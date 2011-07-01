@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <title>JS Pong</title>
+    <link href="main.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" src="logo.js"></script>
+  </head>
+  <body onload="draw_logo(500);">
+    <b>zoom:</b>
+    <input type="range" id="zoom" min="10" max="1000" value="500" onchange="draw_logo(this.value);showValue(this.value)"/>
+    <span id="sliderval">0</span>
+    <script type="text/javascript">
+      function showValue(val){document.getElementById("sliderval").innerHTML=val;}
+    </script>
+    <p/>
+    <canvas id="canvas"></canvas>
+  </body>
+</html>
+
