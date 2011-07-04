@@ -7,8 +7,12 @@
     <script type="text/javascript" src="http://localhost:9888/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="main.js"></script>
   </head>
-  <body onload="init();">
-    <p>dam, dam, dam</p>
+  <body>
+    <button onclick="init();">init socket</button><span id='p-init'></span><br/>
+    <button onclick="create_session();">create session</button><span id='p-create'></span><br/>
+    <input id="session_code"></input><button onclick="join_session();">join session</button><span id='p-join'></span><br/>
+    <input id="data"></input><button onclick="send_data();">send data</button><span id='p-send'></span><br/>
+    <p id='log_text'><em>Events:</em><br/></p>
   </body>
 </html>
 
