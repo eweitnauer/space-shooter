@@ -10,9 +10,9 @@ function log() {
   p.appendChild(document.createTextNode(msg));
 };
 
-function init() {
+function comm_init() {
   socket = io.connect('http://localhost:9888');
-  document.getElementById('p-init').innerHTML = socket ? 'ok' : 'fail';
+  
   socket.on('session_joined', function(code, success) {
     log('joined session ' + code + ', ' + success);
     session_code = code;
@@ -29,17 +29,7 @@ function init() {
 }
 
 function create_session() {
-  socket.emit('create_session_cool', function(code, success) {
-    document.getElementById('p-create').innerHTML = success ? code : 'fail';
+  socket.emit('create_session', function(code, success) {
+    document.getElementById('session-code').innerHTML = success ? code : 'fail';
   });
-}
-
-function join_session() {
-  var code = document.getElementById('session_code').value;
-  socket.emit('join_session', code);
-}
-
-function send_data() {
-  var data = document.getElementById('data').value;
-  socket.emit('data', session_code, data);
 }

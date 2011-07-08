@@ -1,0 +1,9 @@
+{
+	"id": "com.phigames.pong",
+	"version": "0.1.0",
+	"vendor": "3rrr",
+	"type": "web",
+	"main": "index.html",
+	"title": "pong_mobile",
+	"icon": "icon.png"
+}

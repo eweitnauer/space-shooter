@@ -10,24 +10,19 @@ var Uuid = require('node-uuid');
 var sessions = {};
 
 Io.sockets.on('connection', function (socket) {
-  socket.on('create_session', function() {
+  socket.on('create_session', function(fn) {
     var code = Uuid().substring(0,4);
     sessions[code] = {game: socket.id};
-    socket.emit('session_created', code, true);
+    if (typeof fn === 'function') fn(code, true);
+    else socket.emit('session_created', code, true);
     if (logging) console.log('[' + socket.id + '] created session ' + code + '.');
   });
   
-  socket.on('create_session_cool', function(fn) {
-    var code = Uuid().substring(0,4);
-    sessions[code] = {game: socket.id};
-    fn(code, true);
-    if (logging) console.log('[' + socket.id + '] created session ' + code + '.');
-  });
-  
-  socket.on('join_session', function(code) {
+  socket.on('join_session', function(code, fn) {
     if (!code || !sessions[code] || sessions[code].player) return;
     sessions[code].player = socket.id;
-    socket.emit('session_joined', code, true);
+    if (typeof fn === 'function') fn(code, true)
+    else socket.emit('session_joined', code, true);
     Io.sockets.socket(sessions[code].game).emit('player_joined', code);
     if (logging) console.log('[' + socket.id + '] joined session ' + code + '.');
   });

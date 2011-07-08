@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Phi Pong</title>
+    <link href="main.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" src="raphael.src.js"></script>
+    <script type="text/javascript" src="http://localhost:9888/socket.io/socket.io.js"></script>
+	  <script type="text/javascript" src="comm.js"></script>
+	  <script type="text/javascript" src="game.js"></script>
+	  <script type="text/javascript" src="main.js"></script>
+  </head>
+  <body onload="init();">
+    <p id="welcome">Start game by joining session <tspan id="session-code">...</tspan></p>
+    <div id="display"></div>
+    <br/>
+    <p>Player 1: a <-- --> d    Player 2: left <-- --> right</p>
+    <p id='log_text'><em>Events:</em><br/></p>
+  </body>
+</html>
+

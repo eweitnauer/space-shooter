@@ -1,0 +1,6 @@
+/* TODO: put your application-specific CSS here */
+div#txtCode, div#btnJoin {
+  width: 48%;
+  height: 40px;
+  display: block;
+}
