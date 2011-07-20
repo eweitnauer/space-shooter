@@ -11,15 +11,15 @@ function log() {
 };
 
 function comm_init() {
-  socket = io.connect('http://localhost:9888');
+  socket = io.connect('http://phigames.com:9888');
   
   socket.on('session_joined', function(code, success) {
     log('joined session ' + code + ', ' + success);
     session_code = code;
   });
-  socket.on('data', function(code, data) {
-    log('received data from session ' + code + ': ' + data);
-  });
+//  socket.on('data', function(code, data) {
+//    log('received data from session ' + code + ': ' + JSON.stringify(data));
+//  });
   socket.on('player_joined', function(code) {
     log('player joined session', code);
   });

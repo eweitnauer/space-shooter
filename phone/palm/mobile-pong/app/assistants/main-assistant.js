@@ -6,8 +6,10 @@ function MainAssistant() {
 }
 
 MainAssistant.prototype.publish = function(msg) {
-  Mojo.Log.info("sending message to " + this.joined);  
-  this.socket.emit('data', this.joined, msg);
+  if (this.socket && this.joined) {
+    Mojo.Log.info("sending message to " + this.joined);  
+    this.socket.emit('data', this.joined, msg);
+  }
   //if (this.con_btn_model.value) {
   //  this.socket_local.publish('data', {id: this.dev_id, data:msg});
   //} else {
@@ -18,8 +20,8 @@ MainAssistant.prototype.publish = function(msg) {
 MainAssistant.prototype.handle_orientation = function(event) {
   //Mojo.Log.info("Orientation change position: ", event.position, " pitch: ", event.pitch,
   //    " roll: ", event.roll);
-  this.controller.get("pitch").update("Pitch = " + event.pitch);
-	this.controller.get("roll").update("Roll = " + event.roll);
+//  this.controller.get("pitch").update("Pitch = " + event.pitch);
+//	this.controller.get("roll").update("Roll = " + event.roll);
 	
 	if (this.send_btn_model.value) {
 	  this.publish({pitch: event.pitch, roll: event.roll});
@@ -27,15 +29,15 @@ MainAssistant.prototype.handle_orientation = function(event) {
 };
 
 MainAssistant.prototype.handle_acceleration = function(event) {
-	this.controller.get("accx").update("X = " + event.accelX);
-	this.controller.get("accy").update("Y = " + event.accelY);
-	this.controller.get("accz").update("Z = " + event.accelZ);
-	this.controller.get("time").update("Time (msec) = " + event.time);
+//	this.controller.get("accx").update("X = " + event.accelX);
+//	this.controller.get("accy").update("Y = " + event.accelY);
+//	this.controller.get("accz").update("Z = " + event.accelZ);
+//	this.controller.get("time").update("Time (msec) = " + event.time);
 }
 
 MainAssistant.prototype.setupSocketIo = function() {
-  Mojo.Log.info("Connecting to http://192.168.0.102:9888...");
-  this.socket = io.connect('http://192.168.0.102:9888');
+  Mojo.Log.info("Connecting to http://phigames.com:9888...");
+  this.socket = io.connect('http://phigames.com:9888');
   if (this.socket) Mojo.Log.info("...successfully connected!");
 };
 
@@ -50,9 +52,9 @@ MainAssistant.prototype.btn_connect_pressed = function(event) {
 MainAssistant.prototype.btn_join_pressed = function(event) {
   var code = this.controller.get('txtCode').mojo.getValue();
   Mojo.Log.info("joining session " + code + "...");
-  this.joined = code;
+  var self = this;
   this.socket.emit('join_session', code, function(code, success) {
-    this.joined = code;
+    self.joined = code;
     Mojo.Log.info(success); 
   });
 }
@@ -78,14 +80,14 @@ MainAssistant.prototype.setupWidgets = function() {
   }); 
   
   this.send_btn_model = {
-  	value : false,
+  	value : true,
 		disabled: false 
 	};
 	this.controller.setupWidget('publish-data', {}, this.send_btn_model);
 
   this.con_btn_model = {
   	value : true,
-		disabled: false 
+		disabled: true 
 	};
 	this.controller.setupWidget('connection-type',
 	                            {trueLabel: 'local', falseLabel: 'remote'},
