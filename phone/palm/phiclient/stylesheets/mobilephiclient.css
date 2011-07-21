@@ -1,0 +1,13 @@
+.my-style .title {
+	font-size: 15px;
+	color: #333;
+}
+
+.my-style .label {
+  margin-top: 13px;
+	font-size: 14px;
+}
+
+.my-style .red {
+  color: red;
+}

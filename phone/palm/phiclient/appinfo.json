@@ -1,0 +1,9 @@
+{
+	"id": "com.phigames.phiclient",
+	"version": "0.1.0",
+	"vendor": "Phi",
+	"type": "web",
+	"main": "index.html",
+	"title": "Mobile Phi Client",
+	"icon": "icon.png"
+}
