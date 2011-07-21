@@ -36,8 +36,8 @@ MainAssistant.prototype.handle_acceleration = function(event) {
 }
 
 MainAssistant.prototype.setupSocketIo = function() {
-  Mojo.Log.info("Connecting to http://phigames.com:9888...");
-  this.socket = io.connect('http://phigames.com:9888');
+  Mojo.Log.info("Connecting to 192.168.0.102:9888...");http://phigames.com:9888...");
+  this.socket = io.connect('http://192.168.0.102:9888');//phigames.com:9888');
   if (this.socket) Mojo.Log.info("...successfully connected!");
 };
 
