@@ -18,6 +18,16 @@ var ctx= null, timer=null, points_A=0, points_B=0,
     bar_A = { x: 0, y: 0, vx: 0 }, bar_B = { x: 0, y: 0, vx: 0 },
     ball = { x:0, y:0, vx:0, vy:0 };
 
+Math.sign = function(x) { 
+    if(x < 0){  
+        return -1; 
+    }else if(x>0){ 
+        return 1; 
+    }else{ 
+        return 0; 
+    } 
+}
+
 /** Since the ball needs to be initialized after each round, its 
 initialization is outsourced to a dedicated function. */
 function init_ball_and_bars(){
@@ -44,6 +54,7 @@ function init(){
     init_ball_and_bars();
    
     timer = setInterval(loop,20);
+    timer = setInterval(function() { ball.vx *= 1.2 } ,2000);
 }
 
 /** This is the actual processing loop of our application. It first
@@ -51,6 +62,7 @@ applies one step of the game logic (moving the ball, moving the bars,
 checking collision and then renders the scene again. For simplicity, 
 we split this into two functions: step() and  render() */
 function loop(){ step(); render(); }
+
 
 /** The step function fist checks for possible collision with the 
 canvas borders. If a collision occurs during the movement, the balls
@@ -97,7 +109,9 @@ function step(){
 /** Once, a new state is produced, the current scene has to be rendered. Here, 
 we use the canvas' rendering context directly. */
 function render(){
-    ctx.clearRect(0,0,W,H);
+    //    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.5)';
+    ctx.fillRect(0,0,W,H);
 
     ctx.fillStyle = COLOR_BALL;
     ctx.lineWidth = 2;
@@ -118,15 +132,7 @@ function render(){
     ctx.fillText(points_B, 20,H-20);
 }
 
-Math.sign = function(x) { 
-    if(x < 0){  
-        return -1; 
-    }else if(x>0){ 
-        return 1; 
-    }else{ 
-        return 0; 
-    } 
-}
+
 
 function move_A(){
     var dx = ball.x - bar_A.x;
