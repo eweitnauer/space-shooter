@@ -2,6 +2,7 @@ var field = {w: 400, h: 300}
 var ball = {x: 40, y: 40, dx: 2, dy: 2, r: 14}
 var pad1 = {x: 150, y: 0, h: 15, w: 100, dir: 0, speed: 6, pts: 0}
 var pad2 = {x: 150, y: field.h-15, h: 15, w: 100, dir: 0, speed: 6, pts: 0}
+var max_pts = 20;
 
 var Painter = {
 	paper: null,
@@ -41,26 +42,19 @@ var Painter = {
 
 var Engine = {
 	stepTimer: null,
-	onKeyDown: function(evt) {
-		if (evt.keyCode == 39) pad2.dir = 1;
-		else if (evt.keyCode == 37) pad2.dir = -1;
-		else if (evt.keyCode == 65) pad1.dir = -1;
-		else if (evt.keyCode == 68) pad1.dir = 1;
-		
-	},
-	onKeyUp: function(evt) {
-		if (evt.keyCode == 39 || evt.keyCode == 37) pad2.dir = 0;
-		else if (evt.keyCode == 65 || evt.keyCode == 68) pad1.dir = 0;
-	},
 	onPitch: function(pitch) {
-	  if (pitch < 5) pad2.dir = -1;
-	  else if (pitch > 5) pad2.dir = 1;
-	  else pad2.dir = 0;
+    pad2.speed = Math.abs(pitch) / 10.0;
+    pad2.dir = (pitch<0) ? 1 : -1;
 	},
 	init: function() {
 		this.stepTimer = setInterval(this.step, 30);
 	},
+	ai_move: function() {
+	  pad1.dir = (pad1.x + pad1.w/2 < ball.x) ? 1 : -1;
+	  pad1.speed = Math.min(6, Math.abs(pad1.x + pad1.w/2 - ball.x));
+	},
 	step: function() {
+	  Engine.ai_move();
 		// move pad 1
 		pad1.x += pad1.speed * pad1.dir;
 		if (pad1.x+pad1.w > field.w) pad1.x = field.w - pad1.w;
@@ -85,7 +79,7 @@ var Engine = {
 				// player 2 lose
 				pad1.pts++;
 				Painter.points();
-				if (pad1.pts==5) { // game over
+				if (pad1.pts==max_pts) { // game over
 					Engine.stop();
 					Painter.text('Player 1 wins!');
 				} else { // next round
@@ -104,7 +98,7 @@ var Engine = {
 			} else if (ball.y-ball.r < 0) {
 				pad2.pts++;
 				Painter.points();
-				if (pad2.pts==5) { // game over
+				if (pad2.pts==max_pts) { // game over
 					Engine.stop();
 					Painter.text('Player 2 wins!');
 				} else { // next round
