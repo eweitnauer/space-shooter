@@ -1,15 +1,40 @@
-/** Here, we present the java-script pong tutorial, which is split into
-3 parts. In the first part, we implement the moving ball which is bounces
-between the canvas borders. The 2nd part will also include the moving bars.
-The 3rd parts completes the tutorial by adding a logic to handle the whole
-match. */
+/** We plan to provide a communication framework for data exchange between
+smart-phone apps and browser applications and games. Therefore, I think its
+a good idea to spend some time familiarizing with one of the most common
+script languages for web-development: <em>Java-Scrip</em>.
+Since we plan to open our gates inaugurate our website with a simple <em>Pong</em>
+game as a <em>proof of concept</em>, we decided to dedicate a blog article to this
+topic. Apparently, the internet seems to be full of javascript pong tutorials, but for
+some strange reason the first page of google hits for the search terms
+<em>javascript pong tutorial</em> provides only one result, that does actually lead
+to a useful tutorial (<a href="http://www.i-programmer.info/projects/36-web/365-javascript-pong-.html">link</a>). Ok, if I optimize my search, I get some other useful hits (list here).
+How can our tutorial now stand out against the others? Recently, several rendering
+frameworks have become quite popular that are build on top of the html5-canvas. We will
+discuss some differnt approaches for visualization.
+<ul>
+<li>pure canvas based drawing</li>
+<li>drawing with Raphael.js</li>
+<li>drawing with Paper.js</li>
+</ul>
+*/
 
-/** For the canvas based java scrip pong, we first have to decide for a
-program sturcture. In order to keep the code simple, we will not use
-java script classes here. Instead, we use a set of global variables that 
-describe the program state.
-First we create a hash 'constants', that contains all constant values we
-used. This part can possible later be exported to the style sheet. */
+/** The tutorial is split into two chapters. The first chapter presents the creation
+of a simple pong game. The visualization is here implemented using the html-canvas
+directly. In the 2nd chapter, we will replace the rendering function by a Raphael.js 
+and a Paper.js renderer respectively in order to highlight the differences of the 
+three approaches. Finally, some additional graphical effects will be added and it will
+be discussed, how these can be implemented in the different rendering engines.
+
+
+/** CHAPTER I */
+
+/** For simplicity, we use simple global variables for constants and the game state.
+The constants can later be defined in the style sheet or in a dedicated configuration 
+file. In the first step of this tutorial, a simple loop will be set up, that draws 
+the ball (a green circle) in the middle of the screen.
+
+*/
+
 var W= 400, H=300, BORDER=2, W_BAR=100, H_BAR=10, 
     V_BALL=10, R_BALL=10, COLOR_BALL="rgb(50,255,50)",
     COLOR_A="rgb(200,100,100)",COLOR_B="rgb(0,100,200)";
