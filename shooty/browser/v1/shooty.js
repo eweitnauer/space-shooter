@@ -1,10 +1,11 @@
 var Game = {
    w: 640, h: 500
-   , grav_x:0, grav_y:9.81/500
+   , grav_x:0, grav_y:9.81/5000
    , air_friction: 0.01
   ,step_timer: null
   ,ships: {}
    ,shots: []
+   ,explosions:[]
   ,start: function() {
     this.canvas = document.getElementById("canvas");
     this.canvas.width = this.w; 
@@ -22,6 +23,29 @@ var Game = {
         }
     }
     Game.shots = newShots;
+
+    for(s in Game.ships){
+        var ship = Game.ships[s];
+        for(x in Game.shots){
+            var shot = Game.shots[x];
+            if(ship.isHit(shot)){
+                shot.hit = true;
+                //console.log('created collision at ' + shot.x + ' ' + shot.y);
+                Game.explosions.push(new Explosion(shot));
+                ship.hit(shot);
+            }
+        }
+    }
+    var newExplosions = [];
+    for(e in Game.explosions){
+        Game.explosions[e].step();
+        if(!Game.explosions[e].isAtEnd()){
+            newExplosions.push(Game.explosions[e]);
+        }
+    }
+    Game.explosions = newExplosions;
+
+
     Game.painter.paint();
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
@@ -42,6 +66,7 @@ var Images = {
         this.next_shot = (this.next_shot+1) % 3;
         return this.shots[this.next_shot];
     },
+    explosions: [new Image, new Image, new Image, new Image],
     bg: new Image
 };
 Images.ship.src = 'graphics/ship-30x30.png';
@@ -54,6 +79,23 @@ Images.shots[0].src = 'graphics/shot-1.png';
 Images.shots[1].src = 'graphics/shot-2.png';    
 Images.shots[2].src = 'graphics/shot-3.png';    
 
+Images.explosions[0].src = 'graphics/boom-1.png';    
+Images.explosions[1].src = 'graphics/boom-2.png';    
+Images.explosions[2].src = 'graphics/boom-3.png';    
+Images.explosions[3].src = 'graphics/boom-4.png';    
+
+var Explosion = function(shot){
+    var self = this;
+    this.x = shot.x;
+    this.y = shot.y;
+    this.time = -1;
+    this.isAtEnd = function(){
+        return this.time >= 4;
+    }
+    this.step = function(){
+        this.time++;
+    }
+};
 
 var Shot = function(id,x,y,v,rot,maxDist){
     var self = this;
@@ -63,6 +105,7 @@ var Shot = function(id,x,y,v,rot,maxDist){
     this.x = x;
     this.y = y;
     this.v = v;
+    this.hit = false;
     this.rot = rot;
     this.maxDist = maxDist;
     this.step = function(){
@@ -70,6 +113,7 @@ var Shot = function(id,x,y,v,rot,maxDist){
         this.y += v * -Math.cos(this.rot);
     }
     this.isAtEnd = function(){
+        if(this.hit) return true;
         var dx = this.x-this.initX;
         var dy = this.y-this.initY;
         return Math.sqrt(dx*dx+dy*dy) > this.maxDist;
@@ -85,11 +129,27 @@ var Ship = function(session_code) {
   this.rot = 0;
   this.vx = 0;
   this.vy = 0;
+  this.collision_radius = 10;
   //this.accel = 0;
   this.energy = 100;
   this.session_code = session_code;
   this.color = Game.shipcolors[Game.nextshipcolor++];
   Game.nextshipcolor = Game.nextshipcolor % 4;
+
+  this.hit = function(shot){
+      this.energy--;
+      var vx = Math.sin(shot.rot)*shot.v;
+      var vy = -Math.cos(shot.rot)*shot.v;
+      this.vx += 0.05*vx;
+      this.vy += 0.05*vy;
+  }
+
+  this.isHit = function(shot){
+      //      console.log('isHit: x:' +thisx + ' y:' + y + ' shot.x:' + shot.x + ' shot.y:'+shot.y);
+      var dx = this.x-shot.x;
+      var dy = this.y-shot.y;
+      return Math.sqrt(dx*dx+dy*dy) < this.collision_radius;
+  }
   
   this.steer = function(data) {
     this.steer_data = data;
@@ -141,7 +201,15 @@ var PaintEngine = function(canvas_context) {
       
       for (s in Game.ships)  this.paint_ship(Game.ships[s]);
       for (s in Game.shots)  this.paint_shot(Game.shots[s]);
+      for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
   }
+
+  this.paint_explosion = function(ex){
+      var c = this.ctx;
+      var im = Images.explosions[ex.time];
+      c.drawImage(im,ex.x-im.width/2,ex.y-im.height/2);
+  }
+  
   this.paint_shot = function(shot){
       var c = this.ctx;
       c.fillStyle = 'rgba(0,255,255,0.5)';
