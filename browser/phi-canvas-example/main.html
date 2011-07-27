@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>JS Pong</title>
+    <link href="main.css" rel="stylesheet" type="text/css"></link>
+    <script type="text/javascript" src="http://phigames.com:9888/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="comm.js"></script>
+    <script type="text/javascript" src="pong.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+  </head>
+  <body onload="init();">
+    <p id="welcome">Start game by joining session <tspan id="session-code">...</tspan></p>
+    <canvas id="canvas"></canvas>
+    <p id='log_text'><em>Events:</em><br/></p>
+  </body>
+</html>
