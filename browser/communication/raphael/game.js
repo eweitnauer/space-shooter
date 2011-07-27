@@ -43,7 +43,7 @@ var Painter = {
 var Engine = {
 	stepTimer: null,
 	onPitch: function(pitch) {
-    pad2.speed = Math.abs(pitch) / 10.0;
+    pad2.speed = Math.abs(pitch) / 5.0;
     pad2.dir = (pitch<0) ? 1 : -1;
 	},
 	init: function() {

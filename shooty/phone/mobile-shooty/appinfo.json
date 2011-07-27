@@ -1,0 +1,9 @@
+{
+	"id": "com.phigames.shooty",
+	"version": "0.1.0",
+	"vendor": "PhiGames",
+	"type": "web",
+	"main": "index.html",
+	"title": "shooty_mobile",
+	"icon": "icon.png"
+}

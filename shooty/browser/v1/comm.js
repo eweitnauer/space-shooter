@@ -19,20 +19,9 @@ function comm_init() {
   socket.on('disconnect', function() {
     log('disconnected');
   });  
-    
-  socket.on('session_joined', function(code, success) {
-    log('joined session ' + code + ', ' + success);
-    session_code = code;
-  });
-//  socket.on('data', function(code, data) {
-//    log('received data from session ' + code + ': ' + JSON.stringify(data));
-//  });
   socket.on('player_joined', function(code) {
     log('player joined session', code);
   });
-  socket.on('session_created', function(code, success) {
-    log('Created Session: ', code, success);
-  });  
 }
 
 function create_session() {
