@@ -18,8 +18,18 @@ JoinSceneAssistant.prototype.number_del = function() {
 }
 
 JoinSceneAssistant.prototype.join_tapped = function() {
-  var val = this.controller.get("session_code").mojo.getValue();
-  Mojo.Log.info('pressed join button, code is ' + val);
+  var code = this.controller.get("session_code").mojo.getValue();
+  Mojo.Log.info('joining session ' + code + '...');
+  var self = this;
+  this.socket.emit('join_session', code, function(code, success) {
+    self.controller.get('btnJoin').mojo.deactivate();
+    if (success) {
+      Mojo.Controller.stageController.pushScene('controller');
+    } else {
+      // show error
+      Mojo.Controller.errorDialog('Could not join session ' + code + '!'); 
+    }
+  });
 }
 
 JoinSceneAssistant.prototype.on_connect = function() {
@@ -57,7 +67,7 @@ JoinSceneAssistant.prototype.setup = function() {
   Mojo.Event.listen(this.controller.get('btnDel'),
                     Mojo.Event.tap,
                     this.number_del.bindAsEventListener(this));
-  this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activity.Buttion}, {label: 'Join Session'});
+  this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activityButton}, {label: 'Join Session'});
   Mojo.Event.listen(this.controller.get('btnJoin'),
                     Mojo.Event.tap,
                     this.join_tapped.bindAsEventListener(this));

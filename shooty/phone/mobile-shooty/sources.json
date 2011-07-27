@@ -7,5 +7,9 @@
     {
         "scenes": "join-scene",
         "source": "app/assistants/join-scene-assistant.js"
+    },
+    {
+        "scenes": "controller",
+        "source": "app/assistants/controller-assistant.js"
     }
 ]
