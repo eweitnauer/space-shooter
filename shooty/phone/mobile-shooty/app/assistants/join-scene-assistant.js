@@ -57,7 +57,7 @@ JoinSceneAssistant.prototype.setup = function() {
   Mojo.Event.listen(this.controller.get('btnDel'),
                     Mojo.Event.tap,
                     this.number_del.bindAsEventListener(this));
-  this.controller.setupWidget('btnJoin', {}, {label: 'Join Session'});
+  this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activity.Buttion}, {label: 'Join Session'});
   Mojo.Event.listen(this.controller.get('btnJoin'),
                     Mojo.Event.tap,
                     this.join_tapped.bindAsEventListener(this));
