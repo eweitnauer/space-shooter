@@ -191,6 +191,6 @@ function init(){
     timer = setInterval(step,33);
 
     document.onkeydown = key_down;
-    document.onkeyup = key_up;
+    document.onkeyup = key_up;w
 
 }
