@@ -3,5 +3,9 @@
     {
         "scenes": "main",
         "source": "app/assistants/main-assistant.js"
+    },
+    {
+        "scenes": "join-scene",
+        "source": "app/assistants/join-scene-assistant.js"
     }
 ]
