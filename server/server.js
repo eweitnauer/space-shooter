@@ -25,7 +25,8 @@ Io.sockets.on('connection', function (socket) {
   });
   
   socket.on('join_session', function(code, fn) {
-    if (!code || !sessions[code] || sessions[code].player) return;
+    //if (!code || !sessions[code] || sessions[code].player) return;
+    if (!code || !sessions[code]) return;
     sessions[code].player = socket.id;
     if (typeof fn === 'function') fn(code, true)
     else socket.emit('session_joined', code, true);
