@@ -9,9 +9,15 @@ var Uuid = require('node-uuid');
 
 var sessions = {};
 
+function getCode() {
+  var c = '', digits = '0123456789';
+  for (var i=0; i<4; i++) c += digits[Math.floor(digits.length*Math.random())];
+  return c;
+}
+
 Io.sockets.on('connection', function (socket) {
   socket.on('create_session', function(fn) {
-    var code = Uuid().substring(0,4);
+    var code = getCode(); //Uuid().substring(0,4);
     sessions[code] = {game: socket.id};
     if (typeof fn === 'function') fn(code, true);
     else socket.emit('session_created', code, true);
