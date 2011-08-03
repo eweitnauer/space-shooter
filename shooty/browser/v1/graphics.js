@@ -12,7 +12,11 @@ var Images = {
         this.next_shot = (this.next_shot+1) % 3;
         return this.shots[this.next_shot];
     },
-    explosions: [new Image, new Image, new Image, new Image],
+    explosions: [new Image, new Image, new Image, new Image,
+                 new Image, new Image, new Image, new Image],
+
+    smokes: [ new Image, new Image, new Image, new Image,
+              new Image, new Image, new Image, new Image],
     bg: new Image
 };
 Images.ship.src = 'graphics/ship-30x30.png';
@@ -29,6 +33,19 @@ Images.explosions[0].src = 'graphics/boom-1.png';
 Images.explosions[1].src = 'graphics/boom-2.png';    
 Images.explosions[2].src = 'graphics/boom-3.png';    
 Images.explosions[3].src = 'graphics/boom-4.png';    
+Images.explosions[4].src = 'graphics/smoke-1.png';    
+Images.explosions[5].src = 'graphics/smoke-2.png';    
+Images.explosions[6].src = 'graphics/smoke-3.png';    
+Images.explosions[7].src = 'graphics/smoke-4.png';    
+
+Images.smokes[0].src = 'graphics/smoke-1.png';    
+Images.smokes[1].src = 'graphics/smoke-1.png';    
+Images.smokes[2].src = 'graphics/smoke-2.png';    
+Images.smokes[3].src = 'graphics/smoke-2.png';    
+Images.smokes[4].src = 'graphics/smoke-3.png';    
+Images.smokes[5].src = 'graphics/smoke-3.png';    
+Images.smokes[6].src = 'graphics/smoke-4.png';    
+Images.smokes[7].src = 'graphics/smoke-4.png';    
 
 
 var PaintEngine = function(canvas_context) {
@@ -42,6 +59,7 @@ var PaintEngine = function(canvas_context) {
       for (s in Game.ships)  this.paint_ship(Game.ships[s]);
       for (s in Game.shots)  this.paint_shot(Game.shots[s]);
       for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
+      for (s in Game.smokes) this.paint_smoke(Game.smokes[s]);
   }
 
   this.paint_explosion = function(ex){
@@ -49,12 +67,21 @@ var PaintEngine = function(canvas_context) {
       var im = Images.explosions[ex.time];
       c.drawImage(im,ex.x-im.width/2,ex.y-im.height/2);
   }
+
+  this.paint_smoke = function(s){
+      var c = this.ctx;
+      var im = Images.smokes[s.time];
+      c.globalAlpha = 0.3;
+      c.drawImage(im,s.x-im.width/2,s.y-im.height/2);
+      c.globalAlpha = 1.0;
+  }
   
   this.paint_shot = function(shot){
       var c = this.ctx;
-      c.fillStyle = 'rgba(0,255,255,0.5)';
+      c.fillStyle = 'rgba(0,255,255,0.4)';
       //c.stokeStyle = 'rgba(0,0,255,0.8)';
       //c.lineWidth = 1;
+      c.fillRect(shot.x-2,shot.y-2,4,4);
       c.fillRect(shot.x-1,shot.y-1,2,2);
       //c.strokeRect(shot.x-1,shot.y-1,2,2);
   }
@@ -91,9 +118,18 @@ var PaintEngine = function(canvas_context) {
         c.drawImage(Images.getFlameImage(),23,28);
     }
     if(ship.isShooting()){
-        c.drawImage(Images.getShotImage(),13,-5);
+        c.drawImage(Images.getShotImage(),11,-10);
     }
-    
+    c.fillStyle = 'rgba(0,255,0,0.5)';
+    //c.fillRect(0,30,20,7);
+
+    c.beginPath();
+    c.translate(Images.ship.width/2,Images.ship.height/2);
+    c.arc(0,0,30,2*Math.PI*(ship.energy/100),0,true);
+    c.lineWidth = 5;
+    c.strokeStyle = 'rgba(200,255,0,0.5)';
+    c.stroke();
+    c.closePath();
     c.restore();
   }
 };
