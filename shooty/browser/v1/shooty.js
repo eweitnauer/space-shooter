@@ -13,8 +13,7 @@ var Game = {
     this.painter = new PaintEngine(this.canvas.getContext("2d"));
     this.step_timer = setInterval(this.step, 30);
   }
-  ,step: function() {
-    for (s in Game.ships) Game.ships[s].step();
+  ,handleShots: function() {
     var newShots = [];
     for (s in Game.shots) {
         Game.shots[s].step();
@@ -23,40 +22,51 @@ var Game = {
         }
     }
     Game.shots = newShots;
-
+  }
+  ,collisionDetection: function() {
+    // shot - ship collisions
     for(s in Game.ships){
-        var ship = Game.ships[s];
-        for(x in Game.shots){
-            var shot = Game.shots[x];
-            if(ship.isHit(shot)){
-                shot.hit = true;
-                //console.log('created collision at ' + shot.x + ' ' + shot.y);
-                Game.explosions.push(new Explosion(shot));
-                ship.hit(shot);
-            }
+      var ship = Game.ships[s];
+      for(x in Game.shots){
+        var shot = Game.shots[x];
+        if(ship.isHit(shot)){
+          shot.hit = true;
+          Game.explosions.push(new Explosion(shot));
+          ship.hit(shot);
         }
+      }
     }
-      for(s in Game.ships){
-	var ship = Game.ships[s];
-        if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
-           ship.vx = -ship.vx*0.8;
-        } 
-	if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
-           ship.vy = -ship.vy*0.8;
-        }
-    }
-
+    
+    // ship - world collisions
     for(s in Game.ships){
-        var ship = Game.ships[s];
-        for(os in Game.ships){
-            var othership = Game.ships[os];
-            if( (s > os) &&  ship.collidesWith(othership)){
-	        ship.collision(othership);	
-                //console.log('created collision at ' + ship.x + ' ' + ship.y);
-            }
-        }
+  	  var ship = Game.ships[s];
+      if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
+        ship.vx = -ship.vx*0.8;
+      } 
+	    if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
+        ship.vy = -ship.vy*0.8;
+      }
     }
-
+    
+    // ship - ship collisions
+    for(s in Game.ships){
+      var ship = Game.ships[s];
+      for(os in Game.ships){
+        var othership = Game.ships[os];
+        if((s > os) &&  ship.collidesWith(othership)){
+          ship.collision(othership);	
+        }
+      }
+    }
+  }
+  ,step: function() {
+    // move the ships
+    for (s in Game.ships) Game.ships[s].step();    
+    // handle the shots
+    Game.handleShots();
+    // collision dectection
+    Game.collisionDetection();
+    // add explosions
     var newExplosions = [];
     for(e in Game.explosions){
         Game.explosions[e].step();
@@ -65,9 +75,7 @@ var Game = {
         }
     }
     Game.explosions = newExplosions;
-
-
-
+    // update the display
     Game.painter.paint();
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
@@ -97,7 +105,7 @@ var Shot = function(id,x,y,v,rot,maxDist){
     this.v = v;
     this.hit = false;
     this.rot = rot;
-    this.maxDist = maxDist;
+    this.maxDist2 = maxDist*maxDist;
     this.step = function(){
         this.x += v * Math.sin(this.rot);
         this.y += v * -Math.cos(this.rot);
@@ -106,7 +114,7 @@ var Shot = function(id,x,y,v,rot,maxDist){
         if(this.hit) return true;
         var dx = this.x-this.initX;
         var dy = this.y-this.initY;
-        return Math.sqrt(dx*dx+dy*dy) > this.maxDist;
+        return dx*dx+dy*dy > this.maxDist2;
     }
 };
 
