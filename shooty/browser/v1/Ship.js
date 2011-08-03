@@ -16,7 +16,7 @@ var Ship = function(session_code) {
   this.steer_data = { shot:false, accel:false, pitch:0 };
 
   this.hit = function(shot){
-      this.energy--;
+      this.energy = this.energy-10;
       var vx = Math.sin(shot.rot)*shot.v;
       var vy = -Math.cos(shot.rot)*shot.v;
       this.vx += 0.05*vx;
@@ -37,7 +37,7 @@ var Ship = function(session_code) {
   }
 
   this.collision = function(ship){
-      this.energy--;
+      this.energy = this.energy-10;
       Game.explosions.push(new Explosion(ship));
       //var vx = Math.sin(shot.rot)*shot.v;
       //var vy = -Math.cos(shot.rot)*shot.v;

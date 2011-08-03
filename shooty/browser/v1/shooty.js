@@ -1,7 +1,7 @@
-var Explosion = function(shot_or_ship){
+var Explosion = function(x, y){
     var self = this;
-    this.x = shot_or_ship.x;
-    this.y = shot_or_ship.y;
+    this.x = x;
+    this.y = y;
     this.time = -1;
     this.isAtEnd = function(){
         return this.time >= 8;
