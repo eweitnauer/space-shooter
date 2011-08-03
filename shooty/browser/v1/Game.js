@@ -63,21 +63,6 @@ var Game = {
      }
    }
 
-  ,collisionDetection: function() {
-    // shot - ship collisions
-    for(s in Game.ships){
-      var ship = Game.ships[s];
-      for(x in Game.shots){
-        var shot = Game.shots[x];
-        if(ship.isHit(shot)){
-          shot.hit = true;
-          Game.explosions.push(new Explosion(shot.x, shot.y));
-          ship.hit(shot);
-        }
-        Game.smokes = newSmokes;
-      }
-    }
-  }
    ,collisionDetection: function() {
         // shot - ship collisions
         for(s in Game.ships){
@@ -86,7 +71,7 @@ var Game = {
                 var shot = Game.shots[x];
                 if(ship.isHit(shot)){
                     shot.hit = true;
-                    Game.explosions.push(new Explosion(shot));
+                    Game.explosions.push(new Explosion(shot.x, shot.y));
                     ship.hit(shot);
                 }
             }
