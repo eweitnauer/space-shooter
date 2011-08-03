@@ -8,6 +8,7 @@ function init() {
   
   socket.on('player_joined', function(code) {
     Game.ships[code] = new Ship(code);
+    create_session();
   });
   
   socket.on('data', function(code, data) {
