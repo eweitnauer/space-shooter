@@ -16,6 +16,13 @@ var Ship = function(session_code) {
   Game.nextshipcolor = Game.nextshipcolor % 4;
   this.steer_data = { shot:false, accel:false, pitch:0 };
 
+  this.spawn = function(){
+      this.energy = 100;
+      this.x = this.collision_radius + Math.random()*(Game.w-2*this.collision_radius);
+      this.y = this.collision_radius + Math.random()*(Game.h-2*this.collision_radius);
+      this.vx = this.vy = 0;
+  }
+  
   this.hit = function(shot){
       this.energy = this.energy-10;
       var vx = Math.sin(shot.rot)*shot.v;

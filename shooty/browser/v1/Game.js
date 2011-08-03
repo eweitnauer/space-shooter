@@ -1,31 +1,47 @@
+var ShipExplosion = function(x,y){
+    this.time = 20;
+    this.x = x;
+    this.y = y;
+    this.step = function(){
+        for (var i=0; i< 2; ++i){ 
+            var r = this.time - 10;
+            if (r < 0) r = -r;
+            Game.explosions.push(new Explosion(this.x+20+8*r*(Math.random()-0.5),this.y+20+8*r*(Math.random()-0.5)));
+        }
+        this.time--;
+    }
+}
+
 var Game = {
    w: 800, h: 500
    , info_bar_h: 30
    , grav_x:0, grav_y:0
    , air_friction: 0.01
-  ,step_timer: null
-  ,ships: {}
+   ,step_timer: null
+   ,ships: {}
+   ,deadShips: {}
    ,shots: []
    ,explosions:[]
    ,smokes: []
+   ,shipExplosions: []
    ,next_session_code: null
-  ,start: function() {
+   ,start: function() {
     this.canvas = document.getElementById("canvas");
-    this.canvas.width = this.w; 
-    this.canvas.height = this.h + this.info_bar_h;
-    this.painter = new PaintEngine(this.canvas.getContext("2d"));
-    this.step_timer = setInterval(this.step, 30);
-  }
-  ,handleShots: function() {
-    var newShots = [];
-    for (s in Game.shots) {
-        Game.shots[s].step();
-        if(!Game.shots[s].isAtEnd()){
-            newShots.push(Game.shots[s]);
+     this.canvas.width = this.w; 
+     this.canvas.height = this.h + this.info_bar_h;
+     this.painter = new PaintEngine(this.canvas.getContext("2d"));
+     this.step_timer = setInterval(this.step, 30);
+   }
+   ,handleShots: function() {
+        var newShots = [];
+        for (var s in Game.shots) {
+            Game.shots[s].step();
+            if(!Game.shots[s].isAtEnd()){
+                newShots.push(Game.shots[s]);
+            }
         }
-    }
-    Game.shots = newShots;
-  }
+        Game.shots = newShots;
+   }
    ,handleSmokes : function(){
         var newSmokes = [];
         for(var s in Game.smokes){
@@ -37,50 +53,49 @@ var Game = {
         Game.smokes = newSmokes;
     }
 
-  ,handleShips : function(){
-    // kill dead ships 
-    for(var s in Game.ships){
-	var ship = Game.ships[s];
-        //console.log(' check ships energy' + ship.energy);
-      if (ship.energy <= 0) {
-        //console.log(' undefined ship'+ship.session_code);
-          //          Game.explosions.push(
-          delete Game.ships[ship.session_code];  
-	}
-     }
-   }
+    ,handleShips : function(){
+        // kill dead ships 
+        for(var s in Game.ships){
+            var ship = Game.ships[s];
+            //console.log(' check ships energy' + ship.energy);
+            if (ship.energy <= 0) {
+                //console.log(' undefined ship'+ship.session_code);
+                Game.shipExplosions.push(new ShipExplosion(ship.x,ship.y));
+                console.log('deleting', ship.session_code);
+                delete Game.ships[ship.session_code]; 
 
-  ,collisionDetection: function() {
-    // shot - ship collisions
-    for(s in Game.ships){
-      var ship = Game.ships[s];
-      for(x in Game.shots){
-        var shot = Game.shots[x];
-        if(ship.isHit(shot)){
-          shot.hit = true;
-          Game.explosions.push(new Explosion(shot.x, shot.y));
-          ship.hit(shot);
+
+                ship.deathTime = Date.now();
+                Game.deadShips[ship.session_code]=ship; 
+            }
         }
-        Game.smokes = newSmokes;
-      }
+        var now = Date.now();        
+        for(var s in Game.deadShips){
+            var ship = Game.deadShips[s];
+            if( (now - ship.deathTime) > 3000){
+                delete Game.deadShips[ship.session_code];
+                Game.ships[ship.session_code] = ship;
+                ship.spawn();
+            }
+        }
     }
-  }
+   
    ,collisionDetection: function() {
         // shot - ship collisions
-        for(s in Game.ships){
+        for(var s in Game.ships){
             var ship = Game.ships[s];
             for(x in Game.shots){
                 var shot = Game.shots[x];
                 if(ship.isHit(shot)){
                     shot.hit = true;
-                    Game.explosions.push(new Explosion(shot));
+                    Game.explosions.push(new Explosion(shot.x, shot.y));
                     ship.hit(shot);
                 }
             }
         }
         
         // ship - world collisions
-        for(s in Game.ships){
+        for(var s in Game.ships){
             var ship = Game.ships[s];
             if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
               ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
@@ -112,7 +127,17 @@ var Game = {
                 newExplosions.push(Game.explosions[e]);
             }
         }
-        Game.explosions = newExplosions;     
+        Game.explosions = newExplosions;   
+        
+        var newShipExplosions = [];
+        for(var e in Game.shipExplosions){
+            Game.shipExplosions[e].step();
+            if(Game.shipExplosions[e].time > 0){
+                newShipExplosions.push(Game.shipExplosions[e]);
+            }
+        }
+        Game.shipExplosions = newShipExplosions;   
+
     }
    ,stepShips: function(){
         for (var s in Game.ships){

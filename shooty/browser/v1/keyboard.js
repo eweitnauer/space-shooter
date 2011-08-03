@@ -2,6 +2,7 @@ var key_steer_data = { pitch: 0, accel: 0 };
 
 var keyboard_init = function(){
     Game.ships['key'] = new Ship('key');
+    Game.ships['key'].spawn();
     
     document.onkeydown = function(evt) {
 
@@ -19,6 +20,7 @@ var keyboard_init = function(){
         if(evt.keyCode == 78){ // 'n'
             var code = ''+Math.random()*1000;
             Game.ships[code] = new Ship(code); 
+            Game.ships[code].spawn();
         }
     };
     
