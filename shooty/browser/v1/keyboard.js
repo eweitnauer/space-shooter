@@ -10,7 +10,7 @@ var keyboard_init = function(){
         }else if(evt.keyCode == 39){
             key_steer_data.pitch = -70;
         }else if(evt.keyCode == 38){ // up-arrow
-            key_steer_data.accel = 0.2;
+            key_steer_data.accel = true;
         }else if(evt.keyCode == 65){
             key_steer_data.shot = true;
         }
@@ -26,7 +26,7 @@ var keyboard_init = function(){
         if(evt.keyCode == 37 || evt.keyCode == 39){
             key_steer_data.pitch = 0;
         }else if(evt.keyCode == 38){ // up-arrow
-            key_steer_data.accel = 0;
+            key_steer_data.accel = false;
         }else if(evt.keyCode == 65){
             key_steer_data.shot = false;
         }
