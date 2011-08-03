@@ -72,12 +72,12 @@ var Images = {
 Images.ship.src = 'graphics/ship-30x30.png';
 Images.bg.src = 'graphics/bg.jpg';
 
-Images.flames[0].src = 'graphics/flame-1.png';    
-Images.flames[1].src = 'graphics/flame-2.png';    
-Images.flames[2].src = 'graphics/flame-3.png';    
-Images.shots[0].src = 'graphics/shot-1.png';    
-Images.shots[1].src = 'graphics/shot-2.png';    
-Images.shots[2].src = 'graphics/shot-3.png';    
+Images.flames[0].src = 'graphics/flame-neu-1.png';    
+Images.flames[1].src = 'graphics/flame-neu-2.png';    
+Images.flames[2].src = 'graphics/flame-neu-3.png';    
+Images.shots[0].src = 'graphics/shot-neu.1.png';    
+Images.shots[1].src = 'graphics/shot-neu-2.png';    
+Images.shots[2].src = 'graphics/shot-neu-3.png';    
 
 Images.explosions[0].src = 'graphics/boom-1.png';    
 Images.explosions[1].src = 'graphics/boom-2.png';    
