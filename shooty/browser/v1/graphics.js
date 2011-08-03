@@ -20,7 +20,7 @@ var Images = {
     bg: new Image
 };
 Images.ship.src = 'graphics/ship-30x30.png';
-Images.bg.src = 'graphics/bg2.jpg';
+Images.bg.src = 'graphics/bg3.jpg';
 
 Images.flames[0].src = 'graphics/flame-neu-1.png';    
 Images.flames[1].src = 'graphics/flame-neu-2.png';    
