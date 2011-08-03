@@ -24,7 +24,7 @@ JoinSceneAssistant.prototype.join_tapped = function() {
   this.socket.emit('join_session', code, function(code, success) {
     self.controller.get('btnJoin').mojo.deactivate();
     if (success) {
-      Mojo.Controller.stageController.pushScene('controller');
+      Mojo.Controller.stageController.pushScene('controller', self.socket, code);
     } else {
       // show error
       Mojo.Controller.errorDialog('Could not join session ' + code + '!'); 
