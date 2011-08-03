@@ -1,5 +1,6 @@
 var Ship = function(session_code) {
   var self = this;
+  this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;
   this.y = 250;

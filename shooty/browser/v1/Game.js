@@ -24,7 +24,7 @@ var Game = {
     }
     Game.shots = newShots;
   }
-  ,handleSmokes : function(){
+   ,handleSmokes : function(){
         var newSmokes = [];
         for(var s in Game.smokes){
             Game.smokes[s].step();
@@ -33,6 +33,32 @@ var Game = {
             }
         }
         Game.smokes = newSmokes;
+    }
+
+  ,handleShips: function(){
+    // kill dead ships 
+    for(var s in Game.ships){
+	var ship = s;
+      if (ship.energy <= 0) {
+        Game.ships[code] = undefined;
+	}  
+     }
+   }
+
+  ,collisionDetection: function() {
+    // shot - ship collisions
+    for(s in Game.ships){
+      var ship = Game.ships[s];
+      for(x in Game.shots){
+        var shot = Game.shots[x];
+        if(ship.isHit(shot)){
+          shot.hit = true;
+          Game.explosions.push(new Explosion(shot));
+          ship.hit(shot);
+        }
+        Game.smokes = newSmokes;
+      }
+    }
   }
    ,collisionDetection: function() {
         // shot - ship collisions
@@ -95,6 +121,9 @@ var Game = {
         }
     }
   ,step: function() {
+
+    // kill dead vessels
+    Game.handleShips();
     // move the ships
     Game.stepShips();
     // handle the shots
