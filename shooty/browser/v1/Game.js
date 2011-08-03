@@ -55,7 +55,7 @@ var Game = {
         var shot = Game.shots[x];
         if(ship.isHit(shot)){
           shot.hit = true;
-          Game.explosions.push(new Explosion(shot));
+          Game.explosions.push(new Explosion(shot.x, shot.y));
           ship.hit(shot);
         }
         Game.smokes = newSmokes;
@@ -87,17 +87,18 @@ var Game = {
             }
         }
         
-        // ship - ship collisions
-        for(s in Game.ships){
-            var ship = Game.ships[s];
-            for(os in Game.ships){
-                var othership = Game.ships[os];
-                if((s > os) &&  ship.collidesWith(othership)){
-                    ship.collision(othership);	
-                }
-            }
-        }
+      // ship - ship collisions
+      for (var s1 in Game.ships) for (var s2 in Game.ships) {
+        if (s1>s2) Physics.checkCollision(Game.ships[s1], Game.ships[s2],
+          function(ship1, ship2, px, py) {
+            var energy = Physics.letCollide(ship1, ship2);
+            ship1.energy -= energy;
+            ship2.energy -= energy;
+            Game.explosions.push(new Explosion(px, py));
+        });
+      }
     }
+
    ,handleExplosions: function(){
         var newExplosions = [];
         for(var e in Game.explosions){
@@ -122,6 +123,7 @@ var Game = {
             }
         }
     }
+
   ,step: function() {
 
     // kill dead vessels
