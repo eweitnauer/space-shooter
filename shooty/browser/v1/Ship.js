@@ -13,6 +13,7 @@ var Ship = function(session_code) {
   this.session_code = session_code;
   this.color = Game.shipcolors[Game.nextshipcolor++];
   Game.nextshipcolor = Game.nextshipcolor % 4;
+  this.steer_data = { shot:false, accel:false, pitch:0 };
 
   this.hit = function(shot){
       this.energy--;
@@ -45,8 +46,21 @@ var Ship = function(session_code) {
   }
 
 
-  this.steer = function(data) {
-    this.steer_data = data;
+  this.steer = function(data){
+      if(data.btn2) {
+          this.steer_data.shot = true;
+      }else{
+          this.steer_data.shot = false;
+      }
+      if(data.btn1) {
+          this.steer_data.accel = 0.2;
+      }else{
+          this.steer_data.accel = 0;
+      }
+      var p = data.pitch*2;
+      if(p < -90) p = -90;
+      if(p > 90) p = 90;
+      this.steer_data.pitch = p;
   }
 
   this.hasAccel = function() {
