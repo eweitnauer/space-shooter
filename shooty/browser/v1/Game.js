@@ -96,11 +96,13 @@ var Game = {
         for(s in Game.ships){
             var ship = Game.ships[s];
             if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
-                ship.vx = -ship.vx*0.8;
+              ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
+              ship.vx = -ship.vx * 0.4;
             } 
 	    if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
-                ship.vy = -ship.vy*0.8;
-            }
+            ship.energy -= Math.max(10, ship.vy*ship.vy*0.5*ship.mass * 0.6);
+            ship.vy = -ship.vy * 0.4;
+          }
         }
         
       // ship - ship collisions
