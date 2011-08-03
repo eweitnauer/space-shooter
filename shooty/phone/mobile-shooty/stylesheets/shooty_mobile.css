@@ -1,0 +1,8 @@
+body.controller-bg {
+  background-image: url(../images/controller-background.png);
+}
+
+div#controller-div {
+  width: 480px;
+  height: 320px;
+}
