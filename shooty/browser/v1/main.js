@@ -13,8 +13,13 @@ function init() {
   socket.on('data', function(code, data) {
           //  console.log(code);
           if (code in Game.ships) {
-              //         console.log('steering ship with given data');
-              Game.ships[code].steer(data);
+              var p = data.pitch*2;
+              if(p < -90) p = -90;
+              if(p > 90) p = 90;
+
+              var steer_data = { pitch: p, shot: data.btn2, 
+                                 accel: data.btn1 };
+              Game.ships[code].steer(steer_data);
           }
   });
 

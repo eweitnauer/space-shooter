@@ -47,20 +47,7 @@ var Ship = function(session_code) {
 
 
   this.steer = function(data){
-      if(data.btn2) {
-          this.steer_data.shot = true;
-      }else{
-          this.steer_data.shot = false;
-      }
-      if(data.btn1) {
-          this.steer_data.accel = 0.2;
-      }else{
-          this.steer_data.accel = 0;
-      }
-      var p = data.pitch*2;
-      if(p < -90) p = -90;
-      if(p > 90) p = 90;
-      this.steer_data.pitch = p;
+      this.steer_data = data;
   }
 
   this.hasAccel = function() {
@@ -78,8 +65,8 @@ var Ship = function(session_code) {
           if(this.steer_data.accel){
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
-              this.vx += dx * this.steer_data.accel;
-              this.vy += dy * this.steer_data.accel;
+              this.vx += dx * 0.2 * (this.steer_data.accel ? 1 : 0);
+              this.vy += dy * 0.2 * (this.steer_data.accel ? 1 : 0);
           }
           if(this.steer_data.shot){
               var dx = Math.sin(this.rot);

@@ -42,7 +42,8 @@ var Game = {
         //console.log(' check ships energy' + ship.energy);
       if (ship.energy <= 0) {
         //console.log(' undefined ship'+ship.session_code);
-	delete Game.ships[ship.session_code];  
+          //          Game.explosions.push(
+          delete Game.ships[ship.session_code];  
 	}
      }
    }
