@@ -1,6 +1,5 @@
 var Ship = function(session_code) {
   var self = this;
-  this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;
   this.y = 250;
@@ -15,7 +14,7 @@ var Ship = function(session_code) {
   Game.nextshipcolor = Game.nextshipcolor % 4;
 
   this.hit = function(shot){
-      this.energy--;
+      this.energy = this.energy-5;
       var vx = Math.sin(shot.rot)*shot.v;
       var vy = -Math.cos(shot.rot)*shot.v;
       this.vx += 0.05*vx;
@@ -36,7 +35,7 @@ var Ship = function(session_code) {
   }
 
   this.collision = function(ship){
-      this.energy--;
+      this.energy = this.energy-5;
       Game.explosions.push(new Explosion(ship));
       //var vx = Math.sin(shot.rot)*shot.v;
       //var vy = -Math.cos(shot.rot)*shot.v;
