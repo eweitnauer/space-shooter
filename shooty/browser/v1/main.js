@@ -1,14 +1,14 @@
 function init() {
   comm_init();
   
-  create_session();
+  create_session(function(code) {Game.next_session_code = code});
   
   Game.start();
   keyboard_init();
   
   socket.on('player_joined', function(code) {
     Game.ships[code] = new Ship(code);
-    create_session();
+    create_session(function(code) {Game.next_session_code = code});
   });
   
   socket.on('data', function(code, data) {

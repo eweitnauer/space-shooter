@@ -51,15 +51,26 @@ Images.smokes[7].src = 'graphics/smoke-4.png';
 var PaintEngine = function(canvas_context) {
   this.ctx = canvas_context;
   this.paint = function() {
-      //this.ctx.fillStyle = 'rgb(0,0,0.6)';
-      //this.ctx.fillRect(0,0,Game.w,Game.h);
-  //    this.ctx.clearRect(0,0,Game.w, Game.h);
-      this.ctx.drawImage(Images.bg,0,0);
-      
+      //this.ctx.drawImage(Images.bg,0,0);
+      this.ctx.fillStyle = 'black';
+      this.ctx.fillRect(0,0,Game.w, Game.h);
       for (s in Game.ships)  this.paint_ship(Game.ships[s]);
       for (s in Game.shots)  this.paint_shot(Game.shots[s]);
       for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
       for (s in Game.smokes) this.paint_smoke(Game.smokes[s]);
+      this.paint_info_bar();
+  }
+  
+  this.paint_info_bar = function() {
+    var c = this.ctx;
+    c.fillStyle = 'black';
+    c.fillRect(0,Game.h,Game.w,Game.info_bar_h);
+
+    c.font = "bold 12 px sans";
+    c.textBaseline = "middle";
+    c.textAlign = "left";
+    c.fillStyle = 'white';
+    c.fillText('Join game with session code ' + Game.next_session_code, 10, Game.h+Game.info_bar_h/2);
   }
 
   this.paint_explosion = function(ex){

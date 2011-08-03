@@ -1,16 +1,18 @@
 var Game = {
-   w: 640, h: 500
-   , grav_x:0, grav_y:9.81/5000
+   w: 800, h: 500
+   , info_bar_h: 30
+   , grav_x:0, grav_y:0
    , air_friction: 0.01
   ,step_timer: null
   ,ships: {}
    ,shots: []
    ,explosions:[]
    ,smokes: []
+   ,next_session_code: null
   ,start: function() {
     this.canvas = document.getElementById("canvas");
     this.canvas.width = this.w; 
-    this.canvas.height = this.h;
+    this.canvas.height = this.h + this.info_bar_h;
     this.painter = new PaintEngine(this.canvas.getContext("2d"));
     this.step_timer = setInterval(this.step, 30);
   }

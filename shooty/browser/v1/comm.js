@@ -24,8 +24,9 @@ function comm_init() {
   });
 }
 
-function create_session() {
+function create_session(fn) {
   socket.emit('create_session', function(code, success) {
     document.getElementById('session-code').innerHTML = success ? code : 'fail';
+    if (success && fn) fn(code);
   });
 }
