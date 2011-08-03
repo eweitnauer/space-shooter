@@ -98,9 +98,9 @@ var PaintEngine = function(canvas_context) {
 
     c.beginPath();
     c.translate(Images.ship.width/2,Images.ship.height/2);
-    c.arc(0,0,30,0,0.1*Math.PI,2*Math.PI,false);
+    c.arc(0,0,30,2*Math.PI*(ship.energy/100),0,true);
     c.lineWidth = 5;
-    c.strokeStyle = 'rgba(0,255,0,0.5)';
+    c.strokeStyle = 'rgba(200,255,0,0.5)';
     c.stroke();
     c.closePath();
     c.restore();
