@@ -23,6 +23,17 @@ var Game = {
     }
     Game.shots = newShots;
   }
+
+  ,handleShips: function(){
+    // kill dead ships 
+    for(var s in Game.ships){
+	var ship = s;
+      if (ship.energy <= 0) {
+        Game.ships[code] = undefined;
+	}  
+     }
+   }
+
   ,collisionDetection: function() {
     // shot - ship collisions
     for(s in Game.ships){
@@ -60,6 +71,9 @@ var Game = {
     }
   }
   ,step: function() {
+
+    // kill dead vessels
+    Game.handleShips();
     // move the ships
     for (s in Game.ships) Game.ships[s].step();    
     // handle the shots
