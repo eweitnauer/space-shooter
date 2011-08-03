@@ -4,7 +4,20 @@ var Explosion = function(shot_or_ship){
     this.y = shot_or_ship.y;
     this.time = -1;
     this.isAtEnd = function(){
-        return this.time >= 4;
+        return this.time >= 8;
+    }
+    this.step = function(){
+        this.time++;
+    }
+};
+
+var Smoke = function(x,y){
+    var self = this;
+    this.x = x;
+    this.y = y;
+    this.time = -1;
+    this.isAtEnd = function(){
+        return this.time >= 8;
     }
     this.step = function(){
         this.time++;
