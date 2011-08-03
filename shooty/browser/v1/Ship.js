@@ -8,6 +8,7 @@ var Ship = function(session_code) {
   this.vx = 0;
   this.vy = 0;
   this.collision_radius = 10;
+  this.mass = 1;
   //this.accel = 0;
   this.energy = 100;
   this.session_code = session_code;
