@@ -8,15 +8,15 @@ var Ship = function(session_code) {
   this.vx = 0;
   this.vy = 0;
   this.collision_radius = 10;
-  this.mass = 1;
   //this.accel = 0;
   this.energy = 100;
   this.session_code = session_code;
   this.color = Game.shipcolors[Game.nextshipcolor++];
   Game.nextshipcolor = Game.nextshipcolor % 4;
+  this.steer_data = { shot:false, accel:false, pitch:0 };
 
   this.hit = function(shot){
-      this.energy--;
+      this.energy = this.energy-10;
       var vx = Math.sin(shot.rot)*shot.v;
       var vy = -Math.cos(shot.rot)*shot.v;
       this.vx += 0.05*vx;
@@ -37,8 +37,8 @@ var Ship = function(session_code) {
   }
 
   this.collision = function(ship){
-      this.energy--;
-      Game.explosions.push(new Explosion(ship.x, ship.y));
+      this.energy = this.energy-10;
+      Game.explosions.push(new Explosion(ship));
       //var vx = Math.sin(shot.rot)*shot.v;
       //var vy = -Math.cos(shot.rot)*shot.v;
       //this.vx += 0.05*vx;
@@ -46,8 +46,21 @@ var Ship = function(session_code) {
   }
 
 
-  this.steer = function(data) {
-    this.steer_data = data;
+  this.steer = function(data){
+      if(data.btn2) {
+          this.steer_data.shot = true;
+      }else{
+          this.steer_data.shot = false;
+      }
+      if(data.btn1) {
+          this.steer_data.accel = 0.2;
+      }else{
+          this.steer_data.accel = 0;
+      }
+      var p = data.pitch*2;
+      if(p < -90) p = -90;
+      if(p > 90) p = 90;
+      this.steer_data.pitch = p;
   }
 
   this.hasAccel = function() {

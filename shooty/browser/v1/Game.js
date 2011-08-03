@@ -35,13 +35,15 @@ var Game = {
         Game.smokes = newSmokes;
     }
 
-  ,handleShips: function(){
+  ,handleShips : function(){
     // kill dead ships 
     for(var s in Game.ships){
-	var ship = s;
+	var ship = Game.ships[s];
+        //console.log(' check ships energy' + ship.energy);
       if (ship.energy <= 0) {
-        Game.ships[code] = undefined;
-	}  
+        //console.log(' undefined ship'+ship.session_code);
+	delete Game.ships[ship.session_code];  
+	}
      }
    }
 
