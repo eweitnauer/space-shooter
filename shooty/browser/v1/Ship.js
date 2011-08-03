@@ -76,7 +76,7 @@ var Ship = function(session_code) {
               this.vx += dx * 0.2 * (this.steer_data.accel ? 1 : 0);
               this.vy += dy * 0.2 * (this.steer_data.accel ? 1 : 0);
           }
-          if(this.steer_data.shot){
+          if(this.steer_data.shot && Math.random()<0.3){
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
               Game.shots.push(new Shot(this.id,this.x+dx*10, this.y+dy*10, 10, this.rot, 500));
