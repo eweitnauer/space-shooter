@@ -1,13 +1,14 @@
 var socket, session_code;
 
 function log() {
-  var msg = [];
-  for (i in arguments) msg.push(arguments[i]);
-  msg = msg.join(' ');
+//  var msg = [];
+//  for (i in arguments) msg.push(arguments[i]);
+//  msg = msg.join(' ');
+//  console.log(msg);
+//  var p = document.getElementById('log_text');
+//  p.appendChild(document.createElement('br'));
+//  p.appendChild(document.createTextNode(msg));
   console.log(msg);
-  var p = document.getElementById('log_text');
-  p.appendChild(document.createElement('br'));
-  p.appendChild(document.createTextNode(msg));
 };
 
 function comm_init() {
@@ -26,7 +27,7 @@ function comm_init() {
 
 function create_session(fn) {
   socket.emit('create_session', function(code, success) {
-    document.getElementById('session-code').innerHTML = success ? code : 'fail';
+    //document.getElementById('session-code').innerHTML = success ? code : 'fail';
     if (success && fn) fn(code);
   });
 }

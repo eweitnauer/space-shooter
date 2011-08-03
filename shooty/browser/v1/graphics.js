@@ -51,9 +51,9 @@ Images.smokes[7].src = 'graphics/smoke-4.png';
 var PaintEngine = function(canvas_context) {
   this.ctx = canvas_context;
   this.paint = function() {
-      //this.ctx.drawImage(Images.bg,0,0);
-      this.ctx.fillStyle = 'black';
-      this.ctx.fillRect(0,0,Game.w, Game.h);
+      this.ctx.drawImage(Images.bg,0,0);
+      //this.ctx.fillStyle = 'black';
+      //this.ctx.fillRect(0,0,Game.w, Game.h);
       for (s in Game.ships)  this.paint_ship(Game.ships[s]);
       for (s in Game.shots)  this.paint_shot(Game.shots[s]);
       for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
