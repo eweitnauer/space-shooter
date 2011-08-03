@@ -1,14 +1,13 @@
 var socket, session_code;
 
 function log() {
-//  var msg = [];
-//  for (i in arguments) msg.push(arguments[i]);
-//  msg = msg.join(' ');
-//  console.log(msg);
+  var msg = [];
+  for (i in arguments) msg.push(arguments[i]);
+  msg = msg.join(' ');
+  console.log(msg);
 //  var p = document.getElementById('log_text');
 //  p.appendChild(document.createElement('br'));
 //  p.appendChild(document.createTextNode(msg));
-  console.log(msg);
 };
 
 function comm_init() {
