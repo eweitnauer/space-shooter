@@ -1,3 +1,17 @@
+var ShipExplosion = function(x,y){
+    this.time = 20;
+    this.x = x;
+    this.y = y;
+    this.step = function(){
+        for (var i=0; i< 2; ++i){ 
+            var r = this.time - 10;
+            if (r < 0) r = -r;
+            Game.explosions.push(new Explosion(this.x+20+8*r*(Math.random()-0.5),this.y+20+8*r*(Math.random()-0.5)));
+        }
+        this.time--;
+    }
+}
+
 var Game = {
    w: 640, h: 500
    , grav_x:0, grav_y:9.81/5000
@@ -7,6 +21,7 @@ var Game = {
    ,shots: []
    ,explosions:[]
    ,smokes: []
+   ,shipExplosions: []
   ,start: function() {
     this.canvas = document.getElementById("canvas");
     this.canvas.width = this.w; 
@@ -42,7 +57,7 @@ var Game = {
         //console.log(' check ships energy' + ship.energy);
       if (ship.energy <= 0) {
         //console.log(' undefined ship'+ship.session_code);
-          //          Game.explosions.push(
+          Game.shipExplosions.push(new ShipExplosion(ship.x,ship.y));
           delete Game.ships[ship.session_code];  
 	}
      }
@@ -108,7 +123,17 @@ var Game = {
                 newExplosions.push(Game.explosions[e]);
             }
         }
-        Game.explosions = newExplosions;     
+        Game.explosions = newExplosions;   
+        
+        var newShipExplosions = [];
+        for(var e in Game.shipExplosions){
+            Game.shipExplosions[e].step();
+            if(Game.shipExplosions[e].time > 0){
+                newShipExplosions.push(Game.shipExplosions[e]);
+            }
+        }
+        Game.shipExplosions = newShipExplosions;   
+
     }
    ,stepShips: function(){
         for (var s in Game.ships){
