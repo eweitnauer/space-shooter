@@ -93,7 +93,16 @@ var PaintEngine = function(canvas_context) {
     if(ship.isShooting()){
         c.drawImage(Images.getShotImage(),13,-5);
     }
-    
+    c.fillStyle = 'rgba(0,255,0,0.5)';
+    //c.fillRect(0,30,20,7);
+
+    c.beginPath();
+    c.translate(Images.ship.width/2,Images.ship.height/2);
+    c.arc(0,0,30,0,0.1*Math.PI,2*Math.PI,false);
+    c.lineWidth = 5;
+    c.strokeStyle = 'rgba(0,255,0,0.5)';
+    c.stroke();
+    c.closePath();
     c.restore();
   }
 };
