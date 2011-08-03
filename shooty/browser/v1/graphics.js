@@ -1,5 +1,6 @@
+var ShipColors = ['red', 'blue', 'cyan', 'green', 'orange', 'violett'];
 var Images = {
-    ship: new Image,
+    ships: {},
     flames: [ new Image, new Image, new Image ],
     next_flame: 0,
     getFlameImage: function(){
@@ -19,7 +20,11 @@ var Images = {
               new Image, new Image, new Image, new Image],
     bg: new Image
 };
-Images.ship.src = 'graphics/ship-30x30.png';
+
+for (color in ShipColors) {
+  Images.ships[ShipColors[color]] = new Image();
+  Images.ships[ShipColors[color]].src = 'graphics/ship_' + ShipColors[color] + '.png';
+}
 Images.bg.src = 'graphics/bg3.jpg';
 
 Images.flames[0].src = 'graphics/flame-neu-1.png';    
@@ -74,9 +79,10 @@ var PaintEngine = function(canvas_context) {
   }
 
   this.paint_explosion = function(ex){
-      var c = this.ctx;
-      var im = Images.explosions[ex.time];
-      c.drawImage(im,ex.x-im.width/2,ex.y-im.height/2);
+    if (ex.time < 0) return;
+    var c = this.ctx;
+    var im = Images.explosions[ex.time];
+    c.drawImage(im,ex.x-im.width/2,ex.y-im.height/2);
   }
 
   this.paint_smoke = function(s){
@@ -99,30 +105,14 @@ var PaintEngine = function(canvas_context) {
   
   this.paint_ship = function(ship) {
     var c = this.ctx;
+    var width = Images.ships['blue'].width;
+    var height = Images.ships['blue'].height;
     c.save();
     c.translate(ship.x, ship.y);
     c.rotate(ship.rot);
     
-    c.fillStyle = ship.color;
-
-
-    c.translate(-Images.ship.width/2,-Images.ship.height/2);
-    c.drawImage(Images.ship,0,0);
-    c.beginPath();
-    c.moveTo(6,20);
-    c.lineTo(9,15);
-    c.lineTo(9,25);
-    c.lineTo(6,27);
-    c.closePath();
-    c.fill();
-
-    c.beginPath();
-    c.moveTo(19,15);
-    c.lineTo(19,25);
-    c.lineTo(22,27);
-    c.lineTo(22,20);
-    c.closePath();
-    c.fill();
+    c.translate(-width/2,-height/2);
+    c.drawImage(Images.ships[ship.color],0,0);
     
     if(ship.hasAccel()){
         c.drawImage(Images.getFlameImage(),0,28);
@@ -134,13 +124,9 @@ var PaintEngine = function(canvas_context) {
     c.fillStyle = 'rgba(0,255,0,0.5)';
     //c.fillRect(0,30,20,7);
 
-    c.beginPath();
-    c.translate(Images.ship.width/2,Images.ship.height/2);
-    c.arc(0,0,30,2*Math.PI*(ship.energy/100),0,true);
-    c.lineWidth = 5;
+    c.translate(0,height+4);
     c.strokeStyle = 'rgba(200,255,0,0.5)';
-    c.stroke();
-    c.closePath();
+    c.fillRect(0,0,width*ship.energy*0.01,6);
     c.restore();
   }
 };

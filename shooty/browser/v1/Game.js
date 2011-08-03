@@ -32,17 +32,16 @@ var Game = {
      this.painter = new PaintEngine(this.canvas.getContext("2d"));
      this.step_timer = setInterval(this.step, 30);
    }
-   ,handleShots: function() {
-        var newShots = [];
-        for (var s in Game.shots) {
-            Game.shots[s].step();
-            if(!Game.shots[s].isAtEnd()){
-                newShots.push(Game.shots[s]);
-            }
-        }
-        Game.shots = newShots;
-   }
-   ,handleSmokes : function(){
+  /// move the shots and erase marked ones (which hit something / flew too far)
+  ,handleShots: function() {
+    var keep = [];
+    for (var i=0; i<Game.shots.length; i++) {
+      Game.shots[i].step();
+      if (!Game.shots[i].erase) keep.push(Game.shots[i]);
+    }
+    Game.shots = keep;
+  }
+  ,handleSmokes : function(){
         var newSmokes = [];
         for(var s in Game.smokes){
             Game.smokes[s].step();
@@ -57,14 +56,9 @@ var Game = {
         // kill dead ships 
         for(var s in Game.ships){
             var ship = Game.ships[s];
-            //console.log(' check ships energy' + ship.energy);
             if (ship.energy <= 0) {
-                //console.log(' undefined ship'+ship.session_code);
                 Game.shipExplosions.push(new ShipExplosion(ship.x,ship.y));
-                console.log('deleting', ship.session_code);
                 delete Game.ships[ship.session_code]; 
-
-
                 ship.deathTime = Date.now();
                 Game.deadShips[ship.session_code]=ship; 
             }
@@ -81,37 +75,35 @@ var Game = {
     }
    
    ,collisionDetection: function() {
-        // shot - ship collisions
-        for(var s in Game.ships){
-            var ship = Game.ships[s];
-            for(x in Game.shots){
-                var shot = Game.shots[x];
-                if(ship.isHit(shot)){
-                    shot.hit = true;
-                    Game.explosions.push(new Explosion(shot.x, shot.y));
-                    ship.hit(shot);
-                }
-            }
+      // shot - ship collisions
+      for (var s in Game.ships) for (var x in Game.shots) {
+        Physics.checkCollision(Game.ships[s], Game.shots[x],
+          function(ship, shot, px, py) {
+            Game.explosions.push(new Explosion(shot.x, shot.y));
+            shot.erase = true;
+            ship.energy -= shot.energy;
+            Physics.letCollide(ship, shot);
+        });
+      }
+      
+      // ship - world collisions
+      for(var s in Game.ships){
+        var ship = Game.ships[s];
+        if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
+          ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
+          ship.vx = -ship.vx * 0.4;
+        } 
+        if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
+          ship.energy -= Math.max(10, ship.vy*ship.vy*0.5*ship.mass * 0.6);
+          ship.vy = -ship.vy * 0.4;
         }
-        
-        // ship - world collisions
-        for(var s in Game.ships){
-            var ship = Game.ships[s];
-            if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
-              ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
-              ship.vx = -ship.vx * 0.4;
-            } 
-	    if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
-            ship.energy -= Math.max(10, ship.vy*ship.vy*0.5*ship.mass * 0.6);
-            ship.vy = -ship.vy * 0.4;
-          }
-        }
+      }
         
       // ship - ship collisions
       for (var s1 in Game.ships) for (var s2 in Game.ships) {
         if (s1>s2) Physics.checkCollision(Game.ships[s1], Game.ships[s2],
           function(ship1, ship2, px, py) {
-            var energy = Physics.letCollide(ship1, ship2);
+            var energy = Math.max(Physics.letCollide(ship1, ship2), 10);
             ship1.energy -= energy;
             ship2.energy -= energy;
             Game.explosions.push(new Explosion(px, py));
