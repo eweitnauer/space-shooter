@@ -36,6 +36,27 @@ var Game = {
             }
         }
     }
+      for(s in Game.ships){
+	var ship = Game.ships[s];
+        if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
+           ship.vx = -ship.vx*0.8;
+        } 
+	if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
+           ship.vy = -ship.vy*0.8;
+        }
+    }
+
+    for(s in Game.ships){
+        var ship = Game.ships[s];
+        for(os in Game.ships){
+            var othership = Game.ships[os];
+            if( (s > os) &&  ship.collidesWith(othership)){
+	        ship.collision(othership);	
+                //console.log('created collision at ' + ship.x + ' ' + ship.y);
+            }
+        }
+    }
+
     var newExplosions = [];
     for(e in Game.explosions){
         Game.explosions[e].step();
@@ -46,16 +67,17 @@ var Game = {
     Game.explosions = newExplosions;
 
 
+
     Game.painter.paint();
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
    ,nextshipcolor : 0
 };
 
-var Explosion = function(shot){
+var Explosion = function(shot_or_ship){
     var self = this;
-    this.x = shot.x;
-    this.y = shot.y;
+    this.x = shot_or_ship.x;
+    this.y = shot_or_ship.y;
     this.time = -1;
     this.isAtEnd = function(){
         return this.time >= 4;
@@ -118,7 +140,23 @@ var Ship = function(session_code) {
       var dy = this.y-shot.y;
       return Math.sqrt(dx*dx+dy*dy) < this.collision_radius;
   }
-  
+
+  this.collidesWith = function(ship){
+      var dx = this.x-ship.x;
+      var dy = this.y-ship.y;
+      return Math.sqrt(dx*dx+dy*dy) < this.collision_radius+ship.collision_radius;
+  }
+
+  this.collision = function(ship){
+      this.energy--;
+      Game.explosions.push(new Explosion(ship));
+      //var vx = Math.sin(shot.rot)*shot.v;
+      //var vy = -Math.cos(shot.rot)*shot.v;
+      //this.vx += 0.05*vx;
+      //this.vy += 0.05*vy;
+  }
+
+
   this.steer = function(data) {
     this.steer_data = data;
   }
