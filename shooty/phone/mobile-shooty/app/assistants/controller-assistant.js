@@ -51,25 +51,56 @@ ControllerAssistant.prototype.logEvent = function(evt) {
   Mojo.Log.info(str.join(', '));
 }
 
+ControllerAssistant.prototype.getLeftButtonState = function() {
+  var dx = this.leftBtnX-160;
+  var dy = this.leftBtnY-160;
+  var result = {
+    pressed: this.leftBtnPressed
+  , triggered: this.leftBtnTriggered
+  , angle: Math.atan2(dy, dx)
+  , dist: Math.sqrt(dx*dx + dy*dy)};
+  this.leftBtnTriggered = false;
+  return result;
+}
+
+ControllerAssistant.prototype.getRightButtonState = function() {
+  var dx = this.rightBtnX-160;
+  var dy = this.rightBtnY-160;
+  var result = {
+    pressed: this.rightBtnPressed
+  , triggered: this.rightBtnTriggered
+  , angle: Math.atan2(dy, dx)
+  , dist: Math.sqrt(dx*dx + dy*dy)};
+  this.rightBtnTriggered = false;
+  return result;
+}
+
 ControllerAssistant.prototype.sendData = function() {
-  //Mojo.Log.info('Left Button: ' + this.leftButtonPressed + ' Right Button ' + this.rightButtonPressed);
-  //Mojo.Log.info('pitch: ' + this.pitch + ' roll: ' + this.roll);
-  //Mojo.Log.info("sending message to " + this.session_code);
-  this.socket.emit('data', this.session_code, 
-    { btn1: this.leftButtonPressed
-    , btn2: this.rightButtonPressed
+  var data = { btn1: this.getLeftButtonState()
+    , btn2: this.getRightButtonState()
     , pitch: this.pitch
-    , roll: this.roll});
+    , roll: this.roll};
+  Mojo.Log.info('Sending data ' + JSON.stringify(data));
+  this.socket.emit('data', this.session_code, data);
 }
 
 ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
   Mojo.Log.info('Got event of type ' + evt.type);
   if (evt.type == "mousedown") {
-    if (evt.x < 240) this.leftButtonPressed = true;
-    else this.rightButtonPressed = true;
+    if (evt.x < 240) {
+      this.leftBtnPressed = true;
+      this.leftBtnTriggered = true;
+      this.leftBtnX = evt.x;
+      this.leftBtnY = evt.y;
+    } else {
+      this.rightButtonPressed = true;
+      this.rightButtonTriggered = true;
+      this.rightBtnX = evt.x;
+      this.rightBtnY = evt.y;
+    }
   } else if (evt.type == "mouseup") {
-    if (evt.x < 240) this.leftButtonPressed = false;
-    else this.rightButtonPressed = false;
+    if (evt.x < 240) this.leftBtnPressed = false;
+    else this.rightBtnPressed = false;
   }
 }
 
@@ -102,7 +133,7 @@ ControllerAssistant.prototype.activate = function(event) {
   $$('body')[0].addClassName('controller-bg');
   $$('body')[0].removeClassName('palm-default');
   // send data with 10 Hertz
-  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/10);
+  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/1);
   this.pitch = 0;
   this.roll = 0;
   this.leftButtonPressed = false;
