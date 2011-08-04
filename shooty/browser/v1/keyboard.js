@@ -15,7 +15,7 @@ var keyboard_init = function(){
         }else if(evt.keyCode == 65){
             key_steer_data.shot = true;
         }
-        Game.ships['key'].steer(key_steer_data);
+        if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
         
         if(evt.keyCode == 78){ // 'n'
             var code = ''+Math.random()*1000;
@@ -32,7 +32,7 @@ var keyboard_init = function(){
         }else if(evt.keyCode == 65){
             key_steer_data.shot = false;
         }
-        Game.ships['key'].steer(key_steer_data);
+        if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
     };
 
 }

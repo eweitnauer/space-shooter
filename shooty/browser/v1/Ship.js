@@ -22,6 +22,7 @@ var Ship = function(session_code) {
       this.energy = 100;
       this.x = this.collision_radius + Math.random()*(Game.w-2*this.collision_radius);
       this.y = this.collision_radius + Math.random()*(Game.h-2*this.collision_radius);
+      this.rot = Math.random()*2*Math.PI;
       this.vx = this.vy = 0;
   }
   
@@ -38,22 +39,22 @@ var Ship = function(session_code) {
   }
   
   this.step = function() {
+      this.steps_to_shot -= 1;
       if (this.steer_data){
           if(this.steer_data.pitch){
-              this.rot -= this.steer_data.pitch/600;
+              this.rot -= this.steer_data.pitch/1000;
           }
           if(this.steer_data.accel){
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
-              this.vx += dx * 0.2 * (this.steer_data.accel ? 1 : 0);
-              this.vy += dy * 0.2 * (this.steer_data.accel ? 1 : 0);
+              this.vx += dx * 0.1 * (this.steer_data.accel ? 1 : 0);
+              this.vy += dy * 0.1 * (this.steer_data.accel ? 1 : 0);
           }
           if(this.steer_data.shot) {
-            this.steps_to_shot -= 1;
             if (this.steps_to_shot <= 0) {
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
-              Game.shots.push(new Shot(this,this.x+dx*10, this.y+dy*10, 10, this.rot, 250));
+              Game.shots.push(new Shot(this,this.x+dx*10+this.vx, this.y+dy*10+this.vy, 10, this.rot, 250));
               this.steps_to_shot = this.shot_delay;
             }
           }

@@ -112,21 +112,27 @@ var PaintEngine = function(canvas_context) {
     c.rotate(ship.rot);
     
     c.translate(-width/2,-height/2);
+
+    // paint engery bar
+    c.translate(0,height+4);
+    c.fillStyle = 'rgba(0,255,0,0.5)';
+    c.strokeStyle = 'rgba(255,255,255,0.5)';
+    var w = width*ship.energy*0.01;
+    //c.fillRect((width-w)/2,0,w,6);
+    c.fillRect(0,0,w,4);
+    c.strokeRect(0,0,width,4);
+    c.translate(0,-height-4);
+    
     c.drawImage(Images.ships[ship.color],0,0);
     
     if(ship.hasAccel()){
-        c.drawImage(Images.getFlameImage(),0,28);
-        c.drawImage(Images.getFlameImage(),23,28);
+      c.drawImage(Images.getFlameImage(),-1,29);
+      c.drawImage(Images.getFlameImage(),21,29);
     }
     if(ship.isShooting()){
         c.drawImage(Images.getShotImage(),11,-10);
     }
-    c.fillStyle = 'rgba(0,255,0,0.5)';
-    //c.fillRect(0,30,20,7);
 
-    c.translate(0,height+4);
-    c.strokeStyle = 'rgba(200,255,0,0.5)';
-    c.fillRect(0,0,width*ship.energy*0.01,6);
     c.restore();
   }
 };
