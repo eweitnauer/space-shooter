@@ -9,12 +9,17 @@ JoinSceneAssistant.prototype.number_input = function(number) {
   Mojo.Log.info('pressed button ' + number);
   var val = this.controller.get("session_code").mojo.getValue();
   this.controller.get("session_code").mojo.setValue(val + number);
+  Mojo.Controller.getAppController().playSoundNotification("vibrate", "");
 }
 
 JoinSceneAssistant.prototype.number_del = function() {
   Mojo.Log.info('pressed del button');
   var val = this.controller.get("session_code").mojo.getValue();
   this.controller.get("session_code").mojo.setValue(val.substr(0,val.length-1));  
+
+//  this.controller.serviceRequest("palm://com.palm.vibrate", {
+//    method: 'vibrate', parameters: { 'period': 0,'duration': 100 }
+//  });
 }
 
 JoinSceneAssistant.prototype.join_tapped = function() {

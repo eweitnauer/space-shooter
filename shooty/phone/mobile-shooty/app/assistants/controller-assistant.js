@@ -41,6 +41,13 @@ function ControllerAssistant(socket, session_code) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
   this.socket = socket;
+  this.socket.on('data', function(code, data) {
+    Mojo.Log.info('got data from ' + code + ': ' + JSON.stringify(data));
+    if (code != session_code) return;
+    if (data && data.vibrate) {
+      Mojo.Controller.getAppController().playSoundNotification("vibrate", "");
+    }
+  });
   this.session_code = session_code;
 }
 

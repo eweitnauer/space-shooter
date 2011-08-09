@@ -25,5 +25,9 @@ function init() {
               Game.ships[code].steer(steer_data);
           }
   });
+}
 
+function sendVibrate(session_code) {
+  console.log('emitting data', socket, session_code);
+  socket.emit('data', session_code, {vibrate: true});
 }

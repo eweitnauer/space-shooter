@@ -83,20 +83,25 @@ var Game = {
             shot.erase = true;
             ship.energy -= shot.energy;
             Physics.letCollide(ship, shot);
+            sendVibrate(ship.code);
         });
       }
       
       // ship - world collisions
       for(var s in Game.ships){
         var ship = Game.ships[s];
+        var hit = false;
         if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
           ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
           ship.vx = -ship.vx * 0.4;
+          hit = true;
         } 
         if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
           ship.energy -= Math.max(10, ship.vy*ship.vy*0.5*ship.mass * 0.6);
           ship.vy = -ship.vy * 0.4;
+          hit = true;
         }
+        if (hit) sendVibrate(ship.code);
       }
         
       // ship - ship collisions
@@ -107,6 +112,8 @@ var Game = {
             ship1.energy -= energy;
             ship2.energy -= energy;
             Game.explosions.push(new Explosion(px, py));
+            sendVibrate(ship1.code);
+            sendVibrate(ship2.code);
         });
       }
     }
