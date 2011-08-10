@@ -1,5 +1,5 @@
 var Ship = function(session_code) {
-  var self = this;
+  this.init_sprite();
   this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;
@@ -14,8 +14,6 @@ var Ship = function(session_code) {
   this.steps_to_shot = 0;
   this.shot_delay = 6;
   this.session_code = session_code;
-  this.color = ShipColors[Game.nextshipcolor];
-  Game.nextshipcolor = (Game.nextshipcolor+1) % ShipColors.length;
   this.steer_data = { shot:false, accel:false, pitch:0 };
 
   this.spawn = function(){
@@ -32,6 +30,14 @@ var Ship = function(session_code) {
 
   this.hasAccel = function() {
       return this.steer_data && this.steer_data.accel;
+  }
+  
+  this.turnsLeft = function() {
+    return this.steer_data && this.steer_data.pitch < -5;
+  }
+
+  this.turnsRight = function() {
+    return this.steer_data && this.steer_data.pitch > 5;
   }
   
   this.isShooting = function() {
@@ -69,3 +75,40 @@ var Ship = function(session_code) {
   }
 };
 Ship.id = 0;
+Ship.colors = ['red', 'blue', 'cyan', 'green', 'orange', 'violett'];
+Ship.next_color = 0;
+Ship.getNextColor = function() {
+  var result = Ship.colors[Ship.next_color++];
+  if (Ship.next_color >= Ship.colors.length) Ship.next_color = 0;
+  return result;
+}
+
+Ship.prototype.init_sprite = function() {
+  jQuery.extend(this, new Sprite([], Ship.getNextColor()));
+  Game.main_sprite.child_sprites.push(this);
+  var ship = this;
+  // energy bar
+  var energy_sprite = new Sprite([], '');
+  energy_sprite.extra_draw = function(ctx) {
+    ctx.fillStyle = 'rgba(0,255,0,0.5)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    var w = 30*ship.energy*0.01;
+    ctx.fillRect(-15,19,w,4);
+    ctx.strokeRect(-15,19,30,4);
+  }
+  this.child_sprites.push(energy_sprite);
+  // the two engine flames
+  var flame_sprite1 = new Sprite([100,100,100], 'flame');
+  flame_sprite1.x = -11; flame_sprite1.y = 20;
+  flame_sprite1.display = function() { return ship.hasAccel() || ship.turnsLeft() };
+  this.child_sprites.push(flame_sprite1);
+  var flame_sprite2 = new Sprite([100,100,100], 'flame');
+  flame_sprite2.display = function() { return ship.hasAccel() || ship.turnsRight() }  
+  flame_sprite2.x = 11; flame_sprite2.y = 20;
+  this.child_sprites.push(flame_sprite2);
+  // canon fire
+  var canon_sprite = new Sprite([50,50,50], 'canon');
+  canon_sprite.display = function() { return ship.isShooting() }  
+  canon_sprite.x = 0; canon_sprite.y = -20;
+  this.child_sprites.push(canon_sprite);
+}

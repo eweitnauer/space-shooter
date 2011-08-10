@@ -26,7 +26,7 @@ var Smoke = function(x,y){
 
 var Shot = function(shooter,x,y,v,rot){
     var self = this;
-    this.energy = 10;
+    this.energy = 5;
     this.collision_radius = 4;
     this.mass = 0.02;
     this.shooter = shooter;

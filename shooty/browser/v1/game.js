@@ -60,7 +60,8 @@ var Game = {
                 Game.shipExplosions.push(new ShipExplosion(ship.x,ship.y));
                 delete Game.ships[ship.session_code]; 
                 ship.deathTime = Date.now();
-                Game.deadShips[ship.session_code]=ship; 
+                Game.deadShips[ship.session_code]=ship;
+                ship.display = false;
             }
         }
         var now = Date.now();        
@@ -70,6 +71,7 @@ var Game = {
                 delete Game.deadShips[ship.session_code];
                 Game.ships[ship.session_code] = ship;
                 ship.spawn();
+                ship.display = true;
             }
         }
     }
@@ -92,13 +94,15 @@ var Game = {
         var ship = Game.ships[s];
         var hit = false;
         if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
-          ship.energy -= Math.max(10, ship.vx*ship.vx*0.5*ship.mass * 0.6);
-          ship.vx = -ship.vx * 0.4;
+          ship.energy -= Math.max(1, ship.vx*ship.vx*0.5*ship.mass * 3);
+          ship.x -= ship.vx;
+          ship.vx = -ship.vx * 0.5;
           hit = true;
         } 
         if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
-          ship.energy -= Math.max(10, ship.vy*ship.vy*0.5*ship.mass * 0.6);
-          ship.vy = -ship.vy * 0.4;
+          ship.energy -= Math.max(1, ship.vy*ship.vy*0.5*ship.mass * 3);
+          ship.y -= ship.vy;
+          ship.vy = -ship.vy * 0.5;
           hit = true;
         }
         if (hit) sendVibrate(ship.code);
@@ -154,7 +158,7 @@ var Game = {
     }
 
   ,step: function() {
-
+    Animation.time = Date.now();
     // kill dead vessels
     Game.handleShips();
     // move the ships
@@ -173,3 +177,6 @@ var Game = {
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
    ,nextshipcolor : 0
 };
+
+Game.main_sprite = new Sprite([], 'background');
+Game.main_sprite.center_img = false;

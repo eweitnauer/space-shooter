@@ -1,18 +1,4 @@
-var ShipColors = ['red', 'blue', 'cyan', 'green', 'orange', 'violett'];
 var Images = {
-    ships: {},
-    flames: [ new Image, new Image, new Image ],
-    next_flame: 0,
-    getFlameImage: function(){
-        this.next_flame = (this.next_flame+1) % 3;
-        return this.flames[this.next_flame];
-    },
-    shots: [ new Image, new Image, new Image ],
-    next_shot: 0,
-    getShotImage: function(){
-        this.next_shot = (this.next_shot+1) % 3;
-        return this.shots[this.next_shot];
-    },
     explosions: [new Image, new Image, new Image, new Image,
                  new Image, new Image, new Image, new Image],
 
@@ -21,18 +7,16 @@ var Images = {
     bg: new Image
 };
 
-for (color in ShipColors) {
-  Images.ships[ShipColors[color]] = new Image();
-  Images.ships[ShipColors[color]].src = 'graphics/ship_' + ShipColors[color] + '.png';
+ImageBank.extension = '.png';
+for (color in Ship.colors) {
+  ImageBank.load_single(Ship.colors[color], 'graphics/ship_' + Ship.colors[color]);
 }
-Images.bg.src = 'graphics/bg3.jpg';
+ImageBank.load_animation('flame', 'graphics/flame-neu-', 1, 3, 1);
+ImageBank.load_animation('canon', 'graphics/shot-neu-', 1, 3, 1);
+ImageBank.extension = '.jpg';
+ImageBank.load_single('background', 'graphics/bg3');
 
-Images.flames[0].src = 'graphics/flame-neu-1.png';    
-Images.flames[1].src = 'graphics/flame-neu-2.png';    
-Images.flames[2].src = 'graphics/flame-neu-3.png';    
-Images.shots[0].src = 'graphics/shot-neu-1.png';    
-Images.shots[1].src = 'graphics/shot-neu-2.png';    
-Images.shots[2].src = 'graphics/shot-neu-3.png';    
+Images.bg.src = 'graphics/bg3.jpg';
 
 Images.explosions[0].src = 'graphics/boom-1.png';    
 Images.explosions[1].src = 'graphics/boom-2.png';    
@@ -56,14 +40,15 @@ Images.smokes[7].src = 'graphics/smoke-4.png';
 var PaintEngine = function(canvas_context) {
   this.ctx = canvas_context;
   this.paint = function() {
-      this.ctx.drawImage(Images.bg,0,0);
-      //this.ctx.fillStyle = 'black';
-      //this.ctx.fillRect(0,0,Game.w, Game.h);
-      for (s in Game.ships)  this.paint_ship(Game.ships[s]);
-      for (s in Game.shots)  this.paint_shot(Game.shots[s]);
-      for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
-      for (s in Game.smokes) this.paint_smoke(Game.smokes[s]);
-      this.paint_info_bar();
+    Game.main_sprite.draw(this.ctx);
+    //this.ctx.drawImage(Images.bg,0,0);
+    //this.ctx.fillStyle = 'black';
+    //this.ctx.fillRect(0,0,Game.w, Game.h);
+    //for (s in Game.ships)  Game.ships[s].draw(this.ctx);
+    for (s in Game.shots)  this.paint_shot(Game.shots[s]);
+    for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
+    for (s in Game.smokes) this.paint_smoke(Game.smokes[s]);
+    this.paint_info_bar();
   }
   
   this.paint_info_bar = function() {
@@ -101,38 +86,5 @@ var PaintEngine = function(canvas_context) {
       c.fillRect(shot.x-2,shot.y-2,4,4);
       c.fillRect(shot.x-1,shot.y-1,2,2);
       //c.strokeRect(shot.x-1,shot.y-1,2,2);
-  }
-  
-  this.paint_ship = function(ship) {
-    var c = this.ctx;
-    var width = Images.ships['blue'].width;
-    var height = Images.ships['blue'].height;
-    c.save();
-    c.translate(ship.x, ship.y);
-    c.rotate(ship.rot);
-    
-    c.translate(-width/2,-height/2);
-
-    // paint engery bar
-    c.translate(0,height+4);
-    c.fillStyle = 'rgba(0,255,0,0.5)';
-    c.strokeStyle = 'rgba(255,255,255,0.5)';
-    var w = width*ship.energy*0.01;
-    //c.fillRect((width-w)/2,0,w,6);
-    c.fillRect(0,0,w,4);
-    c.strokeRect(0,0,width,4);
-    c.translate(0,-height-4);
-    
-    c.drawImage(Images.ships[ship.color],0,0);
-    
-    if(ship.hasAccel()){
-      c.drawImage(Images.getFlameImage(),-1,29);
-      c.drawImage(Images.getFlameImage(),21,29);
-    }
-    if(ship.isShooting()){
-        c.drawImage(Images.getShotImage(),11,-10);
-    }
-
-    c.restore();
   }
 };

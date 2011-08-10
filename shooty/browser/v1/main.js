@@ -28,6 +28,5 @@ function init() {
 }
 
 function sendVibrate(session_code) {
-  console.log('emitting data', socket, session_code);
   socket.emit('data', session_code, {vibrate: true});
 }
