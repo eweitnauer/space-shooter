@@ -26,6 +26,7 @@ Animation = function(timeLine, imgs) {
   this.frame = 0;
   this.loop = true;
   this.finished_callback = null;
+  this.finished = false;
   this.display = true;
   if (typeof(timeLine) != 'undefined') this.setTimeLine(timeLine);
 }
@@ -74,6 +75,7 @@ Animation.prototype._incFrame = function() {
       if (this.finished_callback) this.finished_callback(this);
       this.stop();
       this.display = false;
+      this.finished = true;
       return false;
     }
   }
@@ -106,7 +108,7 @@ Sprite.prototype.draw = function(ctx) {
   if (typeof(this.display) == 'function') { if (!this.display()) return; }
   else if (!this.display) return;
   ctx.save();
-  ctx.translate(this.x+this.offset_x, this.y+this.offset_y);
+  ctx.translate(this.x, this.y);
   ctx.rotate(this.rot);
   ctx.scale(this.scale, this.scale);
   
@@ -118,18 +120,21 @@ Sprite.prototype.draw = function(ctx) {
   // draw self
   var img = this.animation.getCurrentImage();
   if (img) {
-    if (this.center_img) ctx.translate(-img.width/2, -img.height/2);
+    if (this.center_img) ctx.translate(-img.width/2+this.offset_x, -img.height/2+this.offset_y);
     ctx.drawImage(img, 0, 0);
-    if (this.center_img) ctx.translate(img.width/2, img.height/2);
+    if (this.center_img) ctx.translate(img.width/2-this.offset_x, img.height/2-this.offset_y);
   }
   
   // custom draw method
   if (this.extra_draw) this.extra_draw.call(this, ctx);
 
-  // draw child sprites
+  // draw child sprites in front of this and delete finished ones
+  var still_active_childs = [];
   this.child_sprites.forEach(function (child) {
     if (child.draw_in_front_of_parent) child.draw(ctx);
+    if (!child.animation.finished) still_active_childs.push(child);
   });
+  this.child_sprites = still_active_childs;
   
   ctx.restore();
 }

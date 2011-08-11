@@ -60,7 +60,7 @@ var Ship = function(session_code) {
             if (this.steps_to_shot <= 0) {
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
-              Game.shots.push(new Shot(this,this.x+dx*10+this.vx, this.y+dy*10+this.vy, 10, this.rot, 250));
+              Game.shots.push(new Shot(this,this.x+dx*10+this.vx, this.y+dy*10+this.vy, this.vx, this.vy, 10, this.rot, 250));
               this.steps_to_shot = this.shot_delay;
             }
           }
@@ -84,31 +84,26 @@ Ship.getNextColor = function() {
 }
 
 Ship.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite([], Ship.getNextColor()));
+  //jQuery.extend(this, new Sprite([], Ship.getNextColor()));
+  jQuery.extend(this, new Sprite([80,80,80,80], 'ship'));
+  this.offset_x = 3; this.offset_y = -1;
   Game.main_sprite.child_sprites.push(this);
+  this.scale = 0.9;
   var ship = this;
-  // energy bar
-  var energy_sprite = new Sprite([], '');
-  energy_sprite.extra_draw = function(ctx) {
-    ctx.fillStyle = 'rgba(0,255,0,0.5)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-    var w = 30*ship.energy*0.01;
-    ctx.fillRect(-15,19,w,4);
-    ctx.strokeRect(-15,19,30,4);
-  }
-  this.child_sprites.push(energy_sprite);
-  // the two engine flames
-  var flame_sprite1 = new Sprite([100,100,100], 'flame');
-  flame_sprite1.x = -11; flame_sprite1.y = 20;
-  flame_sprite1.display = function() { return ship.hasAccel() || ship.turnsLeft() };
-  this.child_sprites.push(flame_sprite1);
-  var flame_sprite2 = new Sprite([100,100,100], 'flame');
-  flame_sprite2.display = function() { return ship.hasAccel() || ship.turnsRight() }  
-  flame_sprite2.x = 11; flame_sprite2.y = 20;
-  this.child_sprites.push(flame_sprite2);
-  // canon fire
-  var canon_sprite = new Sprite([50,50,50], 'canon');
-  canon_sprite.display = function() { return ship.isShooting() }  
-  canon_sprite.x = 0; canon_sprite.y = -20;
-  this.child_sprites.push(canon_sprite);
+  var flame_sprite = new Sprite([80,80,80], 'flame');
+  flame_sprite.y = 20;
+  flame_sprite.display = function() { return ship.hasAccel() };
+  flame_sprite.draw_in_front_of_parent = false;
+  this.child_sprites.push(flame_sprite);
+//  // energy bar
+//  var ship = this;
+//  var energy_sprite = new Sprite([], '');
+//  energy_sprite.extra_draw = function(ctx) {
+//    ctx.fillStyle = 'rgba(0,255,0,0.5)';
+//    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+//    var w = 30*ship.energy*0.01;
+//    ctx.fillRect(-15,20,w,4);
+//    ctx.strokeRect(-15,20,30,4);
+//  }
+//  this.child_sprites.push(energy_sprite);
 }

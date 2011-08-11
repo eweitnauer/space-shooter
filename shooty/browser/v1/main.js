@@ -27,6 +27,10 @@ function init() {
   });
 }
 
+var last_vibrate=0;
 function sendVibrate(session_code) {
+  var now = Date.now();
+  if (now-last_vibrate<500) return;
   socket.emit('data', session_code, {vibrate: true});
+  last_vibrate = now;
 }

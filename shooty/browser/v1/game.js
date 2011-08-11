@@ -13,9 +13,9 @@ var ShipExplosion = function(x,y){
 }
 
 var Game = {
-   w: 800, h: 500
+   w: 1280, h: 853
    , info_bar_h: 30
-   , grav_x:0, grav_y:0
+   , grav_x:0, grav_y:0.020
    , air_friction: 0.01
    ,step_timer: null
    ,ships: {}
@@ -81,8 +81,10 @@ var Game = {
       for (var s in Game.ships) for (var x in Game.shots) {
         Physics.checkCollision(Game.ships[s], Game.shots[x],
           function(ship, shot, px, py) {
-            Game.explosions.push(new Explosion(shot.x, shot.y));
+            //Game.explosions.push(new Explosion(shot.x, shot.y));
+            new ExplosionNew(shot.x, shot.y);
             shot.erase = true;
+            shot.animation.finished = true;
             ship.energy -= shot.energy;
             Physics.letCollide(ship, shot);
             sendVibrate(ship.code);
@@ -115,7 +117,8 @@ var Game = {
             var energy = Math.max(Physics.letCollide(ship1, ship2), 10);
             ship1.energy -= energy;
             ship2.energy -= energy;
-            Game.explosions.push(new Explosion(px, py));
+            //Game.explosions.push(new Explosion(px, py));
+            new ExplosionNew(px, py);
             sendVibrate(ship1.code);
             sendVibrate(ship2.code);
         });
@@ -149,10 +152,12 @@ var Game = {
             if(ship.steer_data && ship.steer_data.accel){
                 var x = ship.x;
                 var y = ship.y;
-                var r = ship.rot + 1.1;
-                Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
-                r += 0.8;
-                Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
+                var r = ship.rot + Math.PI/2+0.1;
+                Game.smokes.push(new Smoke(x+Math.cos(r)*27+(Math.random()-0.5)*5,y+Math.sin(r)*27+(Math.random()-0.5)*5));
+                //var r = ship.rot + 1.1;
+                //Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
+                //r += 0.8;
+                //Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
             }
         }
     }
@@ -180,3 +185,7 @@ var Game = {
 
 Game.main_sprite = new Sprite([], 'background');
 Game.main_sprite.center_img = false;
+var anim = new Sprite([2000,200,200,200,200,200,200,200,2000], 'solar');
+anim.scale = 0.8;
+Game.main_sprite.child_sprites.push(anim);
+anim.x = 400; anim.y = 400;

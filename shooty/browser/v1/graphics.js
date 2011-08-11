@@ -7,14 +7,24 @@ var Images = {
     bg: new Image
 };
 
+//ImageBank.prefix = 'http://phigames.com/demos/shooty/';
 ImageBank.extension = '.png';
 for (color in Ship.colors) {
   ImageBank.load_single(Ship.colors[color], 'graphics/ship_' + Ship.colors[color]);
 }
+
+ImageBank.load_animation('ship', 'graphics/ship/ship_', 0, 3, 1);
+ImageBank.load_animation('shot', 'graphics/ship/shot2_', 0, 2, 1);
+
 ImageBank.load_animation('flame', 'graphics/flame-neu-', 1, 3, 1);
 ImageBank.load_animation('canon', 'graphics/shot-neu-', 1, 3, 1);
-ImageBank.extension = '.jpg';
-ImageBank.load_single('background', 'graphics/bg3');
+ImageBank.load_animation('explosion', 'graphics/boom-', 1, 4, 1);
+ImageBank.load_animation('solar', 'graphics/animation_solar/solar_', 0, 8, 2);
+ImageBank.load_single('background', 'graphics/background-final');
+//ImageBank.extension = '.jpg';
+//ImageBank.load_single('background', 'graphics/bg3');
+
+
 
 Images.bg.src = 'graphics/bg3.jpg';
 
@@ -41,11 +51,8 @@ var PaintEngine = function(canvas_context) {
   this.ctx = canvas_context;
   this.paint = function() {
     Game.main_sprite.draw(this.ctx);
-    //this.ctx.drawImage(Images.bg,0,0);
     //this.ctx.fillStyle = 'black';
     //this.ctx.fillRect(0,0,Game.w, Game.h);
-    //for (s in Game.ships)  Game.ships[s].draw(this.ctx);
-    for (s in Game.shots)  this.paint_shot(Game.shots[s]);
     for (e in Game.explosions)  this.paint_explosion(Game.explosions[e]);
     for (s in Game.smokes) this.paint_smoke(Game.smokes[s]);
     this.paint_info_bar();
@@ -76,15 +83,5 @@ var PaintEngine = function(canvas_context) {
       c.globalAlpha = 0.3;
       c.drawImage(im,s.x-im.width/2,s.y-im.height/2);
       c.globalAlpha = 1.0;
-  }
-  
-  this.paint_shot = function(shot){
-      var c = this.ctx;
-      c.fillStyle = 'rgba(0,255,255,0.4)';
-      //c.stokeStyle = 'rgba(0,0,255,0.8)';
-      //c.lineWidth = 1;
-      c.fillRect(shot.x-2,shot.y-2,4,4);
-      c.fillRect(shot.x-1,shot.y-1,2,2);
-      //c.strokeRect(shot.x-1,shot.y-1,2,2);
   }
 };
