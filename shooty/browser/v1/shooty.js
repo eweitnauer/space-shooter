@@ -36,6 +36,7 @@ var Shot = function(shooter,x,y,vx,vy,v,rot){
   this.init_sprite();
   this.energy = 15;
   this.collision_radius = 4;
+  this.restitution = 0.9;
   this.mass = 0.02;
   this.shooter = shooter;
   this.initx = x;

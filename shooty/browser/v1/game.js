@@ -1,12 +1,16 @@
 var Game = {
     w: 1280, h: 800
-   ,borders: {left:320, top:150, right: 1144, bottom: 742}
+   ,borders: {left:344, top:261, right: 1135, bottom: 668}
    ,grav_x:0, grav_y:0.02
    ,air_friction: 0.01
    ,step_timer: null
    ,ships: {}
    ,deadShips: {}
    ,shots: new LinkedList
+   ,lines: [{A:new Point(261,235), B:new Point(1135,101)},
+            {A:new Point(1135,101), B:new Point(1212,668)},
+            {A:new Point(1212,668), B:new Point(344,782)},
+            {A:new Point(344,782), B:new Point(261,235)}]
    ,start: function() {
       Animation.time = Date.now();
       this.canvas = document.getElementById("canvas");
@@ -70,24 +74,17 @@ var Game = {
       });
       
       // ship - world collisions
-      for(var s in Game.ships){
-        var ship = Game.ships[s];
-        var hit = false;
-        if (ship.x+ship.vx  >= Game.borders.right-ship.collision_radius ||
-            ship.x+ship.vx <= Game.borders.left+ship.collision_radius) {
-          ship.energy -= Math.max(1, ship.vx*ship.vx*0.5*ship.mass * 3);
-          ship.x -= ship.vx;
-          ship.vx = -ship.vx * 0.5;
-          hit = true;
-        } 
-        if (ship.y+ship.vy >= Game.borders.bottom-ship.collision_radius ||
-            ship.y+ship.vy <= Game.borders.top+ship.collision_radius) {
-          ship.energy -= Math.max(1, ship.vy*ship.vy*0.5*ship.mass * 3);
-          ship.y -= ship.vy;
-          ship.vy = -ship.vy * 0.5;
-          hit = true;
+      for(var s in Game.ships) {
+        for (var i=0; i<Game.lines.length; ++i) {
+          Physics.checkCollision2(Game.ships[s], Game.lines[i], function(ship, line, p) {
+            line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
+            line.restitution = 0.2;
+            var energy = Physics.letCollide(ship, line);
+            //if (!ship.attemptLand(line))
+            ship.energy -= energy;
+            if (energy>5) sendVibrate(ship.code);
+          });
         }
-        if (hit) sendVibrate(ship.code);
       }
         
       // ship - ship collisions
