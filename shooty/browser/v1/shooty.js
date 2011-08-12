@@ -1,30 +1,18 @@
-var Explosion = function(x, y){
-    var self = this;
-    this.x = x;
-    this.y = y;
-    this.time = -1;
-    this.isAtEnd = function(){
-        return this.time >= 8;
-    }
-    this.step = function(){
-        this.time++;
-    }
-};
-
-var ExplosionNew = function(x, y) {
+var Explosion = function(x, y) {
   this.init_sprite();
   this.x = x; this.y = y;
 }
 
-ExplosionNew.prototype.init_sprite = function() {
-  var sprite = new Sprite([100,100,100,100], 'explosion');
+Explosion.prototype.init_sprite = function() {
+  var sprite = new Sprite(80, 'explosion');
+  sprite.alpha = 0.75;
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
 }
 
 var Smoke = function(x,y){
-    var self = this;
+  this.init_sprite();
     this.x = x;
     this.y = y;
     this.time = -1;
@@ -36,9 +24,17 @@ var Smoke = function(x,y){
     }
 };
 
+Smoke.prototype.init_sprite = function() {
+  var sprite = new Sprite(100, 'smoke');
+  sprite.animation.loop = false;
+  sprite.alpha = 0.3;
+  jQuery.extend(this, sprite);
+  Game.main_sprite.child_sprites.push(this);
+}
+
 var Shot = function(shooter,x,y,vx,vy,v,rot){
   this.init_sprite();
-  this.energy = 5;
+  this.energy = 15;
   this.collision_radius = 4;
   this.mass = 0.02;
   this.shooter = shooter;
@@ -50,7 +46,6 @@ var Shot = function(shooter,x,y,vx,vy,v,rot){
   this.vy = v * -Math.cos(rot) + vy;
   this.rot = rot;
   this.maxDist2 = 300*300;
-  this.erase = false;
   this.step = function(){
     this.x += this.vx;
     this.y += this.vy;
@@ -59,7 +54,6 @@ var Shot = function(shooter,x,y,vx,vy,v,rot){
     if (dx*dx+dy*dy > this.maxDist2) {
       this.display = false;
       this.animation.finished = true;
-      this.erase = true;
     }
   }
 };

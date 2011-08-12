@@ -1,7 +1,11 @@
 function init() {
   comm_init();
   
-  create_session(function(code) {Game.next_session_code = code});
+  socket.on('connect', function() {
+    document.body.removeChild(document.getElementById('connecting'));
+  });
+  
+  create_session(function(code) {next_session_code = code});
   
   Game.start();
   
@@ -10,7 +14,7 @@ function init() {
   socket.on('player_joined', function(code) {
     Game.ships[code] = new Ship(code);
     Game.ships[code].spawn();
-    create_session(function(code) {Game.next_session_code = code});
+    create_session(function(code) {next_session_code = code});
   });
   
   socket.on('data', function(code, data) {

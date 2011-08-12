@@ -1,107 +1,87 @@
-var ShipExplosion = function(x,y){
-    this.time = 20;
-    this.x = x;
-    this.y = y;
-    this.step = function(){
-        for (var i=0; i< 2; ++i){ 
-            var r = this.time - 10;
-            if (r < 0) r = -r;
-            Game.explosions.push(new Explosion(this.x+20+8*r*(Math.random()-0.5),this.y+20+8*r*(Math.random()-0.5)));
-        }
-        this.time--;
-    }
-}
-
 var Game = {
-   w: 1280, h: 853
-   , info_bar_h: 30
-   , grav_x:0, grav_y:0.020
-   , air_friction: 0.01
+    w: 1280, h: 800
+   ,borders: {left:320, top:150, right: 1144, bottom: 742}
+   ,grav_x:0, grav_y:0.02
+   ,air_friction: 0.01
    ,step_timer: null
    ,ships: {}
    ,deadShips: {}
-   ,shots: []
-   ,explosions:[]
-   ,smokes: []
-   ,shipExplosions: []
-   ,next_session_code: null
+   ,shots: new LinkedList
    ,start: function() {
-    this.canvas = document.getElementById("canvas");
-     this.canvas.width = this.w; 
-     this.canvas.height = this.h + this.info_bar_h;
-     this.painter = new PaintEngine(this.canvas.getContext("2d"));
-     this.step_timer = setInterval(this.step, 30);
+      Animation.time = Date.now();
+      this.canvas = document.getElementById("canvas");
+      this.canvas.width = this.w; 
+      this.canvas.height = this.h;
+      this.painter = new PaintEngine(this.canvas);
+      this.step_timer = setInterval(this.step, 30);
+      Game.main_sprite = new Sprite([], 'background');
+      Game.main_sprite.center_img = false;
+      var anim = new Sprite([2000,200,200,200,200,200,200,200,10000], 'solar');
+      anim.scale = 0.8;
+      Game.main_sprite.child_sprites.push(anim);
+      anim.x = 990; anim.y = 565;
+      Game.painter.add(Game.main_sprite);
+      Game.infobar = new Infobar();
+      Game.painter.add(Game.infobar);
    }
-  /// move the shots and erase marked ones (which hit something / flew too far)
+  /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
-    var keep = [];
-    for (var i=0; i<Game.shots.length; i++) {
-      Game.shots[i].step();
-      if (!Game.shots[i].erase) keep.push(Game.shots[i]);
-    }
-    Game.shots = keep;
+    Game.shots.forEach(function(shot, el) {
+      shot.step();
+      if (!shot.display) el.remove();
+    });
   }
-  ,handleSmokes : function(){
-        var newSmokes = [];
-        for(var s in Game.smokes){
-            Game.smokes[s].step();
-            if(!Game.smokes[s].isAtEnd()){
-                newSmokes.push(Game.smokes[s]);
-            }
-        }
-        Game.smokes = newSmokes;
+ ,handleShips : function(){
+    // kill dead ships 
+    for (var s in Game.ships) {
+      var ship = Game.ships[s];
+      if (ship.energy <= 0) {
+        ship.explode();
+        delete Game.ships[ship.session_code]; 
+        ship.deathTime = Animation.time;
+        Game.deadShips[ship.session_code]=ship;
+        ship.display = false;
+      }
     }
-
-    ,handleShips : function(){
-        // kill dead ships 
-        for(var s in Game.ships){
-            var ship = Game.ships[s];
-            if (ship.energy <= 0) {
-                Game.shipExplosions.push(new ShipExplosion(ship.x,ship.y));
-                delete Game.ships[ship.session_code]; 
-                ship.deathTime = Date.now();
-                Game.deadShips[ship.session_code]=ship;
-                ship.display = false;
-            }
-        }
-        var now = Date.now();        
-        for(var s in Game.deadShips){
-            var ship = Game.deadShips[s];
-            if( (now - ship.deathTime) > 3000){
-                delete Game.deadShips[ship.session_code];
-                Game.ships[ship.session_code] = ship;
-                ship.spawn();
-                ship.display = true;
-            }
-        }
+    for(var s in Game.deadShips){
+      var ship = Game.deadShips[s];
+      if((Animation.time - ship.deathTime) > 3000) {
+        delete Game.deadShips[ship.session_code];
+        Game.ships[ship.session_code] = ship;
+        ship.spawn();
+        ship.display = true;
+      }
     }
+  }
    
-   ,collisionDetection: function() {
+ ,collisionDetection: function() {
       // shot - ship collisions
-      for (var s in Game.ships) for (var x in Game.shots) {
-        Physics.checkCollision(Game.ships[s], Game.shots[x],
+      for (var s in Game.ships) Game.shots.forEach(function(shot) {
+        Physics.checkCollision(Game.ships[s], shot,
           function(ship, shot, px, py) {
             //Game.explosions.push(new Explosion(shot.x, shot.y));
-            new ExplosionNew(shot.x, shot.y);
+            new Explosion(shot.x, shot.y);
             shot.erase = true;
             shot.animation.finished = true;
             ship.energy -= shot.energy;
             Physics.letCollide(ship, shot);
             sendVibrate(ship.code);
         });
-      }
+      });
       
       // ship - world collisions
       for(var s in Game.ships){
         var ship = Game.ships[s];
         var hit = false;
-        if (ship.x+ship.vx  >= Game.w-ship.collision_radius || ship.x+ship.vx <= 0+ship.collision_radius) {
+        if (ship.x+ship.vx  >= Game.borders.right-ship.collision_radius ||
+            ship.x+ship.vx <= Game.borders.left+ship.collision_radius) {
           ship.energy -= Math.max(1, ship.vx*ship.vx*0.5*ship.mass * 3);
           ship.x -= ship.vx;
           ship.vx = -ship.vx * 0.5;
           hit = true;
         } 
-        if (ship.y+ship.vy >= Game.h-ship.collision_radius || ship.y+ship.vy <= 0+ship.collision_radius) {
+        if (ship.y+ship.vy >= Game.borders.bottom-ship.collision_radius ||
+            ship.y+ship.vy <= Game.borders.top+ship.collision_radius) {
           ship.energy -= Math.max(1, ship.vy*ship.vy*0.5*ship.mass * 3);
           ship.y -= ship.vy;
           ship.vy = -ship.vy * 0.5;
@@ -118,46 +98,20 @@ var Game = {
             ship1.energy -= energy;
             ship2.energy -= energy;
             //Game.explosions.push(new Explosion(px, py));
-            new ExplosionNew(px, py);
+            new Explosion(px, py);
             sendVibrate(ship1.code);
             sendVibrate(ship2.code);
         });
       }
     }
-
-   ,handleExplosions: function(){
-        var newExplosions = [];
-        for(var e in Game.explosions){
-            Game.explosions[e].step();
-            if(!Game.explosions[e].isAtEnd()){
-                newExplosions.push(Game.explosions[e]);
-            }
-        }
-        Game.explosions = newExplosions;   
-        
-        var newShipExplosions = [];
-        for(var e in Game.shipExplosions){
-            Game.shipExplosions[e].step();
-            if(Game.shipExplosions[e].time > 0){
-                newShipExplosions.push(Game.shipExplosions[e]);
-            }
-        }
-        Game.shipExplosions = newShipExplosions;   
-
-    }
    ,stepShips: function(){
         for (var s in Game.ships){
             var ship = Game.ships[s];
             ship.step(); 
-            if(ship.steer_data && ship.steer_data.accel){
-                var x = ship.x;
-                var y = ship.y;
-                var r = ship.rot + Math.PI/2+0.1;
-                Game.smokes.push(new Smoke(x+Math.cos(r)*27+(Math.random()-0.5)*5,y+Math.sin(r)*27+(Math.random()-0.5)*5));
-                //var r = ship.rot + 1.1;
-                //Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
-                //r += 0.8;
-                //Game.smokes.push(new Smoke(x+Math.cos(r)*30,y+Math.sin(r)*30));
+            if(ship.steer_data && ship.steer_data.accel && Math.random()< 0.67){
+                var rot = (ship.rot + Math.PI/2);
+                var r = 20;
+                new Smoke(ship.x+Math.cos(rot)*r+(Math.random()-0.5)*6,ship.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
             }
         }
     }
@@ -172,20 +126,24 @@ var Game = {
     Game.handleShots();
     // collision dectection
     Game.collisionDetection();
-    // add explosions
-    Game.handleExplosions();
-    // step and delete smoke clouds
-    Game.handleSmokes();
     // update the display
-    Game.painter.paint();
+    Game.painter.draw();
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
    ,nextshipcolor : 0
 };
 
-Game.main_sprite = new Sprite([], 'background');
-Game.main_sprite.center_img = false;
-var anim = new Sprite([2000,200,200,200,200,200,200,200,2000], 'solar');
-anim.scale = 0.8;
-Game.main_sprite.child_sprites.push(anim);
-anim.x = 400; anim.y = 400;
+Infobar = function() {
+  jQuery.extend(this, new Sprite([], ''));
+  this.extra_draw = function(ctx) {
+    ctx.font = "bold italic 14 px sans";
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.fillStyle = '#555';
+    ctx.save();
+    ctx.translate(842, 151);
+    ctx.rotate(-0.14);
+    ctx.fillText('join game with session code ' + next_session_code, 0, 0);
+    ctx.restore();
+  }
+}

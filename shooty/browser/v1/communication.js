@@ -1,32 +1,25 @@
-var socket, session_code;
+/// global varibale for communication with Phi server
+var socket, next_session_code = null;
 
-function log() {
-  var msg = [];
-  for (i in arguments) msg.push(arguments[i]);
-  msg = msg.join(' ');
-  console.log(msg);
-//  var p = document.getElementById('log_text');
-//  p.appendChild(document.createElement('br'));
-//  p.appendChild(document.createTextNode(msg));
-};
-
+/// connect to Phi server
 function comm_init() {
   socket = io.connect('http://phigames.com:9888');
   
   socket.on('connect', function() {
-    log('connected');
+    console.log('connected');
   });
   socket.on('disconnect', function() {
-    log('disconnected');
+    console.log('disconnected');
   });  
   socket.on('player_joined', function(code) {
-    log('player joined session', code);
+    console.log('player joined session', code);
   });
 }
 
+/// Creates a new session on the server and calls fn(code, success) after the
+/// server replied.
 function create_session(fn) {
   socket.emit('create_session', function(code, success) {
-    //document.getElementById('session-code').innerHTML = success ? code : 'fail';
     if (success && fn) fn(code);
   });
 }

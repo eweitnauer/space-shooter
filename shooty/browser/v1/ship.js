@@ -18,8 +18,8 @@ var Ship = function(session_code) {
 
   this.spawn = function(){
       this.energy = 100;
-      this.x = this.collision_radius + Math.random()*(Game.w-2*this.collision_radius);
-      this.y = this.collision_radius + Math.random()*(Game.h-2*this.collision_radius);
+      this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
+      this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
       this.rot = Math.random()*2*Math.PI;
       this.vx = this.vy = 0;
   }
@@ -44,6 +44,17 @@ var Ship = function(session_code) {
     return this.steer_data && this.steer_data.shot;
   }
   
+  this.explode = function() {
+    for (var t=600; t>=0; t-=100) {
+      for (var i=0; i<2; ++i) {
+        var r = (10+t/20) + Math.random()*10-5;
+        var a = Math.random()*Math.PI*2;
+        var expl = new Explosion(this.x+Math.cos(a)*r, this.y+Math.sin(a)*r);
+        expl.animation.delay_time = t;
+      }  
+    }
+  }
+ 
   this.step = function() {
       this.steps_to_shot -= 1;
       if (this.steer_data){
@@ -85,13 +96,13 @@ Ship.getNextColor = function() {
 
 Ship.prototype.init_sprite = function() {
   //jQuery.extend(this, new Sprite([], Ship.getNextColor()));
-  jQuery.extend(this, new Sprite([80,80,80,80], 'ship'));
+  jQuery.extend(this, new Sprite(80, 'ship'));
   this.offset_x = 3; this.offset_y = -1;
   Game.main_sprite.child_sprites.push(this);
   this.scale = 0.9;
   var ship = this;
-  var flame_sprite = new Sprite([80,80,80], 'flame');
-  flame_sprite.y = 20;
+  var flame_sprite = new Sprite(80, 'flame');
+  flame_sprite.y = 20; flame_sprite.alpha = 0.7;
   flame_sprite.display = function() { return ship.hasAccel() };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);

@@ -5,6 +5,7 @@ Sprite = function(timeLine, imgs) {
   this.offset_y = 0;
   this.rot = 0;
   this.scale = 1;
+  this.alpha = 1;
   this.extra_draw = null;
   this.child_sprites = [];
   this.animation = new Animation(timeLine, imgs);
@@ -22,23 +23,33 @@ Animation = function(timeLine, imgs) {
   this._totalTime = 0;
   this._last_time = Animation.time;
   this._pause_time = Animation.time;
+  this.delay_time = 0; /// time in ms to wait until first frame is shown
   this.running = true;
   this.frame = 0;
   this.loop = true;
   this.finished_callback = null;
   this.finished = false;
   this.display = true;
-  if (typeof(timeLine) != 'undefined') this.setTimeLine(timeLine);
+  this.setTimeLine(timeLine);
 }
 
 Animation.time = 0;
 
 Animation.prototype.setTimeLine = function(timeLine) {
-  this._timeLine = timeLine;
-  this._totalTime = 0;
-  for (var i=0;i<timeLine.length;++i) this._totalTime += timeLine[i];
+  this._timeLine = [];
   this.frame = 0;
   this._last_time = Animation.time;
+  if (typeof(timeLine) == 'undefined') {
+    this.setTimeLine(80);
+  } else if (typeof(timeLine) == 'number') {
+    var l = (typeof(this._imgs) == 'string') ? ImageBank.imgs[this._imgs].length : this._imgs.length;
+    this._totalTime = timeLine * l;
+    for (var i=0; i<l; ++i) this._timeLine.push(timeLine);
+  } else {
+    this._timeLine = timeLine;
+    this._totalTime = 0;
+    for (var i=0;i<timeLine.length;++i) this._totalTime += timeLine[i];
+  }
 }
 
 Animation.prototype.pause = function() {
@@ -74,6 +85,7 @@ Animation.prototype._incFrame = function() {
     else {
       if (this.finished_callback) this.finished_callback(this);
       this.stop();
+      this.frame = -1;
       this.display = false;
       this.finished = true;
       return false;
@@ -95,9 +107,15 @@ Animation.prototype.updateFrame = function() {
 }
 
 Animation.prototype.getCurrentImage = function() {
-  this.updateFrame();
+  if (this.delay_time > 0) {
+    this.delay_time -= Animation.time-this._last_time;
+    this._last_time = Animation.time;
+    return null;
+  }
+  else {this.delay_time = 0};
   if (!this.display) return null;
   if (!this._imgs) return null;
+  this.updateFrame();
   if (typeof(this._imgs) == 'string') {
     return ImageBank.get(this._imgs, this.frame)
   } else return this._imgs[this.frame];
@@ -121,7 +139,10 @@ Sprite.prototype.draw = function(ctx) {
   var img = this.animation.getCurrentImage();
   if (img) {
     if (this.center_img) ctx.translate(-img.width/2+this.offset_x, -img.height/2+this.offset_y);
+    var alpha = ctx.globalAlpha;
+    ctx.globalAlpha = this.alpha;
     ctx.drawImage(img, 0, 0);
+    ctx.globalAlpha = alpha;
     if (this.center_img) ctx.translate(img.width/2-this.offset_x, img.height/2-this.offset_y);
   }
   
@@ -166,13 +187,15 @@ ImageBank = {
  } 
 }
 
-SceneGraph = function(canvas) {
+PaintEngine = function(canvas) {
+  var self = this;
   this.sprites = []; // top-level sprites
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
+  this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
     this.sprites.forEach(function(sprite) {
-      sprite.draw(this.context);
+      sprite.draw(self.context);
     });
- } 
+  } 
 }
