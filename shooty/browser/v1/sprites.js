@@ -192,10 +192,20 @@ PaintEngine = function(canvas) {
   this.sprites = []; // top-level sprites
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
+  this.draw_physics = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
     this.sprites.forEach(function(sprite) {
       sprite.draw(self.context);
     });
+    if (self.draw_physics) {
+      self.context.strokeStyle = 'blue';   
+      for (var i=0; i<Game.lines.length; ++i) {
+        self.context.beginPath();
+        self.context.moveTo(Game.lines[i].A.x, Game.lines[i].A.y);
+        self.context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
+        self.context.stroke();
+      }
+    }
   } 
 }
