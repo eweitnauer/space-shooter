@@ -12,11 +12,12 @@ var Ship = function(session_code) {
   this.collision_radius = 12;
   this.restitution = 0.90;
   this.mass = 1;
+  this.heat = 0;
   this.energy = 100;
-  this.health = 100;
   this.last_shot_time = 0;
-  this.energy_gain_per_sec = 10;
-  this.energy_per_shot = 7;
+  this.cooldown_per_sec = 15;
+  this.heat_per_shot = 10;
+  this.heal_per_sec = 15;
   this.last_time = 0;
   this.shot_delay = 250; // in ms
   this.session_code = session_code;
@@ -27,8 +28,9 @@ var Ship = function(session_code) {
   this.spawn = function() {
     this.display = true;
     this.destroyed = false;
+    this.heat = 0;
     this.energy = 100;
-    this.health = 100;
+    this.landed = false;
     this.last_time = Animation.time;
     this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
     this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
@@ -69,7 +71,7 @@ var Ship = function(session_code) {
  
   this.step = function() {
       if (this.steer_data){
-          if(this.steer_data.pitch){
+          if(this.steer_data.pitch && !this.landed){
               this.rot -= this.steer_data.pitch/1000;
           }
           if(this.steer_data.accel){
@@ -83,34 +85,45 @@ var Ship = function(session_code) {
                 new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
                           this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
               }
+              this.landed = false;
           }
-          if (this.steer_data.shot && (Animation.time-this.last_shot_time >= this.shot_delay) &&
-              (this.energy > this.energy_per_shot)) {
-            this.energy -= this.energy_per_shot;
+          if (!this.landed && this.steer_data.shot && (Animation.time-this.last_shot_time >= this.shot_delay)) {
             this.last_shot_time = Animation.time;
-            var dx = Math.sin(this.rot);
-            var dy = -Math.cos(this.rot);
-            Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 20));
-          }
+            if (this.heat + this.heat_per_shot > 100) {
+              this.heat = Math.min(100, this.heat + this.heat_per_shot/4);
+            } else {
+              this.heat += this.heat_per_shot;
+              var dx = Math.sin(this.rot);
+              var dy = -Math.cos(this.rot);
+              Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
+            }
+          }           
       }
-      this.vx += Game.grav_x;
-      this.vy += Game.grav_y;
+      if (!this.landed) {
+        this.vx += Game.grav_x;
+        this.vy += Game.grav_y;
 
-      this.vx *= 1.0-Game.air_friction;
-      this.vy *= 1.0-Game.air_friction;
-      this.x += this.vx;
-      this.y += this.vy;
-      
-      this.energy += this.energy_gain_per_sec * (Animation.time-this.last_time) / 1000;
-      if (this.energy > 100) this.energy = 100;
+        this.vx *= 1.0-Game.air_friction;
+        this.vy *= 1.0-Game.air_friction;
+        this.x += this.vx;
+        this.y += this.vy;
+      } else {
+        this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
+        if (this.energy > 100) this.energy = 100;
+      }
+            
+      this.heat -= this.cooldown_per_sec * (Animation.time-this.last_time) / 1000;
+      if (this.heat < 0) this.heat = 0;
       this.last_time = Animation.time;
   }
 };
 
+Ship.max_land_speed = 0.5;
+
 Ship.prototype.destroy = function(respawn_delay) {
   this.points = Math.max(0, this.points-1);
+  this.heat = 0;
   this.energy = 0;
-  this.health = 0;
   this.explode();
   this.display = false;
   this.destroyed = true;
@@ -118,12 +131,44 @@ Ship.prototype.destroy = function(respawn_delay) {
 }
 
 Ship.prototype.hit = function(energy) {
-  this.energy -= energy;
-  if (this.energy<0) {
-    this.health += this.energy;
-    this.energy = 0;
-    if (this.health < 0) this.destroy(3000);
-  } else this.used_shield = true;
+  if (this.energy<=energy) this.destroy(3000);
+  else this.energy -= energy;
+}
+
+Ship.prototype.norm_rotation = function() {
+  this.rot = this.rot % (Math.PI*2);
+  if (this.rot < -Math.PI) this.rot += 2*Math.PI;  
+  else if (this.rot > Math.PI) this.rot -= 2*Math.PI;  
+}
+
+Ship.prototype.land = function() {
+  //console.log('landing');
+  this.vx = 0;
+  this.vy = 0;
+  this.landed = true;
+}
+
+Ship.prototype.attempt_land = function(line) {
+  //console.log('attempting to land');
+  // check for speed
+  var speed2 = this.vx*this.vx+this.vy*this.vy;
+  //console.log('current speed: ' + Math.sqrt(speed2));
+  if (speed2 > Ship.max_land_speed*Ship.max_land_speed) return false;
+  // check for rotation of ship and ground
+  this.norm_rotation();
+  //console.log('current rotation: ' + this.rot);
+  if (Math.abs(this.rot) > 0.79) return false; 
+  var l_rot = Math.atan2(line.B.y-line.A.y, line.B.x-line.A.x);
+  //console.log('ground rotation: ', l_rot);
+  if (Math.abs(l_rot) > 0.79) return false; 
+  // check rotation difference to ground 
+  var delta_rot = (l_rot-this.rot);
+  //console.log('delta rotation: ', delta_rot);
+  if (Math.abs(delta_rot) > 0.35) return false;
+  // set rotation and land
+  this.rot = l_rot;
+  this.land();
+  return true;
 }
 
 Ship.id = 0;
@@ -163,15 +208,15 @@ Ship.prototype.createScoreSprite = function() {
   ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
   sprite.child_sprites.push(ship_sprite);
   sprite.extra_draw = function(ctx) {
-    // energy and health bar
+    // energy and heat bar
     var l = 35;
     ctx.strokeStyle = 'rgba(0,0,0,0.5)';
     ctx.fillStyle = 'rgba(0,255,0,0.5)';
-    var w = l*ship.health*0.01;
+    var w = l*ship.energy*0.01;
     ctx.fillRect(25,3,w,6);
     ctx.strokeRect(25,3,l,6);
-    ctx.fillStyle = 'rgba(0,0,255,0.5)';
-    var w = l*ship.energy*0.01;
+    ctx.fillStyle = 'rgba(255,0,0,0.5)';
+    var w = l*ship.heat*0.01;
     ctx.fillRect(25,13,w,6);
     ctx.strokeRect(25,13,l,6);
     // write player name

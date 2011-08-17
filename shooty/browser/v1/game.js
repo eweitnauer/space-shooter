@@ -63,11 +63,13 @@ var Game = {
         for (var i=0; i<Game.lines.length; ++i) {
           Physics.checkCollision2(Game.ships[s], Game.lines[i], function(ship, line, p) {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
-            line.restitution = 0.2;
+            line.restitution = 0.4;
             var energy = Physics.letCollide(ship, line);
-            //if (!ship.attemptLand(line))
-            ship.hit(energy);
-            if (!ship.destroyed && energy>5) sendVibrate(ship.code);
+            if (!ship.attempt_land(line)) {
+              ship.hit(Math.max(10,energy));
+              new Explosion(p.x, p.y);
+              if (!ship.destroyed && energy>5) sendVibrate(ship.code);
+            }
           });
         }
       });
