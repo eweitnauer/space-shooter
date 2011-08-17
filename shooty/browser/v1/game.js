@@ -146,11 +146,11 @@ Infobar = function() {
   this.extra_draw = function(ctx) {
     ctx.font = "bold italic 14 px sans";
     ctx.textBaseline = "top";
-    ctx.textAlign = "left";
+    ctx.textAlign = "right";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(352,712);
-    ctx.rotate(-0.005);
+    ctx.translate(1144,95);
+    ctx.rotate(-0.01);
     ctx.fillText('join game with session code ' + next_session_code, 0, 0);
     ctx.restore();
   }
@@ -164,12 +164,16 @@ ScoreBoard = function() {
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(325,690);
+    ctx.translate(340,686);
     ctx.rotate(-0.005);
+    var i = 0;
     for (s in Game.ships) {
       var ship = Game.ships[s];
-      ctx.fillText(ship.color + ': ' + ship.points, 0, 0);
-      break;
+      ctx.save();
+      ctx.translate(Math.floor(i/2)*200, (i%2)*30);
+      ship.score_sprite.draw(ctx);
+      ctx.restore();
+      i++;
     }
     ctx.restore();
   }
