@@ -25,6 +25,7 @@ var Game = {
       Game.main_sprite.child_sprites.push(anim);
       anim.x = 765; anim.y = 650;
       Game.painter.add(Game.main_sprite);
+      Game.painter.add(new ScoreBoard());
       Game.infobar = new Infobar();
       Game.painter.add(Game.infobar);
       Game.lines = load_collision_data_from_svg(Game.coll_data);
@@ -41,6 +42,7 @@ var Game = {
     for (var s in Game.ships) {
       var ship = Game.ships[s];
       if (ship.energy <= 0) {
+        ship.points = Math.max(0, ship.points-1);
         ship.explode();
         delete Game.ships[ship.session_code]; 
         ship.deathTime = Animation.time;
@@ -64,10 +66,11 @@ var Game = {
       for (var s in Game.ships) Game.shots.forEach(function(shot) {
         Physics.checkCollision(Game.ships[s], shot,
           function(ship, shot, px, py) {
-            //Game.explosions.push(new Explosion(shot.x, shot.y));
+            if (shot.shooter == ship) return; // don't hit own ship
             new Explosion(shot.x, shot.y);
             shot.kill();
             ship.energy -= shot.energy;
+            if (ship.energy < 0) shot.shooter.points++;
             Physics.letCollide(ship, shot);
             sendVibrate(ship.code);
         });
@@ -103,7 +106,6 @@ var Game = {
             var energy = Math.max(Physics.letCollide(ship1, ship2), 10);
             ship1.energy -= energy;
             ship2.energy -= energy;
-            //Game.explosions.push(new Explosion(px, py));
             new Explosion(px, py);
             sendVibrate(ship1.code);
             sendVibrate(ship2.code);
@@ -150,6 +152,25 @@ Infobar = function() {
     ctx.translate(352,712);
     ctx.rotate(-0.005);
     ctx.fillText('join game with session code ' + next_session_code, 0, 0);
+    ctx.restore();
+  }
+}
+
+ScoreBoard = function() {
+  jQuery.extend(this, new Sprite([], ''));
+  this.extra_draw = function(ctx) {
+    ctx.font = "bold italic 14 px sans";
+    ctx.textBaseline = "top";
+    ctx.textAlign = "left";
+    ctx.fillStyle = '#555';
+    ctx.save();
+    ctx.translate(325,690);
+    ctx.rotate(-0.005);
+    for (s in Game.ships) {
+      var ship = Game.ships[s];
+      ctx.fillText(ship.color + ': ' + ship.points, 0, 0);
+      break;
+    }
     ctx.restore();
   }
 }

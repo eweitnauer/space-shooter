@@ -16,6 +16,7 @@ var Ship = function(session_code) {
   this.shot_delay = 6;
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
+  this.points = 0;
 
   this.spawn = function(){
       this.energy = 100;
@@ -72,7 +73,7 @@ var Ship = function(session_code) {
             if (this.steps_to_shot <= 0) {
               var dx = Math.sin(this.rot);
               var dy = -Math.cos(this.rot);
-              Game.shots.push(new Shot(this,this.x+dx*10+this.vx, this.y+dy*10+this.vy, this.vx, this.vy, 10, this.rot, 250));
+              Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 250));
               this.steps_to_shot = this.shot_delay;
             }
           }
@@ -87,7 +88,7 @@ var Ship = function(session_code) {
   }
 };
 Ship.id = 0;
-Ship.colors = ['red', 'blue', 'cyan', 'green', 'orange', 'violett'];
+Ship.colors = ['red', 'blue', 'orange', 'violett'];
 Ship.next_color = 0;
 Ship.getNextColor = function() {
   var result = Ship.colors[Ship.next_color++];
@@ -96,8 +97,8 @@ Ship.getNextColor = function() {
 }
 
 Ship.prototype.init_sprite = function() {
-  //jQuery.extend(this, new Sprite([], Ship.getNextColor()));
-  jQuery.extend(this, new Sprite(80, 'ship'));
+  this.color = Ship.getNextColor();
+  jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
   this.offset_x = 3; this.offset_y = -1;
   Game.main_sprite.child_sprites.push(this);
   this.scale = 0.9;
