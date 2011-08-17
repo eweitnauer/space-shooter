@@ -1,5 +1,7 @@
 var Ship = function(session_code) {
   this.init_sprite();
+  this.score_sprite = this.createScoreSprite();
+  this.player_name = 'Peter Pan';
   this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;
@@ -17,6 +19,7 @@ var Ship = function(session_code) {
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
   this.points = 0;
+  this.in_game = true;
 
   this.spawn = function(){
       this.energy = 100;
@@ -108,15 +111,40 @@ Ship.prototype.init_sprite = function() {
   flame_sprite.display = function() { return ship.hasAccel() };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
+}
+
+Ship.prototype.createScoreSprite = function() {
+  var ship = this;
+  var sprite = new Sprite([], '');
+  var ship_sprite = new Sprite([], 'ship_'+this.color);
+  ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
+  sprite.child_sprites.push(ship_sprite);
+  sprite.extra_draw = function(ctx) {
+    // energy and health bar
+    var l = 35;
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillStyle = 'rgba(0,255,0,0.5)';
+    var w = l*ship.energy*0.01;
+    ctx.fillRect(25,3,w,6);
+    ctx.strokeRect(25,3,l,6);
+    ctx.fillStyle = 'rgba(0,0,255,0.5)';
+    var w = l*ship.energy*0.01;
+    ctx.fillRect(25,13,w,6);
+    ctx.strokeRect(25,13,l,6);
+    // write player name
+    ctx.font = "bold italic 15 px sans";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    ctx.fillStyle = '#555';
+    ctx.fillText(ship.player_name + ': ' + ship.points, 67, 13);
+  }
+  return sprite;
+}
+
 //  // energy bar
 //  var ship = this;
 //  var energy_sprite = new Sprite([], '');
 //  energy_sprite.extra_draw = function(ctx) {
-//    ctx.fillStyle = 'rgba(0,255,0,0.5)';
-//    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-//    var w = 30*ship.energy*0.01;
-//    ctx.fillRect(-15,20,w,4);
-//    ctx.strokeRect(-15,20,30,4);
 //  }
 //  this.child_sprites.push(energy_sprite);
-}
+//}
