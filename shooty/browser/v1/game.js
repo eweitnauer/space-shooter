@@ -5,7 +5,6 @@ var Game = {
    ,air_friction: 0.01
    ,step_timer: null
    ,ships: {}
-   ,deadShips: {}
    ,shots: new LinkedList
    ,lines: []//{A:new Point(261,235), B:new Point(1135,101)},
             //{A:new Point(1135,101), B:new Point(1212,668)},
@@ -30,65 +29,48 @@ var Game = {
       Game.painter.add(Game.infobar);
       Game.lines = load_collision_data_from_svg(Game.coll_data);
    }
+  ,forEachActiveShip: function(fn) {
+    for (s in Game.ships) {
+      if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
+    }
+  }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
     Game.shots.forEach(function(shot, el) {
       shot.step();
       if (!shot.display) el.remove();
     });
-  }
- ,handleShips : function(){
-    // kill dead ships 
-    for (var s in Game.ships) {
-      var ship = Game.ships[s];
-      if (ship.energy <= 0) {
-        ship.points = Math.max(0, ship.points-1);
-        ship.explode();
-        delete Game.ships[ship.session_code]; 
-        ship.deathTime = Animation.time;
-        Game.deadShips[ship.session_code]=ship;
-        ship.display = false;
-      }
-    }
-    for(var s in Game.deadShips){
-      var ship = Game.deadShips[s];
-      if((Animation.time - ship.deathTime) > 3000) {
-        delete Game.deadShips[ship.session_code];
-        Game.ships[ship.session_code] = ship;
-        ship.spawn();
-        ship.display = true;
-      }
-    }
-  }
-   
+  }   
  ,collisionDetection: function() {
       // shot - ship collisions
-      for (var s in Game.ships) Game.shots.forEach(function(shot) {
-        Physics.checkCollision(Game.ships[s], shot,
-          function(ship, shot, px, py) {
-            if (shot.shooter == ship) return; // don't hit own ship
-            new Explosion(shot.x, shot.y);
-            shot.kill();
-            ship.energy -= shot.energy;
-            if (ship.energy < 0) shot.shooter.points++;
-            Physics.letCollide(ship, shot);
-            sendVibrate(ship.code);
+      Game.forEachActiveShip(function(ship) {
+        Game.shots.forEach(function(shot) {
+          Physics.checkCollision(Game.ships[s], shot,
+            function(ship, shot, px, py) {
+              if (shot.shooter == ship) return; // don't hit own ship
+              new Explosion(shot.x, shot.y);
+              Physics.letCollide(ship, shot);
+              ship.hit(shot.energy);
+              if (ship.destroyed) shot.shooter.points++;
+              shot.kill();
+              sendVibrate(ship.code);
+          });
         });
       });
       
       // ship - world collisions
-      for(var s in Game.ships) {
+      Game.forEachActiveShip(function(ship) {
         for (var i=0; i<Game.lines.length; ++i) {
           Physics.checkCollision2(Game.ships[s], Game.lines[i], function(ship, line, p) {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
             line.restitution = 0.2;
             var energy = Physics.letCollide(ship, line);
             //if (!ship.attemptLand(line))
-            ship.energy -= energy;
-            if (energy>5) sendVibrate(ship.code);
+            ship.hit(energy);
+            if (!ship.destroyed && energy>5) sendVibrate(ship.code);
           });
         }
-      }
+      });
       
       // shot - world collisions
       Game.shots.forEach(function(shot) {
@@ -100,34 +82,29 @@ var Game = {
       });
         
       // ship - ship collisions
-      for (var s1 in Game.ships) for (var s2 in Game.ships) {
-        if (s1>s2) Physics.checkCollision(Game.ships[s1], Game.ships[s2],
-          function(ship1, ship2, px, py) {
-            var energy = Math.max(Physics.letCollide(ship1, ship2), 10);
-            ship1.energy -= energy;
-            ship2.energy -= energy;
-            new Explosion(px, py);
-            sendVibrate(ship1.code);
-            sendVibrate(ship2.code);
+      Game.forEachActiveShip(function(ship1) {
+        Game.forEachActiveShip(function(ship2) {
+          if (ship1.code>ship2.code) Physics.checkCollision(ship1, ship2,
+            function(ship1, ship2, px, py) {
+              var energy = Math.max(Physics.letCollide(ship1, ship2), 10);
+              var pts1=ship1.points, pts2=ship2.points;
+              ship1.hit(energy);
+              ship2.hit(energy);
+              if (ship1.destroyed && !(ship2.destroyed && pts2==0)) ship2.points++;
+              if (ship2.destroyed && !(ship1.destroyed && pts1==0)) ship1.points++;
+              new Explosion(px, py);
+              sendVibrate(ship1.code);
+              sendVibrate(ship2.code);
+          });
         });
-      }
+      });
     }
    ,stepShips: function(){
-        for (var s in Game.ships){
-            var ship = Game.ships[s];
-            ship.step(); 
-            if(ship.steer_data && ship.steer_data.accel && Math.random()< 0.67){
-                var rot = (ship.rot + Math.PI/2);
-                var r = 20;
-                new Smoke(ship.x+Math.cos(rot)*r+(Math.random()-0.5)*6,ship.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
-            }
-        }
+     Game.forEachActiveShip(function(ship) { ship.step() });
     }
 
   ,step: function() {
     Animation.time = Date.now();
-    // kill dead vessels
-    Game.handleShips();
     // move the ships
     Game.stepShips();
     // handle the shots
@@ -164,13 +141,13 @@ ScoreBoard = function() {
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(340,686);
+    ctx.translate(340,690);
     ctx.rotate(-0.005);
     var i = 0;
     for (s in Game.ships) {
       var ship = Game.ships[s];
       ctx.save();
-      ctx.translate(Math.floor(i/2)*200, (i%2)*30);
+      ctx.translate(Math.floor(i/2)*200, (i%2)*28);
       ship.score_sprite.draw(ctx);
       ctx.restore();
       i++;

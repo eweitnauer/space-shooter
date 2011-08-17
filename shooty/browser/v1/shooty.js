@@ -32,9 +32,9 @@ Smoke.prototype.init_sprite = function() {
   Game.main_sprite.child_sprites.push(this);
 }
 
-var Shot = function(shooter,x,y,vx,vy,v,rot){
+var Shot = function(shooter,x,y,vx,vy,v,rot,energy){
   this.init_sprite();
-  this.energy = 15;
+  this.energy = energy;
   this.collision_radius = 4;
   this.restitution = 0.9;
   this.mass = 0.02;

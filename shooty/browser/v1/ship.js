@@ -12,21 +12,28 @@ var Ship = function(session_code) {
   this.collision_radius = 12;
   this.restitution = 0.90;
   this.mass = 1;
-  //this.accel = 0;
   this.energy = 100;
-  this.steps_to_shot = 0;
-  this.shot_delay = 6;
+  this.health = 100;
+  this.last_shot_time = 0;
+  this.energy_gain_per_sec = 10;
+  this.energy_per_shot = 7;
+  this.last_time = 0;
+  this.shot_delay = 250; // in ms
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
   this.points = 0;
-  this.in_game = true;
+  this.destroyed = false;
 
-  this.spawn = function(){
-      this.energy = 100;
-      this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
-      this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
-      this.rot = Math.random()*2*Math.PI;
-      this.vx = this.vy = 0;
+  this.spawn = function() {
+    this.display = true;
+    this.destroyed = false;
+    this.energy = 100;
+    this.health = 100;
+    this.last_time = Animation.time;
+    this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
+    this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
+    this.rot = Math.random()*2*Math.PI;
+    this.vx = this.vy = 0;
   }
   
   this.steer = function(data){
@@ -61,7 +68,6 @@ var Ship = function(session_code) {
   }
  
   this.step = function() {
-      this.steps_to_shot -= 1;
       if (this.steer_data){
           if(this.steer_data.pitch){
               this.rot -= this.steer_data.pitch/1000;
@@ -71,14 +77,20 @@ var Ship = function(session_code) {
               var dy = -Math.cos(this.rot);
               this.vx += dx * 0.1 * (this.steer_data.accel ? 1 : 0);
               this.vy += dy * 0.1 * (this.steer_data.accel ? 1 : 0);
+              if (Math.random()< 0.67) {
+                var rot = (this.rot + Math.PI/2);
+                var r = 20;
+                new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
+                          this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+              }
           }
-          if(this.steer_data.shot) {
-            if (this.steps_to_shot <= 0) {
-              var dx = Math.sin(this.rot);
-              var dy = -Math.cos(this.rot);
-              Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 250));
-              this.steps_to_shot = this.shot_delay;
-            }
+          if (this.steer_data.shot && (Animation.time-this.last_shot_time >= this.shot_delay) &&
+              (this.energy > this.energy_per_shot)) {
+            this.energy -= this.energy_per_shot;
+            this.last_shot_time = Animation.time;
+            var dx = Math.sin(this.rot);
+            var dy = -Math.cos(this.rot);
+            Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 20));
           }
       }
       this.vx += Game.grav_x;
@@ -88,8 +100,32 @@ var Ship = function(session_code) {
       this.vy *= 1.0-Game.air_friction;
       this.x += this.vx;
       this.y += this.vy;
+      
+      this.energy += this.energy_gain_per_sec * (Animation.time-this.last_time) / 1000;
+      if (this.energy > 100) this.energy = 100;
+      this.last_time = Animation.time;
   }
 };
+
+Ship.prototype.destroy = function(respawn_delay) {
+  this.points = Math.max(0, this.points-1);
+  this.energy = 0;
+  this.health = 0;
+  this.explode();
+  this.display = false;
+  this.destroyed = true;
+  if (typeof(respawn_delay) != 'undefined') setTimeout(jQuery.proxy(this.spawn, this), respawn_delay);
+}
+
+Ship.prototype.hit = function(energy) {
+  this.energy -= energy;
+  if (this.energy<0) {
+    this.health += this.energy;
+    this.energy = 0;
+    if (this.health < 0) this.destroy(3000);
+  } else this.used_shield = true;
+}
+
 Ship.id = 0;
 Ship.colors = ['red', 'blue', 'orange', 'violett'];
 Ship.next_color = 0;
@@ -116,7 +152,14 @@ Ship.prototype.init_sprite = function() {
 Ship.prototype.createScoreSprite = function() {
   var ship = this;
   var sprite = new Sprite([], '');
-  var ship_sprite = new Sprite([], 'ship_'+this.color);
+  var ship_sprite = new Sprite([], '');
+  ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
+  var img_active = ImageBank.get('ship_'+this.color, 0);
+  var img_inactive = ImageBank.get('ship_gray', 0);
+  ship_sprite.animation.getCurrentImage = function() {
+    if (ship.destroyed) return img_inactive;
+    else return img_active;
+  }
   ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
   sprite.child_sprites.push(ship_sprite);
   sprite.extra_draw = function(ctx) {
@@ -124,7 +167,7 @@ Ship.prototype.createScoreSprite = function() {
     var l = 35;
     ctx.strokeStyle = 'rgba(0,0,0,0.5)';
     ctx.fillStyle = 'rgba(0,255,0,0.5)';
-    var w = l*ship.energy*0.01;
+    var w = l*ship.health*0.01;
     ctx.fillRect(25,3,w,6);
     ctx.strokeRect(25,3,l,6);
     ctx.fillStyle = 'rgba(0,0,255,0.5)';
@@ -140,11 +183,3 @@ Ship.prototype.createScoreSprite = function() {
   }
   return sprite;
 }
-
-//  // energy bar
-//  var ship = this;
-//  var energy_sprite = new Sprite([], '');
-//  energy_sprite.extra_draw = function(ctx) {
-//  }
-//  this.child_sprites.push(energy_sprite);
-//}
