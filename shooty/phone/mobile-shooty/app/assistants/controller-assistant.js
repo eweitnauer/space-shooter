@@ -59,7 +59,7 @@ ControllerAssistant.prototype.logEvent = function(evt) {
 }
 
 ControllerAssistant.prototype.getLeftButtonState = function() {
-  var dx = this.leftBtnX-160;
+  var dx = this.leftBtnX-120;
   var dy = this.leftBtnY-160;
   var result = {
     pressed: this.leftBtnPressed
@@ -71,7 +71,7 @@ ControllerAssistant.prototype.getLeftButtonState = function() {
 }
 
 ControllerAssistant.prototype.getRightButtonState = function() {
-  var dx = this.rightBtnX-160;
+  var dx = this.rightBtnX-360;
   var dy = this.rightBtnY-160;
   var result = {
     pressed: this.rightBtnPressed
@@ -100,8 +100,8 @@ ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
       this.leftBtnX = evt.x;
       this.leftBtnY = evt.y;
     } else {
-      this.rightButtonPressed = true;
-      this.rightButtonTriggered = true;
+      this.rightBtnPressed = true;
+      this.rightBtnTriggered = true;
       this.rightBtnX = evt.x;
       this.rightBtnY = evt.y;
     }
@@ -140,7 +140,7 @@ ControllerAssistant.prototype.activate = function(event) {
   $$('body')[0].addClassName('controller-bg');
   $$('body')[0].removeClassName('palm-default');
   // send data with 10 Hertz
-  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/1);
+  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/20);
   this.pitch = 0;
   this.roll = 0;
   this.leftButtonPressed = false;
