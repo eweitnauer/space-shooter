@@ -53,7 +53,6 @@ var Game = {
               ship.hit(shot.energy);
               if (ship.destroyed) shot.shooter.points++;
               shot.kill();
-              sendVibrate(ship.code);
           });
         });
       });
@@ -68,7 +67,6 @@ var Game = {
             if (!ship.attempt_land(line)) {
               ship.hit(Math.max(10,energy));
               new Explosion(p.x, p.y);
-              if (!ship.destroyed && energy>5) sendVibrate(ship.code);
             }
           });
         }
@@ -95,8 +93,6 @@ var Game = {
               if (ship1.destroyed && !(ship2.destroyed && pts2==0)) ship2.points++;
               if (ship2.destroyed && !(ship1.destroyed && pts1==0)) ship1.points++;
               new Explosion(px, py);
-              sendVibrate(ship1.code);
-              sendVibrate(ship2.code);
           });
         });
       });

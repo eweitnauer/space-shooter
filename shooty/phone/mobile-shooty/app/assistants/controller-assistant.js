@@ -1,161 +1,71 @@
-/* Mojo events:
-	//Mojo.Event.listen(el, Mojo.Event.tap, this.logEvent.bindAsEventListener(this), true);
-  //Mojo.Event.listen(el, Mojo.Event.dragStart, this.logEvent.bindAsEventListener(this), true);
-  //Mojo.Event.listen(el, Mojo.Event.dragging, this.logEvent.bindAsEventListener(this), true);
-  //Mojo.Event.listen(el, Mojo.Event.dragEnd, this.logEvent.bindAsEventListener(this), true);
-  //Mojo.Event.listen(el, Mojo.Event.hold, this.logEvent.bindAsEventListener(this), true);
-	//Mojo.Event.listen(el, Mojo.Event.holdEnd, this.logEvent.bindAsEventListener(this), true);
-	//Mojo.Event.listen(el, Mojo.Event.singleTap, this.logEvent.bindAsEventListener(this), true);//not working
-
-all:
-  currentTarget, returnValue, target, bubbles, srcElement, defaultPrevented,
-  timeStamp, ...
-
-mojo-tap:
- up, down, ...
-
-mousedown, mouseup:
-  layerX:236, y:154, clientX:236, shiftKey:false, currentTarget:[object HTMLDocument],
-  timeStamp:Mon Aug 01 2011 12:33:40 GMT-0700 (PDT), eventPhase:3, cancelable:true, 
-  bubbles:true, screenX:236, x:236, button:0, defaultPrevented:false, altKey:false, 
-  keyCode:0, offsetY:154, clientY:154, view:[object DOMWindow], fromElement:null, 
-  ctrlKey:false, target:[object HTMLDivElement], layerY:154, charCode:0, type:mousedown, 
-  pageX:236, cancelBubble:false, pageY:154, clipboardData:undefined, metaKey:false, 
-  srcElement:[object HTMLDivElement], toElement:[object HTMLDivElement], detail:1, 
-  offsetX:236, relatedTarget:null, screenY:154
-
-We don't get a mouseup event for every mousedown, but only for the last one.
-
-dragStart, dragging:
-  down, move, distance, ...
-  
-hold[, holdEnd]:
-  down, [up], ...
-
-We don't get and holdEnd if we hold too long (>5sec)... Broken for multitouch...
-*/
-
+/// Pass the connected socket, the code of the session that was joined and the
+/// controller mode ('absolute' or 'relative' to this constructor.
 function ControllerAssistant(socket, session_code, mode) {
-	/* this is the creator function for your scene assistant object. It will be passed all the 
-	   additional parameters (after the scene name) that were passed to pushScene. The reference
-	   to the scene controller (this.controller) has not be established yet, so any initialization
-	   that needs the scene controller should be done in the setup function below. */
   this.mode = mode;
+  this.session_code = session_code;
   this.socket = socket;
   this.socket.on('data', function(code, data) {
-    Mojo.Log.info('got data from ' + code + ': ' + JSON.stringify(data));
     if (code != session_code) return;
     if (data && data.vibrate) {
       Mojo.Controller.getAppController().playSoundNotification("vibrate", "");
     }
   });
-  this.session_code = session_code;
 }
 
-ControllerAssistant.prototype.logEvent = function(evt) {
-  Mojo.Log.info('Got event of type ' + evt.type);
-  var str=[];
-  for (x in evt) str.push(x + ':' + evt[x]);
-  Mojo.Log.info(str.join(', '));
-}
-
-ControllerAssistant.prototype.centered = function(pos_x,pos_y) {
-    var center_x =  240;
-    var center_y =  160;
-    var th       =   50;
-    var d = Math.sqrt(  ((center_x - pos_x)*(center_x - pos_x)) + ((center_y - pos_y)*(center_y - pos_y)) );
-    Mojo.Log.info(d);
-    if (d <= th) return true;
-    return false; 
-}
-
-ControllerAssistant.prototype.getLeftButtonState = function() {
-  var dx = this.leftBtnX-240;
-  var dy = this.leftBtnY-160;
-  var result = {
-    pressed: this.leftBtnPressed
-  , triggered: this.leftBtnTriggered
-  , angle: Math.atan2(dy, dx)
-  , dist: Math.sqrt(dx*dx + dy*dy)};
-  this.leftBtnTriggered = false;
-  return result;
-}
-
-ControllerAssistant.prototype.getRightButtonState = function() {
-  var dx = this.rightBtnX-240;
-  var dy = this.rightBtnY-160;
-  var result = {
-    pressed: this.rightBtnPressed
-  , triggered: this.rightBtnTriggered
-  , angle: Math.atan2(dy, dx)
-  , dist: Math.sqrt(dx*dx + dy*dy)};
-  this.rightBtnTriggered = false;
-  return result;
-}
-
+/// Sends the data to the game via the Phi-Server.
+/// Example data: { mode: 'relative', pitch:-32, roll:4, btn1: {triggered: true,
+///                 hold: false}, btn2: {triggered: false, hold: true}}.
 ControllerAssistant.prototype.sendData = function() {
-  Mojo.Log.info('MODE MODE MODE ' + this.mode);
   var data = { mode: this.mode
-    , btn1: this.getLeftButtonState()
-    , btn2: this.getRightButtonState()
+    , btn1: this.btn.btn1
+    , btn2: this.btn.btn2
     , pitch: this.pitch
     , roll: this.roll};
-  //Mojo.Log.info('Sending data ' + JSON.stringify(data));
   this.socket.emit('data', this.session_code, data);
+  this.btn.btn1.triggered = false;
+  this.btn.btn2.triggered = false;  
 }
 
-ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
-  Mojo.Log.info('Got event of type ' + evt.type);
+/// Returns true if the passed position belongs to the passed button (depends on
+/// the controller mode).
+ControllerAssistant.prototype.belongsToButton = function(btn_name, x, y) {
+  if (this.mode == 'absolute') {
+    var dx = x-240, dy = y-180, dist = Math.sqrt(dx*dx+dy*dy);
+    if (btn_name == 'btn1' && dist<=100) return true;
+    if (btn_name == 'btn2' && dist>100) return true; 
+  } else if (this.mode == 'relative') {
+    if (btn_name == 'btn1' && x <= 240) return true;
+    if (btn_name == 'btn2' && x > 240) return true;
+  }
+  return false;
+}
+
+/// Updates the button information that is used the next time data is sent to the
+/// Phi-Server.
+ControllerAssistant.prototype.updateButton = function(btn_name, evt) {
   if (evt.type == "mousedown") {
-
-    if (this.centered(evt.x,evt.y)) {
-	this.leftBtnPressed = true;
-        this.leftBtnTriggered = true;
-        this.leftBtnX = evt.x;
-        this.leftBtnY = evt.y;
-    }else {
-	this.rightBtnPressed = true;
-        this.rightBtnTriggered = true;
-        this.rightBtnX = evt.x;
-        this.rightBtnY = evt.y;
-    }
-   }
-    if (evt.type == "mouseup") {
-       if (this.centered(evt.x,evt.y)) this.leftBtnPressed = false;
-       else this.rightBtnPressed = false;
-  } 
- 
-
-/*    if (evt.x < 240) {
-      this.leftBtnPressed = true;
-      this.leftBtnTriggered = true;
-      this.leftBtnX = evt.x;
-      this.leftBtnY = evt.y;
-    } else {
-      this.rightBtnPressed = true;
-      this.rightBtnTriggered = true;
-      this.rightBtnX = evt.x;
-      this.rightBtnY = evt.y;
-    }
+    this.btn[btn_name].triggered = true;
+    this.btn[btn_name].hold = true;
   } else if (evt.type == "mouseup") {
-    if (evt.x < 240) this.leftBtnPressed = false;
-    else this.rightBtnPressed = false;
-  } */
-
+    this.btn[btn_name].hold = false;
+  }
 }
 
-ControllerAssistant.prototype.handle_orientation = function(evt) {
-  Mojo.Log.info(evt.position + ', ' + evt.pitch);
+/// Handles touch events. Will update the local button states accordingly.
+ControllerAssistant.prototype.handleTouch = function(evt) {
+  if (this.belongsToButton('btn1', evt.x, evt.y)) this.updateButton('btn1', evt);
+  if (this.belongsToButton('btn2', evt.x, evt.y)) this.updateButton('btn2', evt);
+}
+
+/// Handles orientation events. Saves the pitch and roll value for the next time
+/// data is sent to the Phi-Server. 
+ControllerAssistant.prototype.handleOrientation = function(evt) {
   this.pitch = evt.pitch;
   this.roll = evt.roll;  
 }
 
 ControllerAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
-	/* use Mojo.View.render to render view templates and add them to the scene, if needed */
-	/* setup widgets here */
-	/* add event handlers to listen to events from widgets */
-  // fix orientation
   if (this.controller.stageController.setWindowOrientation) {
 		this.controller.stageController.setWindowOrientation("left");
 		this.controller.stageController.setWindowProperties({
@@ -164,11 +74,11 @@ ControllerAssistant.prototype.setup = function() {
     });
 	}
 	var el = this.controller.get('controller-div');
-	Mojo.Event.listen(el, 'mousedown', this.handleMouseInteraction.bindAsEventListener(this), true);
-  Mojo.Event.listen(el, 'mouseup', this.handleMouseInteraction.bindAsEventListener(this), true);
+	Mojo.Event.listen(el, 'mousedown', this.handleTouch.bindAsEventListener(this), true);
+  Mojo.Event.listen(el, 'mouseup', this.handleTouch.bindAsEventListener(this), true);
 
 	this.controller.listen(document, 'orientationchange',
-                         this.handle_orientation.bindAsEventListener(this));
+                         this.handleOrientation.bindAsEventListener(this));
 };
 
 ControllerAssistant.prototype.activate = function(event) {
@@ -176,18 +86,18 @@ ControllerAssistant.prototype.activate = function(event) {
 	   example, key handlers that are observing the document */
   $$('body')[0].addClassName(this.mode+ '-bg');
   $$('body')[0].removeClassName('palm-default');
-  // send data with 10 Hertz
+  // send data with 15 Hertz
   this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/15);
   this.pitch = 0;
   this.roll = 0;
-  this.leftButtonPressed = false;
-  this.rightButtonPressed = false;  
+  this.btn = {'btn1': {hold: false, triggered: false},
+              'btn2': {hold: false, triggered: false}};
 };
 
 ControllerAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
- 	$$('body')[0].removeClassName(this.mode+ '-bg');
+ 	$$('body')[0].removeClassName(this.mode + '-bg');
 	$$('body')[0].addClassName('palm-default');
   // stop sending data
   if (this.timerId) {

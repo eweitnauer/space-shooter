@@ -7,9 +7,9 @@ var keyboard_init = function(){
     document.onkeydown = function(evt) {
 
         if(evt.keyCode == 37){
-            key_steer_data.pitch = 70;
+            key_steer_data.pitch = 50;
         }else if(evt.keyCode == 39){
-            key_steer_data.pitch = -70;
+            key_steer_data.pitch = -50;
         }else if(evt.keyCode == 38){ // up-arrow
             key_steer_data.accel = true;
         }else if(evt.keyCode == 65){

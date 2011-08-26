@@ -1,0 +1,36 @@
+/* Mojo events:
+	//Mojo.Event.listen(el, Mojo.Event.tap, this.logEvent.bindAsEventListener(this), true);
+  //Mojo.Event.listen(el, Mojo.Event.dragStart, this.logEvent.bindAsEventListener(this), true);
+  //Mojo.Event.listen(el, Mojo.Event.dragging, this.logEvent.bindAsEventListener(this), true);
+  //Mojo.Event.listen(el, Mojo.Event.dragEnd, this.logEvent.bindAsEventListener(this), true);
+  //Mojo.Event.listen(el, Mojo.Event.hold, this.logEvent.bindAsEventListener(this), true);
+	//Mojo.Event.listen(el, Mojo.Event.holdEnd, this.logEvent.bindAsEventListener(this), true);
+	//Mojo.Event.listen(el, Mojo.Event.singleTap, this.logEvent.bindAsEventListener(this), true);//not working
+
+all:
+  currentTarget, returnValue, target, bubbles, srcElement, defaultPrevented,
+  timeStamp, ...
+
+mojo-tap:
+ up, down, ...
+
+mousedown, mouseup:
+  layerX:236, y:154, clientX:236, shiftKey:false, currentTarget:[object HTMLDocument],
+  timeStamp:Mon Aug 01 2011 12:33:40 GMT-0700 (PDT), eventPhase:3, cancelable:true, 
+  bubbles:true, screenX:236, x:236, button:0, defaultPrevented:false, altKey:false, 
+  keyCode:0, offsetY:154, clientY:154, view:[object DOMWindow], fromElement:null, 
+  ctrlKey:false, target:[object HTMLDivElement], layerY:154, charCode:0, type:mousedown, 
+  pageX:236, cancelBubble:false, pageY:154, clipboardData:undefined, metaKey:false, 
+  srcElement:[object HTMLDivElement], toElement:[object HTMLDivElement], detail:1, 
+  offsetX:236, relatedTarget:null, screenY:154
+
+We don't get a mouseup event for every mousedown, but only for the last one.
+
+dragStart, dragging:
+  down, move, distance, ...
+  
+hold[, holdEnd]:
+  down, [up], ...
+
+We don't get and holdEnd if we hold too long (>5sec)... Broken for multitouch...
+*/

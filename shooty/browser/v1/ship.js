@@ -67,13 +67,18 @@ var Ship = function(session_code) {
         expl.animation.delay_time = t;
       }  
     }
+    var code = this.code;
+    sendVibrate(code);
+    setTimeout(function() {sendVibrate(code)}, 200);
+    setTimeout(function() {sendVibrate(code)}, 400);
+    setTimeout(function() {sendVibrate(code)}, 600);
   }
  
   this.step = function() {
       if (this.steer_data){
           if(this.steer_data.pitch && !this.landed){
             if (this.code == 'key' || this.steer_data.mode == 'relative') {
-              this.rot -= this.steer_data.pitch/1000;
+              this.rot -= this.steer_data.pitch/500;
             } else if (this.steer_data.mode == 'absolute') {
               var delta = (-this.steer_data.pitch*Math.PI/180)-this.rot;
               delta = Ship.norm_rotation(delta);
@@ -139,6 +144,8 @@ Ship.prototype.destroy = function(respawn_delay) {
 }
 
 Ship.prototype.hit = function(energy) {
+  if (this.landed) { energy *= 2; this.landed = false; }
+  if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
 }
