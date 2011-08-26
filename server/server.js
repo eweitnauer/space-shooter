@@ -1,6 +1,6 @@
 ///// Settings ////////////////////////////////
 var port = 9888;
-var logging = true;
+var logging = false;
 ///////////////////////////////////////////////
 
 // note, io.listen() will create a http server for you

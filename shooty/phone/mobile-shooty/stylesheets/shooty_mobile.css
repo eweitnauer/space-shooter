@@ -1,5 +1,9 @@
-body.controller-bg {
-  background-image: url(../images/controller-background.png);
+body.relative-bg {
+  background-image: url(../images/bg_relative.png);
+}
+
+body.absolute-bg {
+  background-image: url(../images/bg_absolute.png);
 }
 
 div#controller-div {

@@ -174,7 +174,7 @@ ControllerAssistant.prototype.setup = function() {
 ControllerAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
-  $$('body')[0].addClassName('controller-bg');
+  $$('body')[0].addClassName(this.mode+ '-bg');
   $$('body')[0].removeClassName('palm-default');
   // send data with 10 Hertz
   this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/15);
@@ -187,7 +187,7 @@ ControllerAssistant.prototype.activate = function(event) {
 ControllerAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
- 	$$('body')[0].removeClassName('controller-bg');
+ 	$$('body')[0].removeClassName(this.mode+ '-bg');
 	$$('body')[0].addClassName('palm-default');
   // stop sending data
   if (this.timerId) {
