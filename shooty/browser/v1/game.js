@@ -1,7 +1,7 @@
 var Game = {
     w: 1237, h: 777
    ,borders: {left:325, top:131, right: 1167, bottom: 361}
-   ,grav_x:0, grav_y:0.02*0
+   ,grav_x:0, grav_y:0.02
    ,air_friction: 0.01
    ,step_timer: null
    ,ships: {}
