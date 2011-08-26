@@ -35,11 +35,12 @@ hold[, holdEnd]:
 We don't get and holdEnd if we hold too long (>5sec)... Broken for multitouch...
 */
 
-function ControllerAssistant(socket, session_code) {
+function ControllerAssistant(socket, session_code, mode) {
 	/* this is the creator function for your scene assistant object. It will be passed all the 
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
+  this.mode = mode;
   this.socket = socket;
   this.socket.on('data', function(code, data) {
     Mojo.Log.info('got data from ' + code + ': ' + JSON.stringify(data));
@@ -93,7 +94,9 @@ ControllerAssistant.prototype.getRightButtonState = function() {
 }
 
 ControllerAssistant.prototype.sendData = function() {
-  var data = { btn1: this.getLeftButtonState()
+  Mojo.Log.info('MODE MODE MODE ' + this.mode);
+  var data = { mode: this.mode
+    , btn1: this.getLeftButtonState()
     , btn2: this.getRightButtonState()
     , pitch: this.pitch
     , roll: this.roll};

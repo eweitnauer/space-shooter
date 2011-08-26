@@ -23,19 +23,38 @@ JoinSceneAssistant.prototype.number_del = function() {
 }
 
 JoinSceneAssistant.prototype.join_tapped = function() {
+  var mode = 'relative';
   var code = this.controller.get("session_code").mojo.getValue();
   Mojo.Log.info('joining session ' + code + '...');
   var self = this;
   this.socket.emit('join_session', code, function(code, success) {
     self.controller.get('btnJoin').mojo.deactivate();
     if (success) {
-      Mojo.Controller.stageController.pushScene('controller', self.socket, code);
+      Mojo.Controller.stageController.pushScene('controller', self.socket, code, mode);
     } else {
       // show error
       Mojo.Controller.errorDialog('Could not join session ' + code + '!'); 
     }
   });
 }
+
+JoinSceneAssistant.prototype.join_tappedAM = function() {
+  var mode = 'absolute';
+  var code = this.controller.get("session_code").mojo.getValue();
+  Mojo.Log.info('joining session ' + code + '...');
+  var self = this;
+  this.socket.emit('join_session', code, function(code, success) {
+    self.controller.get('btnJoin').mojo.deactivate();
+    if (success) {
+      Mojo.Controller.stageController.pushScene('controller', self.socket, code, mode);
+    } else {
+      // show error
+      Mojo.Controller.errorDialog('Could not join session ' + code + '!'); 
+    }
+  });
+}
+
+
 
 JoinSceneAssistant.prototype.on_connect = function() {
   this.conn_spinner_model.spinning = false;
@@ -73,9 +92,14 @@ JoinSceneAssistant.prototype.setup = function() {
                     Mojo.Event.tap,
                     this.number_del.bindAsEventListener(this));
   this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activityButton}, {label: 'Join Session'});
+  this.controller.setupWidget('btnJoinAM', {type: Mojo.Widget.activityButton}, {label: 'Join Session (AM)'});
   Mojo.Event.listen(this.controller.get('btnJoin'),
                     Mojo.Event.tap,
                     this.join_tapped.bindAsEventListener(this));
+
+  Mojo.Event.listen(this.controller.get('btnJoinAM'),
+                    Mojo.Event.tap,
+                    this.join_tappedAM.bindAsEventListener(this));
   this.connect();
 };
 
