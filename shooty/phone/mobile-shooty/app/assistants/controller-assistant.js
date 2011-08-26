@@ -58,8 +58,18 @@ ControllerAssistant.prototype.logEvent = function(evt) {
   Mojo.Log.info(str.join(', '));
 }
 
+ControllerAssistant.prototype.centered = function(pos_x,pos_y) {
+    var center_x =  240;
+    var center_y =  160;
+    var th       =   50;
+    var d = Math.sqrt(  ((center_x - pos_x)*(center_x - pos_x)) + ((center_y - pos_y)*(center_y - pos_y)) );
+    Mojo.Log.info(d);
+    if (d <= th) return true;
+    return false; 
+}
+
 ControllerAssistant.prototype.getLeftButtonState = function() {
-  var dx = this.leftBtnX-120;
+  var dx = this.leftBtnX-240;
   var dy = this.leftBtnY-160;
   var result = {
     pressed: this.leftBtnPressed
@@ -71,7 +81,7 @@ ControllerAssistant.prototype.getLeftButtonState = function() {
 }
 
 ControllerAssistant.prototype.getRightButtonState = function() {
-  var dx = this.rightBtnX-360;
+  var dx = this.rightBtnX-240;
   var dy = this.rightBtnY-160;
   var result = {
     pressed: this.rightBtnPressed
@@ -94,7 +104,26 @@ ControllerAssistant.prototype.sendData = function() {
 ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
   Mojo.Log.info('Got event of type ' + evt.type);
   if (evt.type == "mousedown") {
-    if (evt.x < 240) {
+
+    if (this.centered(evt.x,evt.y)) {
+	this.leftBtnPressed = true;
+        this.leftBtnTriggered = true;
+        this.leftBtnX = evt.x;
+        this.leftBtnY = evt.y;
+    }else {
+	this.rightBtnPressed = true;
+        this.rightBtnTriggered = true;
+        this.rightBtnX = evt.x;
+        this.rightBtnY = evt.y;
+    }
+   }
+    if (evt.type == "mouseup") {
+       if (this.centered(evt.x,evt.y)) this.leftBtnPressed = false;
+       else this.rightBtnPressed = false;
+  } 
+ 
+
+/*    if (evt.x < 240) {
       this.leftBtnPressed = true;
       this.leftBtnTriggered = true;
       this.leftBtnX = evt.x;
@@ -108,7 +137,8 @@ ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
   } else if (evt.type == "mouseup") {
     if (evt.x < 240) this.leftBtnPressed = false;
     else this.rightBtnPressed = false;
-  }
+  } */
+
 }
 
 ControllerAssistant.prototype.handle_orientation = function(evt) {
