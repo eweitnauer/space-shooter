@@ -18,16 +18,17 @@ function init() {
   });
   
   socket.on('data', function(code, data) {
-          //  console.log(code);
-          if (code in Game.ships) {
-              var p = data.pitch*2;
-              if(p < -90) p = -90;
-              if(p > 90) p = 90;
-
-              var steer_data = { pitch: p, shot: data.btn2.triggered, 
-                                 accel: data.btn1.pressed };
-              Game.ships[code].steer(steer_data);
-          }
+    if (code in Game.ships) {
+      var p = data.pitch;
+      if (data.roll > 0) {
+        if (p < 0) p = -180 - p;
+        else p = 180 - p
+      }
+      
+      var steer_data = { pitch: p, shot: data.btn2.pressed, 
+                         accel: data.btn1.pressed, mode: 'relative' };
+      Game.ships[code].steer(steer_data);
+    }
   });
 }
 

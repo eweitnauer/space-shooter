@@ -100,7 +100,7 @@ ControllerAssistant.prototype.sendData = function() {
     , btn2: this.getRightButtonState()
     , pitch: this.pitch
     , roll: this.roll};
-  Mojo.Log.info('Sending data ' + JSON.stringify(data));
+  //Mojo.Log.info('Sending data ' + JSON.stringify(data));
   this.socket.emit('data', this.session_code, data);
 }
 
@@ -145,6 +145,7 @@ ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
 }
 
 ControllerAssistant.prototype.handle_orientation = function(evt) {
+  Mojo.Log.info(evt.position + ', ' + evt.pitch);
   this.pitch = evt.pitch;
   this.roll = evt.roll;  
 }
@@ -157,7 +158,10 @@ ControllerAssistant.prototype.setup = function() {
   // fix orientation
   if (this.controller.stageController.setWindowOrientation) {
 		this.controller.stageController.setWindowOrientation("left");
-  	this.controller.stageController.setWindowProperties({fastAccelerometer: 'true'});
+		this.controller.stageController.setWindowProperties({
+      fastAccelerometer: true,
+      blockScreenTimeout: true
+    });
 	}
 	var el = this.controller.get('controller-div');
 	Mojo.Event.listen(el, 'mousedown', this.handleMouseInteraction.bindAsEventListener(this), true);
@@ -173,7 +177,7 @@ ControllerAssistant.prototype.activate = function(event) {
   $$('body')[0].addClassName('controller-bg');
   $$('body')[0].removeClassName('palm-default');
   // send data with 10 Hertz
-  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/20);
+  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/15);
   this.pitch = 0;
   this.roll = 0;
   this.leftButtonPressed = false;

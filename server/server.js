@@ -48,7 +48,7 @@ Io.sockets.on('connection', function (socket) {
   });
   
   socket.on('disconnect', function () {
-    Io.sockets.emit('user disconnected');
+    if (logging) console.log('client disconnected');
   });
 });
 
