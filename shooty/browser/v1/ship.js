@@ -72,7 +72,12 @@ var Ship = function(session_code) {
   this.step = function() {
       if (this.steer_data){
           if(this.steer_data.pitch && !this.landed){
-              this.rot -= this.steer_data.pitch/1000;
+            if (this.code == 'key') this.rot -= this.steer_data.pitch/1000;
+            else {
+              var delta = (-this.steer_data.pitch*Math.PI/180)-this.rot;
+              delta = Ship.norm_rotation(delta);
+              this.rot += delta*0.1;
+            }
           }
           if(this.steer_data.accel){
               var dx = Math.sin(this.rot);
@@ -135,10 +140,14 @@ Ship.prototype.hit = function(energy) {
   else this.energy -= energy;
 }
 
-Ship.prototype.norm_rotation = function() {
-  this.rot = this.rot % (Math.PI*2);
-  if (this.rot < -Math.PI) this.rot += 2*Math.PI;  
-  else if (this.rot > Math.PI) this.rot -= 2*Math.PI;  
+
+/// Returns the passed angle projected into the interval [-Pi, Pi] by adding or
+/// subtracting multiples of 2*Pi.
+Ship.norm_rotation = function(rot) {
+  var r = rot % (Math.PI*2);
+  if (r < -Math.PI) r += 2*Math.PI;  
+  else if (r > Math.PI) r -= 2*Math.PI;  
+  return r;
 }
 
 Ship.prototype.land = function() {
@@ -155,7 +164,7 @@ Ship.prototype.attempt_land = function(line) {
   //console.log('current speed: ' + Math.sqrt(speed2));
   if (speed2 > Ship.max_land_speed*Ship.max_land_speed) return false;
   // check for rotation of ship and ground
-  this.norm_rotation();
+  this.rot = Ship.norm_rotation(this.rot);
   //console.log('current rotation: ' + this.rot);
   if (Math.abs(this.rot) > 0.79) return false; 
   var l_rot = Math.atan2(line.B.y-line.A.y, line.B.x-line.A.x);

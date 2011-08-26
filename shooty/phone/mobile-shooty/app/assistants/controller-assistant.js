@@ -112,6 +112,7 @@ ControllerAssistant.prototype.handleMouseInteraction = function(evt) {
 }
 
 ControllerAssistant.prototype.handle_orientation = function(evt) {
+  Mojo.Log.info(evt.position + ', ' + evt.pitch);
   this.pitch = evt.pitch;
   this.roll = evt.roll;  
 }
@@ -140,7 +141,7 @@ ControllerAssistant.prototype.activate = function(event) {
   $$('body')[0].addClassName('controller-bg');
   $$('body')[0].removeClassName('palm-default');
   // send data with 10 Hertz
-  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/20);
+  this.timerId = setInterval(this.sendData.bindAsEventListener(this), 1000/2);
   this.pitch = 0;
   this.roll = 0;
   this.leftButtonPressed = false;
