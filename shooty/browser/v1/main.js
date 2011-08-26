@@ -24,9 +24,9 @@ function init() {
         if (p < 0) p = -180 - p;
         else p = 180 - p
       }
-
-      var steer_data = { pitch: p, shot: data.btn2.triggered, 
-                         accel: data.btn1.pressed };
+      
+      var steer_data = { pitch: p, shot: data.btn2.pressed, 
+                         accel: data.btn1.pressed, mode: 'relative' };
       Game.ships[code].steer(steer_data);
     }
   });

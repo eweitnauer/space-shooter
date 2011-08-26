@@ -72,11 +72,14 @@ var Ship = function(session_code) {
   this.step = function() {
       if (this.steer_data){
           if(this.steer_data.pitch && !this.landed){
-            if (this.code == 'key') this.rot -= this.steer_data.pitch/1000;
-            else {
+            if (this.code == 'key' || this.steer_data.mode == 'relative') {
+              this.rot -= this.steer_data.pitch/1000;
+            } else if (this.steer_data.mode == 'absolute') {
               var delta = (-this.steer_data.pitch*Math.PI/180)-this.rot;
               delta = Ship.norm_rotation(delta);
-              this.rot += delta*0.1;
+              if (delta > 0.3) delta = 0.3;
+              if (delta < -0.3) delta = -0.3;
+              this.rot += delta*0.5;
             }
           }
           if(this.steer_data.accel){
