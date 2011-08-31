@@ -16,6 +16,11 @@ function init() {
     Game.ships[code].spawn();
     create_session(function(code) {next_session_code = code});
   });
+
+  socket.on('player_left', function(code) {
+    Game.ships[code].animation.finished = true;
+    delete Game.ships[code];
+  });
   
   socket.on('data', function(code, data) {
     if (code in Game.ships) {
