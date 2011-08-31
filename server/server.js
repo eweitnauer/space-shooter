@@ -49,6 +49,18 @@ Io.sockets.on('connection', function (socket) {
   
   socket.on('disconnect', function () {
     if (logging) console.log('client disconnected');
+    for (code in sessions) {
+      if (!sessions.hasOwnProperty(code)) continue;
+      var s = sessions[code];
+      if (s.player == socket.id) {
+        s.player = null;
+        if (s.game) Io.sockets.socket(s.game).emit('session_left', code);
+        else delete sessions[code];
+      } else if (session.game == socket.id) {
+        if (s.player) Io.sockets.socket(s.player).emit('session_closed', code);
+        delete sessions[code];
+      }
+    }
   });
 });
 
