@@ -54,7 +54,7 @@ Io.sockets.on('connection', function (socket) {
       var s = sessions[code];
       if (s.player == socket.id) {
         s.player = null;
-        if (s.game) Io.sockets.socket(s.game).emit('session_left', code);
+        if (s.game) Io.sockets.socket(s.game).emit('player_left', code);
         else delete sessions[code];
       } else if (session.game == socket.id) {
         if (s.player) Io.sockets.socket(s.player).emit('session_closed', code);

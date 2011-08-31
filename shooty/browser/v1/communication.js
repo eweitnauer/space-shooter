@@ -14,6 +14,9 @@ function comm_init() {
   socket.on('player_joined', function(code) {
     console.log('player joined session', code);
   });
+  socket.on('player_left', function(code) {
+    console.log('player left session', code);
+  });
 }
 
 /// Creates a new session on the server and calls fn(code, success) after the
