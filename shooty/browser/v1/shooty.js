@@ -6,6 +6,7 @@ var Explosion = function(x, y) {
 Explosion.prototype.init_sprite = function() {
   var sprite = new Sprite(80, 'explosion');
   sprite.alpha = 0.75;
+  sprite.scale = 0.85;
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
