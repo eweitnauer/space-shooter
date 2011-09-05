@@ -25,11 +25,19 @@ function init() {
   socket.on('data', function(code, data) {
     if (code in Game.ships) {
       var p = data.pitch;
-      if (data.roll > 0) {
-        if (p < 0) p = -180 - p;
-        else p = 180 - p
+      if (data.platform == 'android') {
+        if (p < -90) p = -180 - p;
+        else if (p > 90) p = 180 - p;
+        if (data.roll < 0) {
+          if (p < 0) p = -180 - p;
+          else p = 180 - p;
+        }
+      } else {
+        if (data.roll > 0) {
+          if (p < 0) p = -180 - p;
+          else p = 180 - p
+        }
       }
-      
       var steer_data = { pitch: p, shot: data.btn2.hold, 
                          accel: data.btn1.hold, mode: data.mode };
       Game.ships[code].steer(steer_data);
