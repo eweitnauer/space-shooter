@@ -35,14 +35,19 @@ function registerListeners() {
     var p = data.pitch;
     if (data.platform == 'android') {
       if (p < -90) p = -180 - p;
-      if (p > 90) p = 180 - p;
+      else if (p > 90) p = 180 - p;
+      if (data.roll < 0) {
+        if (p < 0) p = -180 - p;
+        else p = 180 - p;
+      }
     } else if (data.platform == 'webos') {
       if (data.roll > 0) {
         if (p < 0) p = -180 - p;
         else p = 180 - p
       }
     }
-    var steer_data = { pitch: p, shot: data.btn2.hold, accel: data.btn1.hold, mode: data.mode };
+    var steer_data = { pitch: p, shot: data.btn2.hold, 
+                       accel: data.btn1.hold, mode: data.mode };
     Game.ships[code].steer(steer_data);
   }
 }
