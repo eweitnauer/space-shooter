@@ -18,7 +18,7 @@ function registerListeners() {
   comm.on_player_joined = function(code, data) {
     Game.ships[code] = new Ship(code);
     Game.ships[code].spawn();
-    if ((typeof data === object) && data.player_name) {
+    if ((typeof data === 'object') && data.player_name) {
       Game.ships[code].player_name = data.player_name;
     }
     comm.create_session();
