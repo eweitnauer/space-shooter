@@ -20,7 +20,8 @@ ControllerAssistant.prototype.sendData = function() {
     , btn1: this.btn.btn1
     , btn2: this.btn.btn2
     , pitch: this.pitch
-    , roll: this.roll};
+    , roll: this.roll
+    , platform: 'webos'};
   this.socket.emit('data', this.session_code, data);
   this.btn.btn1.triggered = false;
   this.btn.btn2.triggered = false;  

@@ -126,7 +126,7 @@ Infobar = function() {
     ctx.save();
     ctx.translate(1144,95);
     ctx.rotate(-0.01);
-    ctx.fillText('join game with session code ' + next_session_code, 0, 0);
+    ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
     ctx.restore();
   }
 }

@@ -1,7 +1,7 @@
 var Ship = function(session_code) {
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
-  this.player_name = 'Peter Pan';
+  this.player_name = '???';
   this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;

@@ -27,7 +27,7 @@ JoinSceneAssistant.prototype.join_tapped = function() {
   var code = this.controller.get("session_code").mojo.getValue();
   Mojo.Log.info('joining session ' + code + '...');
   var self = this;
-  this.socket.emit('join_session', code, function(code, success) {
+  this.socket.emit('join_session', code, {player_name: 'Palmer'}, function(code, success) {
     self.controller.get('btnJoin').mojo.deactivate();
     if (success) {
       Mojo.Controller.stageController.pushScene('controller', self.socket, code, mode);
