@@ -25,9 +25,10 @@ JoinSceneAssistant.prototype.number_del = function() {
 JoinSceneAssistant.prototype.join_tapped = function() {
   var mode = 'relative';
   var code = this.controller.get("session_code").mojo.getValue();
+  var pname = this.controller.get("player_name").mojo.getValue();
   Mojo.Log.info('joining session ' + code + '...');
   var self = this;
-  this.socket.emit('join_session', code, {player_name: 'Palmer'}, function(code, success) {
+  this.socket.emit('join_session', code, {player_name: pname}, function(code, success) {
     self.controller.get('btnJoin').mojo.deactivate();
     if (success) {
       Mojo.Controller.stageController.pushScene('controller', self.socket, code, mode);
@@ -41,9 +42,10 @@ JoinSceneAssistant.prototype.join_tapped = function() {
 JoinSceneAssistant.prototype.join_tappedAM = function() {
   var mode = 'absolute';
   var code = this.controller.get("session_code").mojo.getValue();
+  var pname = this.controller.get("player_name").mojo.getValue();
   Mojo.Log.info('joining session ' + code + '...');
   var self = this;
-  this.socket.emit('join_session', code, function(code, success) {
+  this.socket.emit('join_session', code, {player_name: pname}, function(code, success) {
     self.controller.get('btnJoin').mojo.deactivate();
     if (success) {
       Mojo.Controller.stageController.pushScene('controller', self.socket, code, mode);
@@ -53,8 +55,6 @@ JoinSceneAssistant.prototype.join_tappedAM = function() {
     }
   });
 }
-
-
 
 JoinSceneAssistant.prototype.on_connect = function() {
   this.conn_spinner_model.spinning = false;
@@ -77,22 +77,20 @@ JoinSceneAssistant.prototype.setup = function() {
 	// setup connection display
 	this.controller.setupWidget("conn_spinner", {spinnerSize: "small"}, 
   	  this.conn_spinner_model = {spinning: true});
-	// setup text field
+	// setup input field for session code
 	this.controller.setupWidget("session_code",
-	    { textCase: Mojo.Widget.steModeLowerCase, hintText: '... enter join code' }, { });
-	// setup number buttons
-  for (var i=0; i<10; i++) {
-    this.controller.setupWidget('btn'+i, {}, {label: ''+i});
-    Mojo.Event.listen(this.controller.get('btn'+i),
-                      Mojo.Event.tap,
-                      this.number_input.bind(this, i));
-  }
-  this.controller.setupWidget('btnDel', {}, {label: 'Del'});
-  Mojo.Event.listen(this.controller.get('btnDel'),
-                    Mojo.Event.tap,
-                    this.number_del.bindAsEventListener(this));
-  this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activityButton}, {label: 'Join Session'});
-  this.controller.setupWidget('btnJoinAM', {type: Mojo.Widget.activityButton}, {label: 'Join Session (AM)'});
+	    { textCase: Mojo.Widget.steModeLowerCase
+	    , hintText: '... enter join code'
+	    , modifierState: Mojo.Widget.numLock
+	    , autoFocus: true
+	    , charsAllow: function(charCode) { return (charCode == 46 || (charCode > 47 && charCode < 58)); }
+	    }, { });
+	// setup input field for player name
+ 	this.controller.setupWidget("player_name",
+	    { textCase: Mojo.Widget.steModeLowerCase, hintText: '... enter your name' }, { });
+	// setup buttons
+  this.controller.setupWidget('btnJoin', {type: Mojo.Widget.activityButton}, {label: 'Join Session (Rel)'});
+  this.controller.setupWidget('btnJoinAM', {type: Mojo.Widget.activityButton}, {label: 'Join Session (Abs)'});
   Mojo.Event.listen(this.controller.get('btnJoin'),
                     Mojo.Event.tap,
                     this.join_tapped.bindAsEventListener(this));

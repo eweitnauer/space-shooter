@@ -62,7 +62,12 @@ ControllerAssistant.prototype.handleTouch = function(evt) {
 /// data is sent to the Phi-Server. 
 ControllerAssistant.prototype.handleOrientation = function(evt) {
   this.pitch = evt.pitch;
-  this.roll = evt.roll;  
+  this.roll = evt.roll;
+  /// a little math to make the pitch range from -180 to 180 degree  
+  if (this.roll > 0) {
+    if (this.pitch < 0) this.pitch = -180 - this.pitch;
+    else this.pitch = 180 - this.pitch;
+  }
 }
 
 ControllerAssistant.prototype.setup = function() {
