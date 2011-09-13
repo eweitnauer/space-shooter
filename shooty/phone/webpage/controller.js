@@ -22,20 +22,25 @@ function setupListeners() {
     window.addEventListener('deviceorientation', function(event) {
       label1.innerHTML = event.alpha + ", " + event.beta + ', ' + event.gamma;
     }, false);
-  } else if (window.OrientationEvent) {
+    return;
+  }
+  label1.innerHTML = 'NO deviceorientation events';
+  if (window.OrientationEvent) {
     window.addEventListener('MozOrientation', function(event) {
       label2.innerHTML = event.x + ", " + event.y + ", " + event.z;
     }, false);
-  } else {
-    var touchListener = function(event) {
-      for (var i = 0; i < event.touches.length; i++) {
-        var touch = event.touches[i];
-        console.log(touch);
-      }
-    }
-    document.getElementById('bg').addEventListener('touchmove', touchListener, false);
-    document.getElementById('bg').addEventListener('touchstart', touchListener, false);
+    return;
   }
+  label2.innerHTML = 'NO MozOrientation events'
+  var touchListener = function(event) {
+    for (var i = 0; i < event.touches.length; i++) {
+      var touch = event.touches[i];
+      console.log(touch);
+      label3.innerHTML = touch.pageX + ", " + touch.pageY;
+    }
+  }
+  document.getElementById('bg').addEventListener('touchmove', touchListener, false);
+  document.getElementById('bg').addEventListener('touchstart', touchListener, false);
 }
  
 function getUrlParameters() {
