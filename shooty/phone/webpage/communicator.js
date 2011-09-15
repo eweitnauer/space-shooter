@@ -1,7 +1,7 @@
 Communicator = function(io) {
   this.io = io;
   this.url = 'http://phigames.com:9888';
-  this.session_code = null; /// code of the most recently created session
+  this.session_code = null; /// code of the most recently created session or joined session
   this.listener_queue = [];
 }
 
