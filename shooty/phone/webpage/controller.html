@@ -1,19 +1,26 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width; user-scalable=no; initial-scale=1.0; maximum-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Mobile-Shooty</title>
-    <link href="main.css" rel="stylesheet" type="text/css"></link>
+    
+    <link rel="stylesheet" media="all and (orientation:landscape)" href="landscape.css">
+    <link rel="stylesheet" media="all and (orientation:portrait)" href="portrait.css">
+    
     <script type="text/javascript" src="http://phigames.com:9888/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="communicator.js"></script>
     <script type="text/javascript" src="controller.js"></script>
   </head>
   <body onload="init();">
-    <div id="bg" width="100%" height="100%">
-      <span id="conn_status">Connecting to Phi-Server...</span><br/>
-      <span id="label1"></span><br/>
-      <span id="label2"></span><br/>
-      <span id="label3"></span>
+    <div id="btn1">
     </div>
+    <div id="btn2">
+    </div>
+    <div class="clear"></div>
+    <span id="conn_status">Connecting to Phi-Server...</span><br/>
   </body>
 </html>
 

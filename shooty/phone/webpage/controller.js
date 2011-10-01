@@ -1,42 +1,63 @@
-var comm;
+var comm, g_pitch, btn1_div, btn2_div;
+var g_btn_state = {'1':{hold: false, triggered: false}
+                  ,'2':{hold: false, triggered: false}};
 
 function init() {
   var params = getUrlParameters();
-  console.log('code: ', params.session_code);
-  console.log('name: ', params.player_name);
-//  comm = new Communicator(io);
-//  comm.connect();
-//  comm.on('connect', function() {
-//    comm.join_session(params.session_code, {player_name: params.player_name}, function(code) {
-//      document.getElementById('conn_status').innerHTML = 'Connected!';
-//    });
-//  });
+  comm = new Communicator(io);
+  comm.connect();
+  comm.on('connect', function() {
+    comm.join_session(params.session_code, {player_name: params.player_name}, function(code) {
+      document.getElementById('conn_status').innerHTML = 'Connected!';
+    });
+  });
   setupListeners();
+  // send with 15 Hz
+  setInterval(sendData, 1000 / 15);
+}
+
+function sendData() {
+  var data = { platform: 'webpage'
+             , mode: 'relative'
+             , pitch: g_pitch
+             , btn1: g_btn_state[1]
+             , btn2: g_btn_state[2]
+             };
+  comm.send_data(comm.session_code, data);
+  g_btn_state[1].triggered = false;
+  g_btn_state[2].triggered = false;
 }
 
 function setupListeners() {
-  var label1 = document.getElementById('label1');
-  var label2 = document.getElementById('label2');
-  var label3 = document.getElementById('label3');
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener('deviceorientation', function(event) {
-      label1.innerHTML = event.alpha + ", " + event.beta + ', ' + event.gamma;
+  btn1_div = document.getElementById('btn1');
+  btn2_div = document.getElementById('btn2');
+  if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', function(event) {
+      g_pitch = Math.atan2(event.accelerationIncludingGravity.y,
+                             -event.accelerationIncludingGravity.x) * 180/Math.PI;
     }, false);
-  } else label1.innerHTML = 'NO deviceorientation events';
-  if (window.OrientationEvent) {
-    window.addEventListener('MozOrientation', function(event) {
-      label2.innerHTML = event.x + ", " + event.y + ", " + event.z;
-    }, false);
-  } else label2.innerHTML = 'NO MozOrientation events'
-  var touchListener = function(event) {
-    for (var i = 0; i < event.touches.length; i++) {
-      var touch = event.touches[i];
-      console.log(touch);
-      label3.innerHTML = touch.pageX + ", " + touch.pageY;
-    }
   }
-  document.getElementById('bg').addEventListener('touchmove', touchListener, false);
-  document.getElementById('bg').addEventListener('touchstart', touchListener, false);
+  var touchListener = function(event, btn) {
+    var ts = event.targetTouches;
+    var div = (btn==1) ? btn1_div : btn2_div;
+    if (ts.length > 0) {
+      div.className = "active";
+      g_btn_state[btn].hold = true;
+      g_btn_state[btn].triggered = true;
+    } else {
+      div.className = "";
+      g_btn_state[btn].hold = false;
+    }
+    event.preventDefault();
+  }
+  btn1_div.addEventListener('touchmove', function(evt) {touchListener(evt, 1)}, false);
+  btn1_div.addEventListener('touchstart', function(evt) {touchListener(evt, 1)}, false);
+  btn1_div.addEventListener('touchcancel', function(evt) {touchListener(evt, 1)}, false);
+  btn1_div.addEventListener('touchend', function(evt) {touchListener(evt, 1)}, false);
+  btn2_div.addEventListener('touchmove', function(evt) {touchListener(evt, 2)}, false);
+  btn2_div.addEventListener('touchstart', function(evt) {touchListener(evt, 2)}, false);
+  btn2_div.addEventListener('touchcancel', function(evt) {touchListener(evt, 2)}, false);
+  btn2_div.addEventListener('touchend', function(evt) {touchListener(evt, 2)}, false);
 }
  
 function getUrlParameters() {
