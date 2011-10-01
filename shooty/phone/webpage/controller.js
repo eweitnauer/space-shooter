@@ -22,16 +22,12 @@ function setupListeners() {
     window.addEventListener('deviceorientation', function(event) {
       label1.innerHTML = event.alpha + ", " + event.beta + ', ' + event.gamma;
     }, false);
-    return;
-  }
-  label1.innerHTML = 'NO deviceorientation events';
+  } else label1.innerHTML = 'NO deviceorientation events';
   if (window.OrientationEvent) {
     window.addEventListener('MozOrientation', function(event) {
       label2.innerHTML = event.x + ", " + event.y + ", " + event.z;
     }, false);
-    return;
-  }
-  label2.innerHTML = 'NO MozOrientation events'
+  } else label2.innerHTML = 'NO MozOrientation events'
   var touchListener = function(event) {
     for (var i = 0; i < event.touches.length; i++) {
       var touch = event.touches[i];
