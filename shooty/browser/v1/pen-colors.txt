@@ -1,0 +1,5 @@
+green:  #2dc128  "rgb(45,193,40)"
+yellow: #fbe203  "rgb(251,226,3)"
+orange: #f7981b  "rgb(247,152,27)"
+red:    #de312e  "rgb(222,49,46)"
+purple: #c250ae  "rgb(194,80,174)"
