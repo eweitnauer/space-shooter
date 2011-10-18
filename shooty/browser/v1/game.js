@@ -6,6 +6,7 @@ var Game = {
    ,step_timer: null
    ,ships: {}
    ,shots: new LinkedList
+   ,aliens: new LinkedList
    ,lines: []
    ,start: function() {
       Animation.time = Date.now();
@@ -21,11 +22,20 @@ var Game = {
       Game.infobar = new Infobar();
       Game.painter.add(Game.infobar);
       Game.lines = load_collision_data_from_svg(Game.coll_data);
+      setInterval(this.spawn_alien,4000);
+      this.spawn_alien();
    }
   ,forEachActiveShip: function(fn) {
     for (s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
     }
+  }
+  ,spawn_alien: function(){
+      var alien = new Alien;
+      alien.x = 300+Math.random()*600;
+      alien.y = 200+Math.random()*200;
+      Game.aliens.push(alien);
+      
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -38,7 +48,7 @@ var Game = {
       // shot - ship collisions
       Game.forEachActiveShip(function(ship) {
         Game.shots.forEach(function(shot) {
-          Physics.checkCollision(Game.ships[s], shot,
+          Physics.checkCollision(Game.ships[s], shot,  // ?? [s] chrissi
             function(ship, shot, px, py) {
               if (shot.shooter == ship) return; // don't hit own ship
               new Explosion(shot.x, shot.y, 'M');
@@ -74,6 +84,39 @@ var Game = {
           });
         }
       });
+
+      // alien - ship collision
+     Game.aliens.forEach(function(alien) {
+         Game.forEachActiveShip(function(ship){
+             Physics.checkCollision(alien, ship,function(alien, ship, px, py) {
+                var energy = Math.max(Physics.letCollide(alien, ship, 
+                                                         ship.state == 'flying' 
+                                                         ), 10);
+                var pts=ship.points;
+                ship.hit(energy);
+                alien.hit(energy);
+                if (alien.destroyed) ship.points++;
+                new Explosion(px, py, 'S');
+             });  
+         });
+     });
+
+     // alien - shot  collisions
+      Game.aliens.forEach(function(alien) {
+        Game.shots.forEach(function(shot) {
+          Physics.checkCollision(alien, shot,
+            function(alien, shot, px, py) {
+              if (shot.shooter == 'alien') return; // aliens dont shoot each other
+              new Explosion(shot.x, shot.y, 'M');
+              // only move ship if it is not landed
+              Physics.letCollide(alien, shot, true, false);
+              alien.hit(shot.energy);
+              if (alien.destroyed) shot.shooter.points++;
+              shot.kill();
+
+          });
+        });
+      });
         
       // ship - ship collisions
       Game.forEachActiveShip(function(ship1) {
@@ -93,19 +136,32 @@ var Game = {
       });
     }
    ,stepShips: function(){
-     Game.forEachActiveShip(function(ship) { ship.step() });
+       Game.forEachActiveShip(function(ship) { ship.step(); });
+    }
+    ,stepAliens: function(){
+        Game.aliens.forEach(function(alien,el) { 
+            alien.step(); 
+            if(alien.destroyed) el.remove();
+        });
     }
 
   ,step: function() {
     Animation.time = Date.now();
     // move the ships
     Game.stepShips();
+    
+    // here ??
+    Game.stepAliens();
+
     // handle the shots
     Game.handleShots();
+
     // collision dectection
     Game.collisionDetection();
     // update the display
     Game.painter.draw();
+
+
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
    ,nextshipcolor : 0
