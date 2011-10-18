@@ -12,6 +12,8 @@ var Ship = function(session_code) {
   this.collision_radius = 12;
   this.restitution = 0.90;
   this.mass = 1;
+  this.last_shot_time = 0;
+  this.shot_delay = 250; // in ms
   this.energy = 100;
   this.heal_per_sec = 15;
   this.last_time = 0;
@@ -61,6 +63,7 @@ Ship.prototype.spawn = function() {
   this.heat = 0;
   this.energy = 100;
   this.state = 'flying';
+  this.last_shoot_time = 0;
   this.last_time = Animation.time;
   this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
   this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
@@ -110,6 +113,8 @@ Ship.prototype.smoke = function() {
 }
 
 Ship.prototype.shoot = function() {
+  if (Animation.time-this.last_shot_time < this.shot_delay) return;
+  this.last_shot_time = Animation.time;
   var dx = Math.sin(this.rot);
   var dy = -Math.cos(this.rot);
   Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
@@ -138,7 +143,7 @@ Ship.prototype.destroy = function(respawn_delay) {
 }
 
 Ship.prototype.hit = function(energy) {
-  if (this.landed) { energy *= 2; this.landed = false; }
+  if (this.status != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
@@ -154,15 +159,9 @@ Ship.norm_rotation = function(rot) {
   return r;
 }
 
-Ship.prototype.land = function() {
-  //console.log('landing');
-  this.vx = 0;
-  this.vy = 0;
-  this.landed = true;
-}
-
 Ship.prototype.attempt_land = function(line) {
   //console.log('attempting to land');
+  if (this.state != 'flying') return true;
   // check for speed
   var speed2 = this.vx*this.vx+this.vy*this.vy;
   //console.log('current speed: ' + Math.sqrt(speed2));
@@ -180,7 +179,8 @@ Ship.prototype.attempt_land = function(line) {
   if (Math.abs(delta_rot) > 0.35) return false;
   // set rotation and land
   this.rot = l_rot;
-  this.land();
+  this.vx = 0; this.vy = 0;
+  this.trigger_open();
   return true;
 }
 
