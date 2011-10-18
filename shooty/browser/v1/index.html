@@ -1,26 +1,25 @@
+<!doctype html>
 <html>
   <head>
     <title>JS Pong</title>
-    <link href="main.css" rel="stylesheet" type="text/css"></link>
-    <script type="text/javascript" src="http://phigames.com:9888/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="libs/jquery-1.6.2.js"></script>
-    <script type="text/javascript" src="libs/point.js"></script>
-    <script type="text/javascript" src="libs/polygon.js"></script>
-    <script type="text/javascript" src="linked_list.js"></script> 
-    <script type="text/javascript" src="communicator.js"></script>
-    <script type="text/javascript" src="shooty.js"></script>
-    <script type="text/javascript" src="keyboard.js"></script>
-    <script type="text/javascript" src="physics.js"></script>
-    <script type="text/javascript" src="ship.js"></script>
-    <script type="text/javascript" src="sprites.js"></script>
-    <script type="text/javascript" src="game.js"></script>
-    <script type="text/javascript" src="graphics.js"></script> 
-    <script type="text/javascript" src="main.js"></script>
+    <link href="main.css" rel="stylesheet">
+    <script src="http://phigames.com:9888/socket.io/socket.io.js"></script>
+    <script src="libs/jquery-1.6.2.js"></script>
+    <script src="libs/point.js"></script>
+    <script src="libs/polygon.js"></script>
+    <script src="linked_list.js"></script> 
+    <script src="communicator.js"></script>
+    <script src="shooty.js"></script>
+    <script src="keyboard.js"></script>
+    <script src="physics.js"></script>
+    <script src="ship.js"></script>
+    <script src="sprites.js"></script>
+    <script src="game.js"></script>
+    <script src="graphics.js"></script> 
+    <script src="main.js"></script>
   </head>
   <body onload="init();">
     <p id='connecting'>Connecting to Phi-Server...</p>
-    <canvas id="canvas" style="float:left;"></canvas>
-    <!--p id="welcome">Start game by joining session <tspan id="session-code">...</tspan></p>
-    <p id='log_text'><em>Events:</em><br/></p-->
+    <canvas id="canvas"></canvas>
   </body>
 </html>
