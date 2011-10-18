@@ -3,6 +3,7 @@ Sprite = function(timeLine, imgs) {
   this.y = 0;
   this.offset_x = 0;
   this.offset_y = 0;
+  this.offset_rot = 0;
   this.rot = 0;
   this.scale = 1;
   this.alpha = 1;
@@ -18,8 +19,8 @@ Sprite = function(timeLine, imgs) {
   *   timeLine: array of milliseconds describing how long each frame is shown
   *   imgs: name of image tag from ImageBank or array of images */
 Animation = function(timeLine, imgs) {
-  this._imgs = imgs;
-  this._timeLine = [];
+  this._imgs = [];      /// an array of images
+  this._timeLine = [];  /// an array of durations in ms
   this._totalTime = 0;
   this._last_time = Animation.time;
   this._pause_time = Animation.time;
@@ -29,11 +30,32 @@ Animation = function(timeLine, imgs) {
   this.loop = true;
   this.finished_callback = null;
   this.finished = false;
+  this.hide_after_finish = false;
+  this.remove_after_finish = false;
   this.display = true;
-  this.setTimeLine(timeLine);
+  this.setAnimation(timeLine, imgs);
 }
 
 Animation.time = 0;
+
+Animation.prototype.reverse = function() {
+  this._timeLine.reverse();
+  this._imgs.reverse();
+}
+
+Animation.prototype.setAnimation = function(timeLine, imgs) {
+  this._setImages(imgs);
+  this.setTimeLine(timeLine);
+}
+
+Animation.prototype._setImages = function(imgs) {
+  this._imgs = [];  
+  if (typeof(imgs) == 'string') { // get image array from image bank
+    this._imgs = ImageBank.imgs[imgs].slice();
+  } else { // images passed as array already, just copy
+    this._imgs = imgs.slice();
+  }
+}
 
 Animation.prototype.setTimeLine = function(timeLine) {
   this._timeLine = [];
@@ -42,7 +64,7 @@ Animation.prototype.setTimeLine = function(timeLine) {
   if (typeof(timeLine) == 'undefined') {
     this.setTimeLine(80);
   } else if (typeof(timeLine) == 'number') {
-    var l = (typeof(this._imgs) == 'string') ? ImageBank.imgs[this._imgs].length : this._imgs.length;
+    var l = this._imgs.length;
     this._totalTime = timeLine * l;
     for (var i=0; i<l; ++i) this._timeLine.push(timeLine);
   } else {
@@ -83,12 +105,15 @@ Animation.prototype._incFrame = function() {
   if (this.frame >= this._timeLine.length) {
     if (this.loop) this.frame = 0;
     else {
-      if (this.finished_callback) this.finished_callback(this);
-      this.stop();
-      this.frame = -1;
-      this.display = false;
-      this.finished = true;
-      return false;
+      if (this.finished_callback) {
+        this.finished_callback(this);
+      } else {
+        this.stop();
+        this.frame = this._timeLine.length-1;
+        if (this.hide_after_finish) this.display = false;
+        this.finished = true;
+      }
+      return !this.finished;
     }
   }
   return true;
@@ -96,6 +121,11 @@ Animation.prototype._incFrame = function() {
 
 Animation.prototype.updateFrame = function() {
   if (!this.running) return;
+  if (this.delay_time > 0) {
+    this.delay_time -= Animation.time-this._last_time;
+    this._last_time = Animation.time;
+    return;
+  }
   if (this._timeLine.length < 2) return;
   var delta = Animation.time - this._last_time;
   delta = delta % this._totalTime;
@@ -107,18 +137,11 @@ Animation.prototype.updateFrame = function() {
 }
 
 Animation.prototype.getCurrentImage = function() {
-  if (this.delay_time > 0) {
-    this.delay_time -= Animation.time-this._last_time;
-    this._last_time = Animation.time;
-    return null;
-  }
-  else {this.delay_time = 0};
   if (!this.display) return null;
   if (!this._imgs) return null;
   this.updateFrame();
-  if (typeof(this._imgs) == 'string') {
-    return ImageBank.get(this._imgs, this.frame)
-  } else return this._imgs[this.frame];
+  if (this.delay_time>0) return null;
+  return this._imgs[this.frame];
 }
 
 /// draws the sprite and all child sprites on the passed canvas context
@@ -138,12 +161,15 @@ Sprite.prototype.draw = function(ctx) {
   // draw self
   var img = this.animation.getCurrentImage();
   if (img) {
-    if (this.center_img) ctx.translate(-img.width/2+this.offset_x, -img.height/2+this.offset_y);
+    ctx.save();
+    ctx.translate(this.offset_x, this.offset_y);
+    ctx.rotate(this.offset_rot);
+    if (this.center_img) ctx.translate(-img.width/2, -img.height/2);
     var alpha = ctx.globalAlpha;
     ctx.globalAlpha = this.alpha;
     ctx.drawImage(img, 0, 0);
     ctx.globalAlpha = alpha;
-    if (this.center_img) ctx.translate(img.width/2-this.offset_x, img.height/2-this.offset_y);
+    ctx.restore();
   }
   
   // custom draw method
@@ -153,7 +179,8 @@ Sprite.prototype.draw = function(ctx) {
   var still_active_childs = [];
   this.child_sprites.forEach(function (child) {
     if (child.draw_in_front_of_parent) child.draw(ctx);
-    if (!child.animation.finished) still_active_childs.push(child);
+    if (!(child.animation.finished && child.animation.remove_after_finish))
+      still_active_childs.push(child);
   });
   this.child_sprites = still_active_childs;
   
