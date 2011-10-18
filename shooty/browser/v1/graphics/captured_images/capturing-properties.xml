@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config>
+	<data id="title" type="string">Configuration file for Configurable ID: app</data>
+	<data id="alpha lower threshold" type="float">229.514</data>
+	<data id="alpha upper threshold" type="float">255</data>
+	<data id="angle" type="string">180</data>
+	<data id="crop" type="float">2</data>
+	<data id="enable alpha channel" type="bool">true</data>
+	<data id="enable local threshold" type="bool">true</data>
+	<data id="enable normalization" type="bool">true</data>
+	<data id="flip" type="string">normal</data>
+	<data id="height" type="float">320</data>
+	<data id="scale down" type="string">8</data>
+	<section id="thresh">
+		<section id="UnaryOp">
+			<data id="check only" type="string">off</data>
+			<data id="clip to ROI" type="string">on</data>
+		</section>
+		<data id="algorithm" type="string">region mean</data>
+		<data id="gamma slope" type="float">10</data>
+		<data id="global threshold" type="float">-19.28</data>
+		<data id="mask size" type="float">43.1578</data>
+	</section>
+	<data id="width" type="float">320</data>
+</config>
