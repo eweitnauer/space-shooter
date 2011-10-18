@@ -19,7 +19,7 @@ var keyboard_init = function() {
       key_steer_data.shot = true;
       evt.preventDefault();
     } else if (evt.keyCode == 40) {
-      evt.preventDefaut();
+      evt.preventDefault();
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
       
@@ -42,7 +42,7 @@ var keyboard_init = function() {
       key_steer_data.shot = false;
       evt.preventDefault();
     } else if (evt.keyCode == 40) {
-      evt.preventDefaut();
+      evt.preventDefault();
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
   };

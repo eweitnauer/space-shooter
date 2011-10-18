@@ -51,7 +51,8 @@ Ship.prototype.step = function() {
       }
       break;
     case 'closing':
-      if (!this.steer_data.accel) this.trigger_open();        
+      if (!this.steer_data.accel) this.trigger_open();
+      else { this.smoke(); this.smoke(); }
       break;
   }
   this.last_time = Animation.time;
@@ -233,11 +234,12 @@ Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
   jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
   this.offset_x = 2; this.offset_y = -3;
+  this.scale = 1;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
   var flame_sprite = new Sprite(80, 'flame');
   flame_sprite.y = 20; flame_sprite.alpha = 0.7;
-  flame_sprite.display = function() { return ship.isAccelerating() };
+  flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
 }

@@ -14,7 +14,7 @@ var Alien = function(type) {
 Alien.prototype.init_sprite = function() {
     jQuery.extend(this, new Sprite(80, 'alien_pyramid'));
     Game.main_sprite.child_sprites.push(this);
-    this.scale = 1;
+    this.scale = 1.0;
  }
 
 Alien.prototype.hit = function(energy) {
