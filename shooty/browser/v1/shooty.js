@@ -1,12 +1,13 @@
-var Explosion = function(x, y) {
-  this.init_sprite();
-  this.x = x; this.y = y;
+/// size must be one of 'L', 'M', 'S'.
+var Explosion = function(x, y, size) {
+  this.init_sprite(size);
+  this.x = x; this.y = y; this.rot = Math.random()*Math.PI*2;
 }
 
-Explosion.prototype.init_sprite = function() {
-  var sprite = new Sprite(80, 'explosion');
-  sprite.alpha = 0.75;
-  sprite.scale = 0.85;
+Explosion.prototype.init_sprite = function(size) {
+  if (size == 'L') var sprite = new Sprite(80, 'big_explosion');
+  else if (size == 'M') var sprite = new Sprite(80, 'med_explosion');
+  else var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);

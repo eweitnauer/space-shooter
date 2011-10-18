@@ -28,7 +28,7 @@ function registerListeners() {
   });
   comm.on('data', function(code, data) {
     if (!(code in Game.ships)) return;
-    var steer_data = { pitch: data.pitch, shot: data.btn2 && data.btn2.hold, 
+    var steer_data = { pitch: data.pitch || 0, shot: data.btn2 && data.btn2.hold, 
                        accel: data.btn1 && data.btn1.hold, mode: data.mode };
     Game.ships[code].steer(steer_data);
   });

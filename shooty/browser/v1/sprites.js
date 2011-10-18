@@ -30,8 +30,8 @@ Animation = function(timeLine, imgs) {
   this.loop = true;
   this.finished_callback = null;
   this.finished = false;
-  this.hide_after_finish = false;
-  this.remove_after_finish = false;
+  this.hide_after_finish = true;
+  this.remove_after_finish = true;
   this.display = true;
   this.setAnimation(timeLine, imgs);
 }
@@ -49,10 +49,12 @@ Animation.prototype.setAnimation = function(timeLine, imgs) {
 }
 
 Animation.prototype._setImages = function(imgs) {
-  this._imgs = [];  
-  if (typeof(imgs) == 'string') { // get image array from image bank
+  this._imgs = [];
+  if (typeof(imgs) == 'string' && imgs != '') {
+    // get image array from image bank
     this._imgs = ImageBank.imgs[imgs].slice();
-  } else { // images passed as array already, just copy
+  } else {
+    // images passed as array already, just copy
     this._imgs = imgs.slice();
   }
 }

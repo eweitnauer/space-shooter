@@ -12,124 +12,118 @@ var Ship = function(session_code) {
   this.collision_radius = 12;
   this.restitution = 0.90;
   this.mass = 1;
-  this.heat = 0;
   this.energy = 100;
-  this.last_shot_time = 0;
-  this.cooldown_per_sec = 15;
-  this.heat_per_shot = 10;
   this.heal_per_sec = 15;
   this.last_time = 0;
-  this.shot_delay = 250; // in ms
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
   this.points = 0;
   this.destroyed = false;
+  this.state = 'flying'; // 'opening, charging, closing, flying'
+};
 
-  this.spawn = function() {
-    this.display = true;
-    this.destroyed = false;
-    this.heat = 0;
-    this.energy = 100;
-    this.landed = false;
-    this.last_time = Animation.time;
-    this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
-    this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
-    this.rot = Math.random()*2*Math.PI;
-    this.vx = this.vy = 0;
-  }
-  
-  this.steer = function(data){
-      this.steer_data = data;
-  }
+Ship.prototype.steer = function(data) {
+  this.steer_data = data;
+}
 
-  this.hasAccel = function() {
-      return this.steer_data && this.steer_data.accel;
-  }
-  
-  this.turnsLeft = function() {
-    return this.steer_data && this.steer_data.pitch < -5;
-  }
-
-  this.turnsRight = function() {
-    return this.steer_data && this.steer_data.pitch > 5;
-  }
-  
-  this.isShooting = function() {
-    return this.steer_data && this.steer_data.shot;
-  }
-  
-  this.explode = function() {
-    for (var t=600; t>=0; t-=100) {
-      for (var i=0; i<2; ++i) {
-        var r = (10+t/20) + Math.random()*10-5;
-        var a = Math.random()*Math.PI*2;
-        var expl = new Explosion(this.x+Math.cos(a)*r, this.y+Math.sin(a)*r);
-        expl.animation.delay_time = t;
-      }  
-    }
-    var code = this.code;
-    sendVibrate(code);
-    setTimeout(function() {sendVibrate(code)}, 200);
-    setTimeout(function() {sendVibrate(code)}, 400);
-    setTimeout(function() {sendVibrate(code)}, 600);
-  }
- 
-  this.step = function() {
-      if (this.steer_data){
-          if(this.steer_data.pitch && !this.landed){
-            if (this.code == 'key' || this.steer_data.mode == 'relative') {
-              this.rot -= this.steer_data.pitch/500;
-            } else if (this.steer_data.mode == 'absolute') {
-              var delta = (-this.steer_data.pitch*Math.PI/180)-this.rot;
-              delta = Ship.norm_rotation(delta);
-              if (delta > 0.3) delta = 0.3;
-              if (delta < -0.3) delta = -0.3;
-              this.rot += delta*0.5;
-            }
-          }
-          if(this.steer_data.accel){
-              var dx = Math.sin(this.rot);
-              var dy = -Math.cos(this.rot);
-              this.vx += dx * 0.1 * (this.steer_data.accel ? 1 : 0);
-              this.vy += dy * 0.1 * (this.steer_data.accel ? 1 : 0);
-              if (Math.random()< 0.67) {
-                var rot = (this.rot + Math.PI/2);
-                var r = 20;
-                new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
-                          this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
-              }
-              this.landed = false;
-          }
-          if (!this.landed && this.steer_data.shot && (Animation.time-this.last_shot_time >= this.shot_delay)) {
-            this.last_shot_time = Animation.time;
-            if (this.heat + this.heat_per_shot > 100) {
-              this.heat = Math.min(100, this.heat + this.heat_per_shot/4);
-            } else {
-              this.heat += this.heat_per_shot;
-              var dx = Math.sin(this.rot);
-              var dy = -Math.cos(this.rot);
-              Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
-            }
-          }           
+Ship.prototype.step = function() {
+  if (!this.steer_data) return;
+  switch(this.state) {
+    case 'flying':
+      if (this.steer_data.accel) {
+        this.accelerate();
+        this.smoke();
       }
-      if (!this.landed) {
-        this.vx += Game.grav_x;
-        this.vy += Game.grav_y;
-
-        this.vx *= 1.0-Game.air_friction;
-        this.vy *= 1.0-Game.air_friction;
-        this.x += this.vx;
-        this.y += this.vy;
-      } else {
+      this.rotate(this.steer_data.mode, this.steer_data.pitch);    
+      if (this.steer_data.shot) this.shoot();
+      this.apply_physics();
+      break;
+    case 'opening':
+      if (this.steer_data.accel) this.trigger_close();
+      break;
+    case 'charging':
+      if (this.steer_data.accel) this.trigger_close();
+      else {
         this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
         if (this.energy > 100) this.energy = 100;
       }
-            
-      this.heat -= this.cooldown_per_sec * (Animation.time-this.last_time) / 1000;
-      if (this.heat < 0) this.heat = 0;
-      this.last_time = Animation.time;
+      break;
+    case 'closing':
+      if (!this.steer_data.accel) this.trigger_open();        
+      break;
   }
-};
+  this.last_time = Animation.time;
+}
+  
+Ship.prototype.spawn = function() {
+  this.display = true;
+  this.destroyed = false;
+  this.heat = 0;
+  this.energy = 100;
+  this.state = 'flying';
+  this.last_time = Animation.time;
+  this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
+  this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
+  this.rot = Math.random()*2*Math.PI;
+  this.vx = this.vy = 0;
+}
+
+Ship.prototype.isAccelerating = function() {
+  return this.steer_data && this.steer_data.accel;
+}
+
+Ship.prototype.isShooting = function() {
+  return this.steer_data && this.steer_data.shot;
+}
+
+Ship.prototype.explode = function() {
+  var expl = new Explosion(this.x, this.y, 'L');
+  expl.rot = this.rot;
+  var code = this.code;
+  sendVibrate(code, 1000);
+}
+  
+Ship.prototype.accelerate = function() {
+  this.vx += Math.sin(this.rot) * 0.1;
+  this.vy += -Math.cos(this.rot) * 0.1;
+}
+
+Ship.prototype.rotate = function(mode, pitch) {
+  if (mode == 'relative') {
+    this.rot -= pitch/500;
+  } else if (mode == 'absolute') {
+    var delta = (-pitch*Math.PI/180)-this.rot;
+    delta = Ship.norm_rotation(delta);
+    if (delta > 0.3) delta = 0.3;
+    if (delta < -0.3) delta = -0.3;
+    this.rot += delta*0.5;
+  }
+}
+
+Ship.prototype.smoke = function() {
+  if (Math.random()< 0.67) {
+    var rot = (this.rot + Math.PI/2);
+    var r = 20;
+    new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
+              this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+  }
+}
+
+Ship.prototype.shoot = function() {
+  var dx = Math.sin(this.rot);
+  var dy = -Math.cos(this.rot);
+  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
+}
+    
+Ship.prototype.apply_physics = function() {
+  this.vx += Game.grav_x;
+  this.vy += Game.grav_y;
+
+  this.vx *= 1.0-Game.air_friction;
+  this.vy *= 1.0-Game.air_friction;
+  this.x += this.vx;
+  this.y += this.vy;
+}
 
 Ship.max_land_speed = 0.5;
 
@@ -208,7 +202,7 @@ Ship.prototype.init_sprite = function() {
   var ship = this;
   var flame_sprite = new Sprite(80, 'flame');
   flame_sprite.y = 20; flame_sprite.alpha = 0.7;
-  flame_sprite.display = function() { return ship.hasAccel() };
+  flame_sprite.display = function() { return ship.isAccelerating() };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
 }

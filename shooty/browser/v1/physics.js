@@ -25,12 +25,17 @@ checkCollision: function(o1, o2, callback) {
 }
 
 /// The function expects two objects (with properties x,y,r,mass,vx,vy). It then
-/// calculates the effect of an elastic collision and sets the speeds of the
-/// objects accordingly.
+/// calculates the effect of an elastic collision and sets the speeds and
+/// positions of the objects accordingly.
+/// If 'false' is passed as one of the next two parameters, the respective
+/// object will not be changed.
 /// Returns the energy of the impact. 
-,letCollide: function(o1, o2) {
+,letCollide: function(o1, o2, o1_movable, o2_movable) {
+  var o1_movable = o1_movable || true;
+  var o2_movable = o2_movable || true;  
   // undo last position update to separate the two objects
-  o1.x -= o1.vx; o1.y -= o1.vy; o2.x -= o2.vx; o2.y -= o2.vy;
+  if (o1_movable) {o1.x -= o1.vx; o1.y -= o1.vy;}
+  if (o2_movable) {o2.x -= o2.vx; o2.y -= o2.vy;}
   var v1 = new Point(o1.vx, o1.vy);
   var v2 = new Point(o2.vx, o2.vy);
   // get the speed components in radial direction
@@ -50,8 +55,8 @@ checkCollision: function(o1, o2, callback) {
   var restitution = o1.restitution*o2.restitution;
   v1 = tang.scaled(v1_t).add(rad.scaled(v1_r_new*restitution));
   v2 = tang.scaled(v2_t).add(rad.scaled(v2_r_new*restitution));
-  o1.vx = v1.x; o1.vy = v1.y;
-  o2.vx = v2.x; o2.vy = v2.y;
+  if (o1_movable) {o1.vx = v1.x; o1.vy = v1.y;}
+  if (o2_movable) {o2.vx = v2.x; o2.vy = v2.y;}
   return 0.5*(v1_r-v1_r_new)*(v1_r-v1_r_new)*o1.mass +
          0.5*(v2_r-v2_r_new)*(v2_r-v2_r_new)*o2.mass;
 }
