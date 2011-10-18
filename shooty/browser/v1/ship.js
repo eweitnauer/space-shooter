@@ -105,11 +105,18 @@ Ship.prototype.rotate = function(mode, pitch) {
 }
 
 Ship.prototype.smoke = function() {
-  if (Math.random()< 0.67) {
+  if (Math.random()< 0.5) {
     var rot = (this.rot + Math.PI/2);
-    var r = 20;
-    new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
-              this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+    var r = 25;
+    var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
+                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+    
+    s.rot = Math.random()/2;
+    s.alpha = 0.3+Math.random()*0.6;
+    s.scale = 0.6+Math.random()*0.4;
+    s.alpha_decay = 0.05+Math.random()*0.1;
+
+    Game.smokes.push(s);
   }
 }
 
@@ -237,8 +244,8 @@ Ship.prototype.init_sprite = function() {
   this.scale = 1;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
-  var flame_sprite = new Sprite(80, 'flame');
-  flame_sprite.y = 20; flame_sprite.alpha = 0.7;
+  var flame_sprite = new Sprite(80, 'large_flame');
+  flame_sprite.y = 15; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);

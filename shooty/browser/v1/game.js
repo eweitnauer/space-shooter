@@ -3,10 +3,13 @@ var Game = {
    ,borders: {left:325, top:131, right: 1167, bottom: 361}
    ,grav_x:0, grav_y:0.02
    ,air_friction: 0.01
+   ,wind_vx: 0.05
+   ,wind_vy: -0.01
    ,step_timer: null
    ,ships: {}
    ,shots: new LinkedList
    ,aliens: new LinkedList
+   ,smokes: new LinkedList
    ,lines: []
    ,start: function() {
       Animation.time = Date.now();
@@ -144,6 +147,12 @@ var Game = {
             if(alien.destroyed) el.remove();
         });
     }
+    ,stepSmokes: function(){
+        Game.smokes.forEach(function(smoke,el){
+            smoke.step();
+            if(smoke.animation.finished) el.remove();
+        });
+    }
 
   ,step: function() {
     Animation.time = Date.now();
@@ -158,6 +167,10 @@ var Game = {
 
     // collision dectection
     Game.collisionDetection();
+
+    // wind effect
+    Game.stepSmokes();
+    
     // update the display
     Game.painter.draw();
 

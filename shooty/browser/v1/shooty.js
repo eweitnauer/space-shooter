@@ -17,22 +17,31 @@ var Smoke = function(x,y){
   this.init_sprite();
     this.x = x;
     this.y = y;
+    this.vx = 0;
+    this.vy = 0;
     this.time = -1;
     this.isAtEnd = function(){
         return this.time >= 8;
     }
     this.step = function(){
+        console.log('smoke.step()');
         this.time++;
+        this.vx += Game.wind_vx; 
+        this.vy += Game.wind_vy;
+        this.x += this.vx;
+        this.y += this.vy;
     }
 };
 
 Smoke.prototype.init_sprite = function() {
-  var sprite = new Sprite(100, 'smoke');
+  var sprite = new Sprite(100, 'smoke-large');
   sprite.animation.loop = false;
-  sprite.alpha = 0.3;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
 }
+
+
+
 
 var Shot = function(shooter,x,y,vx,vy,v,rot,energy){
   this.init_sprite();

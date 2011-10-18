@@ -7,6 +7,7 @@ Sprite = function(timeLine, imgs) {
   this.rot = 0;
   this.scale = 1;
   this.alpha = 1;
+  this.alpha_decay = 0;
   this.extra_draw = null;
   this.child_sprites = [];
   this.animation = new Animation(timeLine, imgs);
@@ -51,6 +52,7 @@ Animation.prototype.setAnimation = function(timeLine, imgs) {
 Animation.prototype._setImages = function(imgs) {
   this._imgs = [];
   if (typeof(imgs) == 'string' && imgs != '') {
+      console.log(imgs);
     // get image array from image bank
     this._imgs = ImageBank.imgs[imgs].slice();
   } else {
@@ -168,7 +170,7 @@ Sprite.prototype.draw = function(ctx) {
     ctx.rotate(this.offset_rot);
     if (this.center_img) ctx.translate(-img.width/2, -img.height/2);
     var alpha = ctx.globalAlpha;
-    ctx.globalAlpha = this.alpha;
+    ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
     ctx.drawImage(img, 0, 0);
     ctx.globalAlpha = alpha;
     ctx.restore();
