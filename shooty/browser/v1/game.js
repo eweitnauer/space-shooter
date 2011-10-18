@@ -81,7 +81,7 @@ var Game = {
           if (ship1.code>ship2.code) Physics.checkCollision(ship1, ship2,
             function(ship1, ship2, px, py) {
               // only flying ships can be moved in a collision
-              var energy = Math.max(Physics.letCollide(ship1, ship2, ship1.state == 'flying', ship2.state=='flying'), 10);
+              var energy = Math.max(Physics.letCollide(ship1, ship2, ship1.state=='flying', ship2.state=='flying'), 10);
               var pts1=ship1.points, pts2=ship2.points;
               ship1.hit(energy);
               ship2.hit(energy);

@@ -31,8 +31,8 @@ checkCollision: function(o1, o2, callback) {
 /// object will not be changed.
 /// Returns the energy of the impact. 
 ,letCollide: function(o1, o2, o1_movable, o2_movable) {
-  var o1_movable = o1_movable || true;
-  var o2_movable = o2_movable || true;  
+  var o1_movable = (typeof(o1_movable) == 'undefined') ? true : o1_movable;
+  var o2_movable = (typeof(o2_movable) == 'undefined') ? true : o2_movable;
   // undo last position update to separate the two objects
   if (o1_movable) {o1.x -= o1.vx; o1.y -= o1.vy;}
   if (o2_movable) {o2.x -= o2.vx; o2.y -= o2.vy;}
