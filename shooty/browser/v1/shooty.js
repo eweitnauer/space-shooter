@@ -62,8 +62,8 @@ var Shot = function(shooter,x,y,vx,vy,v,rot,energy){
 };
 
 Shot.prototype.init_sprite = function() {
-  var sprite = new Sprite([80,80,80], 'shot');
-  sprite.offset_x = 5; sprite.offset_y = 6;
+  var sprite = new Sprite(80, 'bullet');
+  sprite.offset_x = 3; sprite.offset_y = 4;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
 }

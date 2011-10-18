@@ -191,7 +191,7 @@ Ship.prototype.attempt_land = function(line) {
 }
 
 Ship.id = 0;
-Ship.colors = ['red', 'blue', 'orange', 'violett'];
+Ship.colors = ['red', 'yellow', 'purple', 'green', 'orange'];
 Ship.next_color = 0;
 Ship.getNextColor = function() {
   var result = Ship.colors[Ship.next_color++];

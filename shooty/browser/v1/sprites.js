@@ -171,20 +171,23 @@ ImageBank = {
   }
  /// load_animation('ship', './ship') will load the file ./ship.png 
  ,load_single: function(tag, url) {
-  this.imgs[tag] = [new Image()];
-  this.imgs[tag][0].src = this.prefix + url + this.extension;
- }
- /// load_animation('ship', './ship', 1, 3, 2) will load the files
- /// ./ship01.png ./ship02.png and /./ship03.png
- ,load_animation: function(tag, url, from, to, len) {
-  this.imgs[tag] = [];
-  for (var i=from; i<=to; i++) {
-    var img = new Image();
-    var num = String(i); while (num.length < len) num = '0'+num;
-    img.src = this.prefix + url + num + this.extension;
-    this.imgs[tag].push(img);
+    this.imgs[tag] = [new Image()];
+    this.imgs[tag][0].src = this.prefix + url + this.extension;
   }
- } 
+ /// load_animation('ship', './ship', 3, 1) will load the files ./ship0.png
+ /// ./ship1.png and ./ship2.png.
+ /// If no 'digits' param is passed, the number of digits will be determined
+ /// according to 'count'.
+ ,load_animation: function(tag, url, count, digits) {
+    var len = digits || String(count).length;
+    this.imgs[tag] = [];
+    for (var i=0; i<count; i++) {
+      var img = new Image();
+      var num = String(i); while (num.length < len) num = '0'+num;
+      img.src = this.prefix + url + num + this.extension;
+      this.imgs[tag].push(img);
+    }
+  } 
 }
 
 PaintEngine = function(canvas) {
