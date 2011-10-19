@@ -1,6 +1,6 @@
 var Game = {
     w: 1237, h: 777
-   ,borders: {left:325, top:131, right: 1167, bottom: 361}
+   ,borders: {left:336, top:158, right: 1171, bottom: 355}
    ,grav_x:0, grav_y:0.02
    ,air_friction: 0.01
    ,wind_vx: 0.05
@@ -25,20 +25,22 @@ var Game = {
       Game.infobar = new Infobar();
       Game.painter.add(Game.infobar);
       Game.lines = load_collision_data_from_svg(Game.coll_data);
-      setInterval(this.spawn_alien,4000);
-      this.spawn_alien();
+      this.spawn_aliens();
    }
   ,forEachActiveShip: function(fn) {
     for (s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
     }
   }
-  ,spawn_alien: function(){
-      var alien = new Alien;
+  ,spawn_aliens: function(){
+      Game.aliens.push(new Ufo());
+      Game.aliens.push(new Ufo());
+      Game.aliens.push(new Ufo());
+      
+      var alien = new Alien();
       alien.x = 300+Math.random()*600;
       alien.y = 200+Math.random()*200;
       Game.aliens.push(alien);
-      
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -102,7 +104,7 @@ var Game = {
          Game.forEachActiveShip(function(ship){
              Physics.checkCollision(alien, ship,function(alien, ship, px, py) {
                 var energy = Math.max(Physics.letCollide(alien, ship, 
-                                                         ship.state == 'flying' 
+                                                         true, ship.state == 'flying' 
                                                          ), 10);
                 var pts=ship.points;
                 ship.hit(energy);
@@ -118,7 +120,7 @@ var Game = {
         Game.shots.forEach(function(shot) {
           Physics.checkCollision(alien, shot,
             function(alien, shot, px, py) {
-              if (shot.shooter == 'alien') return; // aliens dont shoot each other
+              if (shot.shooter.type == 'alien') return; // aliens dont shoot each other
 
               var s = new Smoke(shot.x, shot.y);
               s.rot = Math.random()*1.5-0.75;

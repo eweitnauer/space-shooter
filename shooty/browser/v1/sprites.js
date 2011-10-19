@@ -52,7 +52,6 @@ Animation.prototype.setAnimation = function(timeLine, imgs) {
 Animation.prototype._setImages = function(imgs) {
   this._imgs = [];
   if (typeof(imgs) == 'string' && imgs != '') {
-      console.log(imgs);
     // get image array from image bank
     this._imgs = ImageBank.imgs[imgs].slice();
   } else {

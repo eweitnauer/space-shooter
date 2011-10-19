@@ -61,7 +61,6 @@ Ship.prototype.step = function() {
 Ship.prototype.spawn = function() {
   this.display = true;
   this.destroyed = false;
-  this.heat = 0;
   this.energy = 100;
   this.state = 'flying';
   this.last_shoot_time = 0;
@@ -105,7 +104,7 @@ Ship.prototype.rotate = function(mode, pitch) {
 }
 
 Ship.prototype.smoke = function() {
-  if (Math.random()< 0.5) {
+  if (Math.random()< 0.67) {
     var rot = (this.rot + Math.PI/2);
     var r = 25;
     if(this.state == 'closing'){
@@ -116,7 +115,7 @@ Ship.prototype.smoke = function() {
     
     s.rot = Math.random()*1.5-0.75;
     s.alpha = 0.8+Math.random()*0.2;
-    s.scale = 0.3+Math.random()*0.7;
+    s.scale = 0.2+Math.random()*0.2;
     s.alpha_decay = 0.05+Math.random()*0.1;
 
   }
@@ -243,10 +242,11 @@ Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
   jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
   this.offset_x = 2; this.offset_y = -3;
-  this.scale = 1;
+  this.scale = 0.9;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
   var flame_sprite = new Sprite(160, 'large_flame');
+  flame_sprite.scale = 0.8;
   flame_sprite.y = 18; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
