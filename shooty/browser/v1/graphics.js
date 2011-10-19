@@ -7,7 +7,7 @@ global_ship_colors.forEach(function(color) {
 });
 ImageBank.load_single('ship_gray', 'graphics/ship/ship-gray-0');
 ImageBank.load_animation('flame', 'graphics/effects/flame-', 3);
-ImageBank.load_animation('large_flame', 'graphics/effects/large-flame-', 3);
+ImageBank.load_animation('large_flame', 'graphics/effects/very-large-flame-', 4);
 ImageBank.load_animation('canon', 'graphics/effects/muzzleflash-', 3);
 ImageBank.load_animation('smoke', 'graphics/effects/smoke-', 4);
 ImageBank.load_animation('smoke-large', 'graphics/effects/smoke-large-lighter-', 21);

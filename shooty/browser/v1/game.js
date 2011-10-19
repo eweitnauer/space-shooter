@@ -54,6 +54,15 @@ var Game = {
           Physics.checkCollision(Game.ships[s], shot,  // ?? [s] chrissi
             function(ship, shot, px, py) {
               if (shot.shooter == ship) return; // don't hit own ship
+
+                for(var i=0;i<5;++i){
+                    var s = new Smoke(shot.x, shot.y);
+                    s.rot = Math.random()*1.5-0.75;
+                    s.alpha = 0.8+Math.random()*0.2;
+                    s.scale = 0.3+Math.random()*0.7;
+                    s.alpha_decay = 0.05+Math.random()*0.1;
+                }
+
               new Explosion(shot.x, shot.y, 'M');
               // only move ship if it is not landed
               Physics.letCollide(ship, shot, ship.state == 'flying', false);
@@ -110,7 +119,14 @@ var Game = {
           Physics.checkCollision(alien, shot,
             function(alien, shot, px, py) {
               if (shot.shooter == 'alien') return; // aliens dont shoot each other
+
+              var s = new Smoke(shot.x, shot.y);
+              s.rot = Math.random()*1.5-0.75;
+              s.alpha = 0.8+Math.random()*0.2;
+              s.scale = 0.3+Math.random()*0.7;
+              s.alpha_decay = 0.05+Math.random()*0.1;
               new Explosion(shot.x, shot.y, 'M');
+
               // only move ship if it is not landed
               Physics.letCollide(alien, shot, true, false);
               alien.hit(shot.energy);

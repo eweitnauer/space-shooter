@@ -31,6 +31,8 @@ var Smoke = function(x,y){
         this.x += this.vx;
         this.y += this.vy;
     }
+
+    Game.smokes.push(this);
 };
 
 Smoke.prototype.init_sprite = function() {
