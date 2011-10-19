@@ -105,7 +105,7 @@ Ship.prototype.rotate = function(mode, pitch) {
 }
 
 Ship.prototype.smoke = function() {
-  if (Math.random()< 0.5) {
+  if (Math.random()< 0.67) {
     var rot = (this.rot + Math.PI/2);
     var r = 25;
     if(this.state == 'closing'){
