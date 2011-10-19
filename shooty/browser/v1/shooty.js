@@ -15,24 +15,17 @@ Explosion.prototype.init_sprite = function(size) {
 
 var Smoke = function(x,y){
   this.init_sprite();
-    this.x = x;
-    this.y = y;
-    this.vx = 0;
-    this.vy = 0;
-    this.time = -1;
-    this.isAtEnd = function(){
-        return this.time >= 8;
-    }
-    this.step = function(){
-        console.log('smoke.step()');
-        this.time++;
-        this.vx += Game.wind_vx; 
-        this.vy += Game.wind_vy;
-        this.x += this.vx;
-        this.y += this.vy;
-    }
-
-    Game.smokes.push(this);
+  this.x = x;
+  this.y = y;
+  this.vx = 0;
+  this.vy = 0;
+  this.step = function(){
+    this.vx += Game.wind_vx; 
+    this.vy += Game.wind_vy;
+    this.x += this.vx;
+    this.y += this.vy;
+  }
+  Game.smokes.push(this);
 };
 
 Smoke.prototype.init_sprite = function() {
@@ -42,10 +35,7 @@ Smoke.prototype.init_sprite = function() {
   Game.main_sprite.child_sprites.push(this);
 }
 
-
-
-
-var Shot = function(shooter,x,y,vx,vy,v,rot,energy){
+var Shot = function(shooter,x,y,vx,vy,v,rot,energy) {
   this.init_sprite();
   this.energy = energy;
   this.collision_radius = 4;
@@ -138,4 +128,8 @@ function load_collision_data_from_url(url) {
   var content = ajaxGetUrl(url);
   if (!content) { console.log('Error loading ', url); return; }
   return load_collision_data_from_svg(content);
+}
+
+Math.clipped = function(x, min, max) {
+  return (x<min) ? min : ((x>max) ? max : x);
 }

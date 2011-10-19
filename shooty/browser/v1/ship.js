@@ -61,9 +61,8 @@ Ship.prototype.step = function() {
 Ship.prototype.spawn = function() {
   this.display = true;
   this.destroyed = false;
-  this.heat = 0;
   this.energy = 100;
-  this.state = 'flying';
+  this.trigger_fly();
   this.last_shoot_time = 0;
   this.last_time = Animation.time;
   this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
@@ -116,7 +115,7 @@ Ship.prototype.smoke = function() {
     
     s.rot = Math.random()*1.5-0.75;
     s.alpha = 0.8+Math.random()*0.2;
-    s.scale = 0.3+Math.random()*0.7;
+    s.scale = 0.2+Math.random()*0.2;
     s.alpha_decay = 0.05+Math.random()*0.1;
 
   }
@@ -243,10 +242,11 @@ Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
   jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
   this.offset_x = 2; this.offset_y = -3;
-  this.scale = 1;
+  this.scale = 0.9;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
   var flame_sprite = new Sprite(160, 'large_flame');
+  flame_sprite.scale = 0.8;
   flame_sprite.y = 18; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
@@ -264,26 +264,25 @@ Ship.prototype.createScoreSprite = function() {
     if (ship.destroyed) return img_inactive;
     else return img_active;
   }
-  ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
+  ship_sprite.scale = 0.75; ship_sprite.x = 15;
   sprite.child_sprites.push(ship_sprite);
   sprite.extra_draw = function(ctx) {
     // energy and heat bar
-    var l = 35;
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    var l = 26;
+    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
     ctx.fillStyle = 'rgba(0,255,0,0.5)';
+    ctx.lineWidth = 1;
     var w = l*ship.energy*0.01;
-    ctx.fillRect(25,3,w,6);
-    ctx.strokeRect(25,3,l,6);
-    ctx.fillStyle = 'rgba(255,0,0,0.5)';
-    var w = l*ship.heat*0.01;
-    ctx.fillRect(25,13,w,6);
-    ctx.strokeRect(25,13,l,6);
+    ctx.fillRect(0,19,w,7);
+    ctx.strokeRect(0,19,l,7);
     // write player name
-    ctx.font = "bold italic 15 px sans";
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
-    ctx.fillText(ship.player_name + ': ' + ship.points, 67, 13);
+    ctx.font = '15px "Permanent Marker"';
+    ctx.fillText(ship.player_name, 30, 9);
+    ctx.font = '12px "Permanent Marker"';
+    ctx.fillText('points: ' + ship.points, 30, 22);
   }
   return sprite;
 }
