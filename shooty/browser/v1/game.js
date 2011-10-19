@@ -201,13 +201,13 @@ var Game = {
 Infobar = function() {
   jQuery.extend(this, new Sprite([], ''));
   this.extra_draw = function(ctx) {
-    ctx.font = "bold italic 14 px sans";
+    ctx.font = '20px "Permanent Marker"';
     ctx.textBaseline = "top";
     ctx.textAlign = "right";
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = '#00a5cd';
     ctx.save();
-    ctx.translate(1144,95);
-    ctx.rotate(-0.01);
+    ctx.translate(1080,112);
+    ctx.rotate(0.02);
     ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
     ctx.restore();
   }
@@ -216,18 +216,19 @@ Infobar = function() {
 ScoreBoard = function() {
   jQuery.extend(this, new Sprite([], ''));
   this.extra_draw = function(ctx) {
-    ctx.font = "bold italic 14 px sans";
+    ctx.font = '15px "Permanent Marker"';
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(340,690);
-    ctx.rotate(-0.005);
+    ctx.translate(330,713);
+    ctx.rotate(0.005);
     var i = 0;
     for (s in Game.ships) {
       var ship = Game.ships[s];
       ctx.save();
-      ctx.translate(Math.floor(i/2)*200, (i%2)*28);
+      //ctx.translate(Math.floor(i/2)*200, (i%2)*28);
+      ctx.translate(i*175, 8);
       ship.score_sprite.draw(ctx);
       ctx.restore();
       i++;
