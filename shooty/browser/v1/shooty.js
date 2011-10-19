@@ -29,7 +29,8 @@ var Smoke = function(x,y){
 };
 
 Smoke.prototype.init_sprite = function() {
-  var sprite = new Sprite(100, 'lighter-smoke-large-colored');
+  
+    var sprite = new Sprite(100, Math.random() > 0.5  ? 'lighter-smoke-large-colored' : 'lighter-smoke-large');
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
