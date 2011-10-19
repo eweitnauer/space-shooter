@@ -108,12 +108,15 @@ Ship.prototype.smoke = function() {
   if (Math.random()< 0.5) {
     var rot = (this.rot + Math.PI/2);
     var r = 25;
+    if(this.state == 'closing'){
+        r = 15;
+    }
     var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
                       this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
     
-    s.rot = Math.random()/2;
-    s.alpha = 0.3+Math.random()*0.6;
-    s.scale = 0.6+Math.random()*0.4;
+    s.rot = Math.random()*1.5-0.75;
+    s.alpha = 0.8+Math.random()*0.2;
+    s.scale = 0.4+Math.random()*0.6;
     s.alpha_decay = 0.05+Math.random()*0.1;
 
     Game.smokes.push(s);
