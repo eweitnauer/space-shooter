@@ -114,9 +114,9 @@ Ship.prototype.smoke = function() {
                       this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
     
     s.rot = Math.random()*1.5-0.75;
-    s.alpha = 0.8+Math.random()*0.2;
-    s.scale = 0.2+Math.random()*0.2;
-    s.alpha_decay = 0.05+Math.random()*0.1;
+    s.alpha = 0.9+Math.random()*0.1;
+    s.scale = 0.5+Math.random()*0.3;
+      s.alpha_decay = 0.02+Math.random()*0.2;
 
   }
 }
