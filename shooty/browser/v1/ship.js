@@ -104,6 +104,9 @@ Ship.prototype.rotate = function(mode, pitch) {
 }
 
 Ship.prototype.smoke = function() {
+    // idee: wir könnten smoke-alpha 
+    // von der schiff-geschwindigkeit
+    // abhängig machen
   if (Math.random()< 0.67) {
     var rot = (this.rot + Math.PI/2);
     var r = 25;
@@ -114,9 +117,12 @@ Ship.prototype.smoke = function() {
                       this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
     
     s.rot = Math.random()*1.5-0.75;
-    s.alpha = 0.9+Math.random()*0.1;
+      // shipSpeed \in [ 0 , 6 ]
+    var shipSpeed = Math.sqrt(this.vx*this.vx + this.vy*this.vy)/6;
+
+    s.alpha = 0.98+Math.random()*0.02 - shipSpeed/6;
     s.scale = 0.5+Math.random()*0.3;
-      s.alpha_decay = 0.02+Math.random()*0.2;
+    s.alpha_decay = 0.02+Math.random()*0.2 + shipSpeed/6*0.6;
 
   }
 }
