@@ -71,7 +71,7 @@ Mine.prototype.turn = function(angle) {
 }
 
 Mine.prototype.think = function() {
-  // get closest landscape feature
+  // get closest landscape part or alien
   d = null; var pt = null;
   var P = new Point(this.x, this.y);
   for (var i=0; i<Game.lines.length; ++i) {
@@ -82,8 +82,18 @@ Mine.prototype.think = function() {
       pt = C;
     }
   }
+  
+//  var self = this;
+//  
+//  Game.aliens.forEach(function(alien) {
+//    if (alien === self) return;
+//    if (pt == null || dist(alien, self) < d) {
+//      pt.x = alien.x; pt.y = alien.y; d = dist(alien, self);
+//    }
+//  });
+  
   // avoid if too close
-  if (d < 30) {
+  if (d < 25) {
     if (this.is_left_to(pt.x, pt.y)) this.turn_right();
     else this.turn_left();
     return;
