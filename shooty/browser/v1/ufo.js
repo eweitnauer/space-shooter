@@ -1,6 +1,9 @@
-var Ufo = function(sprite) {
+var Ufo = function() {
   this.type = 'alien';
   this.max_vx = 1.5; this.max_vy = 0.75;
+  this.release_rate = 1000; // 1 mine released per x ms
+  this.production_time = 5000; // between mine releases we have x ms
+  this.max_mine_count = 3; // number of mines per production cycle
   this.init_sprite();
   this.spawn();
 }
@@ -17,6 +20,8 @@ Ufo.prototype.init_sprite = function() {
 }
 
 Ufo.prototype.spawn = function() {
+  this.next_production_finished_at = Animation.time+this.production_time;
+  this.state = 'flying';
   this.energy = 200;
   this.display = true;
   this.destroyed = false;
@@ -61,14 +66,61 @@ Ufo.prototype.step = function() {
   this.think();
   this.x += this.vx;
   this.y += this.vy;
+  this.last_time = Animation.time;
 }
 
 Ufo.prototype.think = function() {
+  if (this.state == 'flying') {
+    if (Animation.time >= this.next_production_finished_at) {
+      if (this.is_moving()) {
+        this.slow_down();
+        this.adjust_rot(); 
+      } else {
+        console.log('switching to state "releasing mines"');
+        this.state = 'releasing mines';
+        this.mines = this.max_mine_count;
+        this.next_mine_release_at = Animation.time + this.release_rate;
+      }
+    } else {
+      this.random_walk();
+    }
+  } else if (this.state == 'releasing mines') {
+    if (Animation.time >= this.next_mine_release_at) {
+      if (this.mines == 0) {
+        console.log('switching to state "flying"');
+        this.state = 'flying';
+        this.next_production_finished_at = Animation.time + this.production_time;
+        this.random_walk();
+      } else {
+        this.next_mine_release_at = Animation.time + this.release_rate;
+        this.release_mine();
+      }
+    }
+  }
+}
+
+Ufo.prototype.slow_down = function() {
+  var dv = this.max_vx / 30;
+  if (Math.abs(this.vx) < dv) this.vx = 0;
+  else this.vx += (this.vx>0) ? -dv : dv;
+  if (Math.abs(this.vy) < dv) this.vy = 0;
+  else this.vy += (this.vy>0) ? -dv : dv;
+}
+
+Ufo.prototype.is_moving = function() {
+  return (this.vx != 0 || this.vy != 0);
+}
+
+Ufo.prototype.release_mine = function() {
+  console.log(new Mine(this.x, this.y + 20));
+  this.mines--;
+}
+
+Ufo.prototype.random_walk = function() {
   if (Math.random() < 0.25) this.change_speed();
   if (this.x-12 < Game.borders.left) this.vx = Math.abs(this.vx);
   if (this.x+12 > Game.borders.right) this.vx = -Math.abs(this.vx);
   if (this.y-12 < Game.borders.top) this.vy = Math.abs(this.vy);
   if (this.y+12 > Game.borders.bottom) this.vy = -Math.abs(this.vy);
-  this.adjust_rot();
+  this.adjust_rot();    
 }
-

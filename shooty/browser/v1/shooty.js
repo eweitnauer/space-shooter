@@ -133,3 +133,11 @@ function load_collision_data_from_url(url) {
 Math.clipped = function(x, min, max) {
   return (x<min) ? min : ((x>max) ? max : x);
 }
+
+Math.sign = function(x) {
+  return (x<0) ? -1 : ((x>0) ? 1 : 0);
+}
+
+Math.randomSign = function() {
+  return Math.random()<0.5 ? 1 : -1;
+}

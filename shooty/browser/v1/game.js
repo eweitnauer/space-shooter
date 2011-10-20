@@ -28,13 +28,11 @@ var Game = {
       this.spawn_aliens();
    }
   ,forEachActiveShip: function(fn) {
-    for (s in Game.ships) {
+    for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
     }
   }
   ,spawn_aliens: function(){
-      Game.aliens.push(new Ufo());
-      Game.aliens.push(new Ufo());
       Game.aliens.push(new Ufo());
       
       var alien = new Alien();
@@ -53,7 +51,7 @@ var Game = {
       // shot - ship collisions
       Game.forEachActiveShip(function(ship) {
         Game.shots.forEach(function(shot) {
-          Physics.checkCollision(Game.ships[s], shot,  // ?? [s] chrissi
+          Physics.checkCollision(ship, shot,
             function(ship, shot, px, py) {
               if (shot.shooter == ship) return; // don't hit own ship
 
@@ -78,7 +76,7 @@ var Game = {
       // ship - world collisions
       Game.forEachActiveShip(function(ship) {
         for (var i=0; i<Game.lines.length; ++i) {
-          Physics.checkCollision2(Game.ships[s], Game.lines[i], function(ship, line, p) {
+          Physics.checkCollision2(ship, Game.lines[i], function(ship, line, p) {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
             line.restitution = 0.4;
             var energy = Physics.letCollide(ship, line);
