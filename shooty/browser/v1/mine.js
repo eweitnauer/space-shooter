@@ -1,13 +1,15 @@
 var Mine = function(x, y) {
   this.type = 'alien';
-  this.max_vx = 1.5; this.max_vy = 1.5;
+  this.max_v = 1.5;
+  this.acceleration = 0.05;
   this.init_sprite();
   this.spawn(x, y);
 }
 
 Mine.prototype.init_sprite = function() {
   jQuery.extend(this, new Sprite(80, 'alien_mine'));
-  this.collision_radius = 9;
+  this.scale = 0.8;
+  this.collision_radius = 7;
   this.restitution = 0.3;
   this.mass = 0.1;
   this.display = false;
@@ -22,7 +24,7 @@ Mine.prototype.spawn = function(x, y) {
   this.display = true;
   this.destroyed = false;
   this.x = x; this.y = y;
-  this.vx = 0; this.vy = this.max_vy/2;
+  this.vx = 0; this.vy = this.max_v/2;
 }
 
 Mine.prototype.hit = function(energy) {
@@ -50,5 +52,34 @@ Mine.prototype.step = function() {
   this.rot += this.drot;
 }
 
+Mine.prototype.is_left_to = function(x, y) {
+  var dx = x-this.x, dy = y-this.y;
+  return this.vx*dy - this.vy*dx < 0;
+}
+
+Mine.prototype.turn_left = function() { this.turn(-0.1); }
+Mine.prototype.turn_right = function() { this.turn(0.1); }
+Mine.prototype.turn = function(angle) {
+  if (this.vy == 0 && this.vx == 0) var dir = 0;
+  else var dir = Math.atan2(this.vy, this.vx);
+  var v = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+  if (v<this.max_v) v += this.acceleration;
+  if (v>this.max_v) v = this.max_v;
+  dir += angle;
+  this.vx = v * Math.cos(dir);
+  this.vy = v * Math.sin(dir);
+}
+
 Mine.prototype.think = function() {
+  // get closest ship
+  var d = null; var ship = null;
+  Game.forEachActiveShip(function(s) {
+    if (ship == null || dist(this, s) < d) {
+      d = dist(this, s); ship = s;
+    }
+  });
+  if (ship == null) return;
+  // now follow the ship
+  if (this.is_left_to(ship.x, ship.y)) this.turn_left();
+  else this.turn_right();
 }

@@ -136,6 +136,32 @@ var Game = {
           });
         });
       });
+      
+      // alien - world collisions
+      Game.aliens.forEach(function(alien) {
+        for (var i=0; i<Game.lines.length; ++i) {
+          Physics.checkCollision2(alien, Game.lines[i], function(alien, line, p) {
+            line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
+            line.restitution = 0.4;
+            var energy = Physics.letCollide(alien, line, true, false);
+            alien.hit(Math.max(10,energy));
+            new Explosion(p.x, p.y, 'S');
+          });
+        }
+      });
+
+      // alien - alien collisions
+      if (0) Game.aliens.forEach(function(alien1, el) {
+        el.forTail(function(alien2) {
+          Physics.checkCollision(alien1, alien2,
+            function(alien1, alien2, px, py) {
+              var energy = Math.max(Physics.letCollide(alien1, alien2), 10);
+              alien1.hit(energy);
+              alien2.hit(energy);
+              new Explosion(px, py, 'S');
+          });
+        });
+      });
         
       // ship - ship collisions
       Game.forEachActiveShip(function(ship1) {

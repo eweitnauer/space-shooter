@@ -38,6 +38,10 @@ ListElement.prototype.remove = function() {
   return this;
 }
 
+ListElement.prototype.forTail = function(fn) {
+  for (var el = this.next; el; el=el.next) { fn(el.d, el) }
+}
+
 LinkedList.prototype.push = function(data) {
   if (!this.head) {
     return this.head = this.tail = new ListElement(this, data, null, null);

@@ -112,7 +112,7 @@ Ufo.prototype.is_moving = function() {
 }
 
 Ufo.prototype.release_mine = function() {
-  console.log(new Mine(this.x, this.y + 20));
+  console.log(new Mine(this.x, this.y + 25));
   this.mines--;
 }
 
