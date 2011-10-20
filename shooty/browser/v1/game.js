@@ -151,7 +151,7 @@ var Game = {
       });
 
       // alien - alien collisions
-      if (0) Game.aliens.forEach(function(alien1, el) {
+      Game.aliens.forEach(function(alien1, el) {
         el.forTail(function(alien2) {
           Physics.checkCollision(alien1, alien2,
             function(alien1, alien2, px, py) {

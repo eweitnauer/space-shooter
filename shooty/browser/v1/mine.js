@@ -71,6 +71,24 @@ Mine.prototype.turn = function(angle) {
 }
 
 Mine.prototype.think = function() {
+  // get closest landscape feature
+  d = null; var pt = null;
+  var P = new Point(this.x, this.y);
+  for (var i=0; i<Game.lines.length; ++i) {
+    var line = Game.lines[i];
+    var C = Point.get_closest_point_on_segment(line.A, line.B, P);
+    if (pt == null || C.dist(P) < d) {
+      d = C.dist(P);
+      pt = C;
+    }
+  }
+  // avoid if too close
+  if (d < 30) {
+    if (this.is_left_to(pt.x, pt.y)) this.turn_right();
+    else this.turn_left();
+    return;
+  }
+
   // get closest ship
   var d = null; var ship = null;
   Game.forEachActiveShip(function(s) {
@@ -82,4 +100,5 @@ Mine.prototype.think = function() {
   // now follow the ship
   if (this.is_left_to(ship.x, ship.y)) this.turn_left();
   else this.turn_right();
+  
 }
