@@ -13,8 +13,9 @@ Explosion.prototype.init_sprite = function(size) {
   Game.main_sprite.child_sprites.push(this);
 }
 
-var Smoke = function(x,y){
-  this.init_sprite();
+var Smoke = function(x,y,img){
+  var img = typeof(img) != 'undefined' ? img : 'lighter-smoke-large-colored';
+  this.init_sprite(img);
   this.x = x;
   this.y = y;
   this.vx = 0;
@@ -28,9 +29,8 @@ var Smoke = function(x,y){
   Game.smokes.push(this);
 };
 
-Smoke.prototype.init_sprite = function() {
-  
-    var sprite = new Sprite(100, Math.random() > 0.5  ? 'lighter-smoke-large-colored' : 'lighter-smoke-large');
+Smoke.prototype.init_sprite = function(img) {
+  var sprite = new Sprite(100, img);
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);

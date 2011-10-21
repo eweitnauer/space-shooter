@@ -24,3 +24,4 @@ ImageBank.load_animation('alien_pyramid', 'graphics/aliens/pyramid-', 4);
 ImageBank.load_animation('alien_ufo', 'graphics/aliens/ufo-', 3);
 ImageBank.load_animation('alien_mine', 'graphics/aliens/mine-', 3);
 
+

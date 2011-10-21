@@ -186,7 +186,15 @@ var Game = {
     ,stepAliens: function(){
         Game.aliens.forEach(function(alien,el) { 
             alien.step(); 
-            if(alien.destroyed) el.remove();
+            if(alien.destroyed) {
+                el.remove();
+                if( alien instanceof Ufo ){
+                    setTimeout(function(){
+                        Game.spawn_aliens();
+                    },4000);
+                }
+
+            }
         });
     }
     ,stepSmokes: function(){

@@ -67,6 +67,13 @@ Ufo.prototype.step = function() {
   this.x += this.vx;
   this.y += this.vy;
   this.last_time = Animation.time;
+    if(this.energy < 100 && Math.random() < 0.2){
+        var s = new Smoke(this.x,this.y,'smoke-large');
+        s.rot = Math.random()*1.5-0.75;
+        s.alpha = 0.5+Math.random()*0.3;
+        s.scale = 0.4+Math.random()*0.2;
+        s.alpha_decay = 0.02+Math.random()*0.3;
+    } 
 }
 
 Ufo.prototype.think = function() {
