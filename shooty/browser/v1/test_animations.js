@@ -1,4 +1,4 @@
-var ctx, cell_size=60, w=1280, h=800;
+var ctx, cell_size=100, w=1280, h=800;
 var sprites = [];
 
 function init() {
