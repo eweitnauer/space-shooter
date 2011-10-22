@@ -1,9 +1,9 @@
 var key_steer_data = { pitch: 0, accel: 0, mode: 'relative' };
 
 var keyboard_init = function() {
-  Game.ships['key'] = new Ship('key');
-  Game.ships['key'].player_name = "Keyboard Klaus";
-  Game.ships['key'].spawn();
+  //Game.ships['key'] = new Ship('key');
+  //Game.ships['key'].player_name = "Keyboard Klaus";
+  //Game.ships['key'].spawn();
   
   document.onkeydown = function(evt) {
     if(evt.keyCode == 37) {
@@ -20,11 +20,14 @@ var keyboard_init = function() {
       evt.preventDefault();
     } else if (evt.keyCode == 40) {
       evt.preventDefault();
+    } else if (evt.keyCode == 190) { // .
+      Game.spawn_mines(3);
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
       
     if(evt.keyCode == 78){ // 'n'
-      var code = ''+Math.random()*1000;
+      if ('key' in Game.ships) var code = ''+Math.random()*1000;
+      else code = 'key';
       Game.ships[code] = new Ship(code); 
       Game.ships[code].spawn();
       evt.preventDefault();

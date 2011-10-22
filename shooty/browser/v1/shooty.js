@@ -142,3 +142,21 @@ Math.sign = function(x) {
 Math.randomSign = function() {
   return Math.random()<0.5 ? 1 : -1;
 }
+
+/// Returns the passed angle projected into the interval [-Pi, Pi] by adding or
+/// subtracting multiples of 2*Pi.
+norm_rotation = function(rot) {
+  var r = rot % (Math.PI*2);
+  if (r < -Math.PI) r += 2*Math.PI;  
+  else if (r > Math.PI) r -= 2*Math.PI;  
+  return r;
+}
+
+/// Returns the passed angle projected into the interval [0, 2*Pi] by adding or
+/// subtracting multiples of 2*Pi.
+norm_rotation2 = function(rot) {
+  var r = rot % (Math.PI*2);
+  if (r < 0) r += 2*Math.PI;  
+  return r;
+}
+

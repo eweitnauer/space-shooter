@@ -32,13 +32,20 @@ var Game = {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
     }
   }
+  ,spawn_mines: function(num) {
+      for (var i=0; i<num; i++) {
+      var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
+      var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
+      new Mine(x,y);
+    }
+  }
   ,spawn_aliens: function(){
-      Game.aliens.push(new Ufo());
+    Game.aliens.push(new Ufo());
       
-      var alien = new Alien();
-      alien.x = 300+Math.random()*600;
-      alien.y = 200+Math.random()*200;
-      Game.aliens.push(alien);
+    var alien = new Alien();
+    alien.x = 300+Math.random()*600;
+    alien.y = 200+Math.random()*200;
+    Game.aliens.push(alien);
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {

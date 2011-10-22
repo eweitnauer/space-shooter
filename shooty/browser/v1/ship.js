@@ -96,7 +96,7 @@ Ship.prototype.rotate = function(mode, pitch) {
     this.rot -= pitch/500;
   } else if (mode == 'absolute') {
     var delta = (-pitch*Math.PI/180)-this.rot;
-    delta = Ship.norm_rotation(delta);
+    delta = norm_rotation(delta);
     if (delta > 0.3) delta = 0.3;
     if (delta < -0.3) delta = -0.3;
     this.rot += delta*0.5;
@@ -171,16 +171,6 @@ Ship.prototype.hit = function(energy) {
   else this.energy -= energy;
 }
 
-
-/// Returns the passed angle projected into the interval [-Pi, Pi] by adding or
-/// subtracting multiples of 2*Pi.
-Ship.norm_rotation = function(rot) {
-  var r = rot % (Math.PI*2);
-  if (r < -Math.PI) r += 2*Math.PI;  
-  else if (r > Math.PI) r -= 2*Math.PI;  
-  return r;
-}
-
 Ship.prototype.attempt_land = function(line) {
   //console.log('attempting to land');
   if (this.state != 'flying') return true;
@@ -189,7 +179,7 @@ Ship.prototype.attempt_land = function(line) {
   //console.log('current speed: ' + Math.sqrt(speed2));
   if (speed2 > Ship.max_land_speed*Ship.max_land_speed) return false;
   // check for rotation of ship and ground
-  this.rot = Ship.norm_rotation(this.rot);
+  this.rot = norm_rotation(this.rot);
   //console.log('current rotation: ' + this.rot);
   if (Math.abs(this.rot) > 0.79) return false; 
   var l_rot = Math.atan2(line.B.y-line.A.y, line.B.x-line.A.x);

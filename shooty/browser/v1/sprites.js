@@ -226,6 +226,7 @@ PaintEngine = function(canvas) {
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
   this.draw_physics = false;
+  this.draw_mine_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
     this.sprites.forEach(function(sprite) {
@@ -239,6 +240,11 @@ PaintEngine = function(canvas) {
         self.context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
         self.context.stroke();
       }
+    }
+    if (self.draw_mine_sensors) {
+      Game.aliens.forEach(function(alien) {
+        if (alien instanceof Mine) alien.visualize_sensors(self.context);
+      });
     }
   } 
 }
