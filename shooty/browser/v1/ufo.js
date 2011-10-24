@@ -22,7 +22,7 @@ Ufo.prototype.init_sprite = function() {
 Ufo.prototype.spawn = function() {
   this.next_production_finished_at = Animation.time+this.production_time;
   this.state = 'flying';
-  this.energy = 200;
+  this.energy = 100;
   this.display = true;
   this.destroyed = false;
   this.last_time = Animation.time;
@@ -67,7 +67,7 @@ Ufo.prototype.explode = function() {
         e.animation.delay = Math.random()*40;
     }
 
-    e = new Explosion(this.x, this.y, 'H');
+    e = new Explosion(this.x, this.y, 'XXL');
     e.rot = Math.random()*Math.PI*2;
     
 }

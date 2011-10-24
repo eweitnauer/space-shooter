@@ -54,7 +54,7 @@ Animation.prototype._setImages = function(imgs) {
   if (typeof(imgs) == 'string' && imgs != '') {
     // get image array from image bank
     this._imgs = ImageBank.imgs[imgs].slice();
-  } else {
+  } else if (typeof(imgs) == 'object' && 'slice' in imgs){
     // images passed as array already, just copy
     this._imgs = imgs.slice();
   }
