@@ -25,5 +25,6 @@ ImageBank.load_single('background', 'graphics/bg');
 ImageBank.load_animation('alien_pyramid', 'graphics/aliens/pyramid-', 4);
 ImageBank.load_animation('alien_ufo', 'graphics/aliens/ufo-', 3);
 ImageBank.load_animation('alien_mine', 'graphics/aliens/mine-', 3);
+ImageBank.load_animation('alien_rocket', 'graphics/aliens/rocket-', 6);
 
 

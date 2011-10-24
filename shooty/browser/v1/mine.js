@@ -18,8 +18,8 @@ var Mine = function(x, y, vx, vy) {
 }
 
 Mine.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite(80, 'alien_mine'));
-  this.scale = 0.8;
+  jQuery.extend(this, new Sprite(100, 'alien_rocket'));
+  this.scale = 0.6; // christof changed this from 0.8
   this.collision_radius = 4;
   this.restitution = 0.3;
   this.mass = 0.1;
@@ -66,7 +66,9 @@ Mine.prototype.step = function() {
   this.think();
   this.x += this.vx;
   this.y += this.vy;
-  this.rot += this.drot;
+  // christof replaced this:  // this.rot += this.drot;
+  this.rot = Math.atan2(this.vy, this.vx)+Math.PI/2;
+
 }
 
 Mine.prototype.is_left_to = function(x, y) {
