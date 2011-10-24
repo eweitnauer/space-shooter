@@ -31,6 +31,15 @@ elif [ $NUM_IMAGES -gt 9 ] ; then
 else
     DIGITS=1;
 fi
+
+if [ $SRC_END_INDEX -gt 99 ] ; then
+    SRC_DIGITS=3;
+elif [ $SRC_END_INDEX -gt 9 ] ; then
+    SRC_DIGITS=2;
+else
+    SRC_DIGITS=1;
+fi
+
 echo "DIGITS:     $DIGITS"
 
 function fill_number () {
@@ -43,20 +52,28 @@ function fill_number () {
     #echo "fill_number: N: $N"
     #echo "fill_number: NUMBER_DIGITS $NUMBER_DIGITS"
     #echo "fill_number: DIGITS: $DIGITS"
-    for (( i=$NUMBER_DIGITS ; $i<$DIGITS ; i++ )) ; do
+    if [ "$1" = "src" ] ; then
+        USE_DIGITS=$SRC_DIGITS
+    else
+        USE_DIGITS=$DIGITS
+    fi
+
+    for (( i=$NUMBER_DIGITS ; $i<$USE_DIGITS ; i++ )) ; do
         #cho "  -- adding 0"
         N="0$N"
     done
     echo $N
 }
-
 DST_INDEX=0
+
 for (( i=$SRC_START_INDEX ; $i <= $SRC_END_INDEX ; i++ )) ; do
-    SRC="$SRC_BASE_NAME$i$SUFFIX";
-    TMP=$(fill_number $DST_INDEX)
+    TMP1=$(fill_number $DST_INDEX dst)
+    TMP2=$(fill_number $i src)
+    SRC="$SRC_BASE_NAME$TMP2$SUFFIX";
     #echo "TMP: $TMP"
-    DST="$DST_BASE_NAME$TMP$SUFFIX"
-    echo "mv $SRC $DST"
+    DST="$DST_BASE_NAME$TMP1$SUFFIX"
+    echo "moving $SRC to $DST"
+    mv $SRC $DST
     DST_INDEX=$(echo "$DST_INDEX+1" | bc -l)
 done
 

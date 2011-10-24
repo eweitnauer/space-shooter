@@ -58,8 +58,17 @@ Ufo.prototype.destroy = function() {
 }
 
 Ufo.prototype.explode = function() {
-  var expl = new Explosion(this.x, this.y, 'H');
-  expl.rot = Math.random()*Math.PI*2;
+    var e;
+    for(var i=0;i;++i){
+        e = new Explosion(this.x,this.y,Math.random() < 0.5 ? 'S' : 'L');
+        e.rot = Math.random()*Math.PI*2;
+        e.scale = 0.8 + 0.4*Math.random();
+        e.animation.delay = Math.random()*40;
+    }
+
+    e = new Explosion(this.x, this.y, 'H');
+    e.rot = Math.random()*Math.PI*2;
+    
 }
 
 Ufo.prototype.step = function() {
