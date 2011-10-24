@@ -8,6 +8,7 @@ Explosion.prototype.init_sprite = function(size) {
   if (size == 'L') var sprite = new Sprite(80, 'big_explosion');
   else if (size == 'M') var sprite = new Sprite(80, 'med_explosion');
   else if (size == 'H') var sprite = new Sprite(80, 'huge_explosion');
+  else if (size == 'S') var sprite = new Sprite(80, 'small_explosion');
   else var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
