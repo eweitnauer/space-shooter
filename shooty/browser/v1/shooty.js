@@ -14,6 +14,36 @@ Explosion.prototype.init_sprite = function(size) {
   Game.main_sprite.child_sprites.push(this);
 }
 
+Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
+  var self = this;
+  var apply_to = function(obj) {
+    var d = dist(obj, self);
+    if (d==0) return;
+    if ('collision_radius' in obj) d -= obj.collision_radius;
+    d -= inner_radius;
+    if (d<0) d = 0;
+    if (d <= r1) {
+      var dir = new Point(obj.x-self.x, obj.y-self.y);
+      dir.normalize();
+      var l = dv * (r1-d) / r1;
+      obj.vx = dir.x*l; obj.vy = dir.y*l;
+    }
+    console.log(d,r2);
+    if (d <= r2) {
+      obj.hit(damage*(r2-d)/r2);
+      console.log(damage*(r2-d)/r2);
+    }
+  }
+  // iterate aliens
+  Game.aliens.forEach(function(alien) {
+    apply_to(alien);
+  });
+  // iterate ships
+  Game.forEachActiveShip(function(ship) {
+    apply_to(ship);
+  });    
+}
+
 var Smoke = function(x,y,img){
   var img = typeof(img) != 'undefined' ? img : 'lighter-smoke-large-colored';
   this.init_sprite(img);

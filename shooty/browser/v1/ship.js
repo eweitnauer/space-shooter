@@ -133,9 +133,9 @@ Ship.prototype.shoot = function() {
   var dx = Math.sin(this.rot);
   var dy = -Math.cos(this.rot);
 
-  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 100));
-  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.1, 100));
-  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.1, 100));
+  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
+//  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.1, 100));
+//  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.1, 100));
 //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.2, 100));
 //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.2, 100));
 
@@ -165,6 +165,7 @@ Ship.prototype.destroy = function(respawn_delay) {
 }
 
 Ship.prototype.hit = function(energy) {
+  if (this.destroyed) return;
   if (this.status != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);

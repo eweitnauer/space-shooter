@@ -36,7 +36,7 @@ var Game = {
       for (var i=0; i<num; i++) {
       var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
       var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
-      new Mine(x,y);
+      new Mine(x,y,0,1);
     }
   }
   ,spawn_aliens: function(){
@@ -70,7 +70,7 @@ var Game = {
                     s.alpha_decay = 0.05+Math.random()*0.1;
                 }
 
-              new Explosion(shot.x, shot.y, 'M');
+              new Explosion(shot.x, shot.y, 'S');
               // only move ship if it is not landed
               Physics.letCollide(ship, shot, ship.state == 'flying', false);
               ship.hit(shot.energy);
@@ -82,11 +82,12 @@ var Game = {
       
       // ship - world collisions
       Game.forEachActiveShip(function(ship) {
+        if (ship.state != 'flying') return;
         for (var i=0; i<Game.lines.length; ++i) {
           Physics.checkCollision2(ship, Game.lines[i], function(ship, line, p) {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
             line.restitution = 0.4;
-            var energy = Physics.letCollide(ship, line);
+            var energy = Physics.letCollide(ship, line, true, false);
             if (!ship.attempt_land(line)) {
               ship.hit(Math.max(10,energy));
               new Explosion(p.x, p.y, 'S');
@@ -132,7 +133,7 @@ var Game = {
               s.alpha = 0.8+Math.random()*0.2;
               s.scale = 0.3+Math.random()*0.7;
               s.alpha_decay = 0.05+Math.random()*0.1;
-              new Explosion(shot.x, shot.y, 'M');
+              new Explosion(shot.x, shot.y, 'S');
 
               // only move ship if it is not landed
               Physics.letCollide(alien, shot, true, false);
@@ -151,7 +152,7 @@ var Game = {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
             line.restitution = 0.4;
             var energy = Physics.letCollide(alien, line, true, false);
-            alien.hit(Math.max(10,energy));
+            alien.hit(Math.max(1,energy));
             new Explosion(p.x, p.y, 'S');
           });
         }
@@ -162,7 +163,7 @@ var Game = {
         el.forTail(function(alien2) {
           Physics.checkCollision(alien1, alien2,
             function(alien1, alien2, px, py) {
-              var energy = Math.max(Physics.letCollide(alien1, alien2), 10);
+              var energy = Math.max(Physics.letCollide(alien1, alien2), 1);
               alien1.hit(energy);
               alien2.hit(energy);
               new Explosion(px, py, 'S');

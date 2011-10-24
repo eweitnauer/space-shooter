@@ -18,6 +18,7 @@ Alien.prototype.init_sprite = function() {
  }
 
 Alien.prototype.hit = function(energy) {
+  if (this.destroyed) return;
   if (this.energy<=energy) this.destroy();
   else this.energy -= energy;
 }

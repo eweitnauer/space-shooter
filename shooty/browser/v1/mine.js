@@ -1,12 +1,20 @@
-var Mine = function(x, y) {
+/** Flying mines, that are released by alien ships. They fly towards the closest
+player and move in swarms. The behavior of mines is implemented in a number of
+behavior methods. These methods rely on the mines' sensors.
+The mines have a number of radial sensors. Each sensor can only detect the
+closest object in its direction. */
+
+// To create a mine, pass along the initial position and speed.
+var Mine = function(x, y, vx, vy) {
   this.type = 'alien';
-  this.max_v = 1;
-  this.turn_speed = 0.1;
-  this.acceleration = 0.02;
-  this.sensors = [];
-  this.sensor_count = 10;
+  this.sensor_count = 4; // number of sensors
+  this.sensors = []; // an array of sensors results
+  this.v_max = 0.8;
+  this.turn_speed = 0.12;
+  this.acceleration = 0.01;
+
   this.init_sprite();
-  this.spawn(x, y);
+  this.spawn(x, y, vx, vy);
 }
 
 Mine.prototype.init_sprite = function() {
@@ -22,30 +30,35 @@ Mine.prototype.init_sprite = function() {
   Game.aliens.push(this);
 }
 
-Mine.prototype.spawn = function(x, y) {
-  this.energy = 30;
+Mine.prototype.spawn = function(x, y, vx, vy) {
+  this.energy = 15;
   this.display = true;
   this.destroyed = false;
   this.x = x; this.y = y;
-  this.vx = 0; this.vy = this.max_v/2;
+  this.vx = vx; this.vy = vy;
   this.prefered_dir = Math.random() < 0.5 ? 'left' : 'right';
 }
 
+/// Called if the mine was hit by something
 Mine.prototype.hit = function(energy) {
+  if (this.destroyed) return;
   if (this.energy<=energy) this.destroy();
   else this.energy -= energy;
 }
 
+/// When the mine is destroyed, there will be an explosion with shock wave and
+/// damaging near ships and aliens.
 Mine.prototype.destroy = function() {
   this.energy = 0;
-  this.explode();
   this.destroyed = true;
   this.display = false;
   this.animation.finished = true;
+  this.explode();
 }
 
 Mine.prototype.explode = function() {
-  var expl = new Explosion(this.x, this.y, 'L');
+  var expl = new Explosion(this.x, this.y, 'M');
+  expl.shockwave(0, 0, 30, 15, 5);
   expl.rot = Math.random()*Math.PI*2;
 }
 
@@ -61,14 +74,21 @@ Mine.prototype.is_left_to = function(x, y) {
   return this.vx*dy - this.vy*dx < 0;
 }
 
+Mine.prototype.turn_away_from = function(x, y) {
+  
+}
+
+Mine.prototype.turn_towards = function(x, y) {
+  
+}
+
 Mine.prototype.turn_left = function() { this.turn(-this.turn_speed); }
 Mine.prototype.turn_right = function() { this.turn(this.turn_speed); }
 Mine.prototype.turn = function(angle) {
-  if (this.vy == 0 && this.vx == 0) var dir = 0;
-  else var dir = Math.atan2(this.vy, this.vx);
+  var dir = Math.atan2(this.vy, this.vx);
   var v = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
-  if (v<this.max_v) v += this.acceleration;
-  if (v>this.max_v) v = this.max_v;
+  if (v<this.v_max) v += this.acceleration;
+  if (v>this.v_max) v -= this.acceleration;
   dir += angle;
   this.vx = v * Math.cos(dir);
   this.vy = v * Math.sin(dir);
@@ -115,14 +135,24 @@ Mine.prototype.sense = function(max_dist) {
 }
 
 Mine.prototype.visualize_sensors = function(ctx) {
+  ctx.strokeStyle = 'black';
+  ctx.beginPath();
+  ctx.moveTo(this.x, this.y);
+  ctx.lineTo(this.x+this.vx*8, this.y+this.vy*8);
+  ctx.stroke();
+  if (this.did_random_flight) {
+    ctx.beginPath();
+    ctx.fillStyle = 'red';
+    ctx.arc(this.x, this.y, 4, 0, Math.PI*2, true);
+    ctx.fill();
+  }
   this.sense(250);
   var N = this.sensor_count;
   var rot = Math.atan2(this.vy, this.vx);
   for (var i=0; i<N; i++) {
     if (this.sensors[i] == null) continue;
-    //ctx.strokeStyle = this.sensors[i][1] == 'mine' ? 'green' : 'red';
-    ctx.strokeStyle = 'green';
-    if (this.sensors[i][1] != 'ship') continue;
+    ctx.strokeStyle = this.sensors[i][1] == 'mine' ? 'green' : ('obstacle' ? 'red' : 'orange');
+    if (this.sensors[i][1] != 'mine') continue;
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);
     ctx.lineTo(this.x + Math.cos(rot+(i+0.5)*Math.PI*2/N) * this.sensors[i][0],
@@ -134,6 +164,8 @@ Mine.prototype.visualize_sensors = function(ctx) {
 /// avoid obstacles
 Mine.prototype.avoid_obstacles = function(max_dist, include_mines) {
   var N = this.sensor_count;
+  var N2 = Math.floor(this.sensor_count/2);
+  if (N2%2 ==0) N2--;
   var rot = Math.atan2(this.vy, this.vx);
   var fy = 0;
   var mind = max_dist;
@@ -142,7 +174,9 @@ Mine.prototype.avoid_obstacles = function(max_dist, include_mines) {
     if (this.sensors[i][1] == 'ship') continue;
     if (!include_mines && this.sensors[i][1] == 'mine') continue;
     if (this.sensors[i][0] > max_dist) continue;
-    fy += (i<this.sensor_count/2 ? 1 : -1)*(max_dist-this.sensors[i][0]);
+    if ((N % 2 == 1) && (i == N2)) continue;
+    if (i <= N2) fy += (max_dist-this.sensors[i][0]);
+    else fy -= (max_dist-this.sensors[i][0]);
     if (mind == null || mind > this.sensors[i][0]) mind = this.sensors[i][0];
   }
   if ((fy != 0) && ((mind < 25) || Math.random() < 0.5)) {
@@ -158,15 +192,17 @@ Mine.prototype.schooling = function(max_dist) {
   var N = this.sensor_count;
   var drot = 0;
   var rot = Math.atan2(this.vy, this.vx);
+  var done = false;
   for (var i=0; i<N; i++) {
     if (this.sensors[i] == null || this.sensors[i][1] != 'mine') continue;
     if (this.sensors[i][0] > max_dist) continue;
-    if (i >= this.sensor_count*3/8 && i < this.sensor_count*5/8) continue;
+    if (i >= this.sensor_count*1/4 && i < this.sensor_count*3/4) continue;
+    done = true;
     drot += norm_rotation(Math.atan2(this.sensors[i][2].vy, this.sensors[i][2].vx) - rot);
   }
-  if (drot > 0) { this.turn_right(); return true; }
-  else if (drot < 0) { this.turn_left(); return true; }
-  return false;
+  if (drot > 0) this.turn_right();
+  else if (drot < 0) this.turn_left();
+  return done;
 }
 
 
@@ -190,6 +226,18 @@ Mine.prototype.hunting = function(max_dist) {
   return false;
 }
 
+Mine.prototype.self_destruct = function(max_dist) {
+  var self = this;
+  Game.forEachActiveShip(function(ship) {
+    var d = dist(ship, self) - self.collision_radius - ship.collision_radius;
+    if (d<=max_dist) {
+      self.destroy();
+      return true;
+    }
+  });
+  return false;
+}
+
 Mine.prototype.random_flight = function() {
   if (Math.random() < 0.04) {
     this.prefered_dir = Math.random() < 0.5 ? 'left' : 'right';
@@ -202,9 +250,12 @@ Mine.prototype.random_flight = function() {
 
 Mine.prototype.think = function() {
   this.sense(250);
+  this.did_random_flight = false;
+  if (this.self_destruct(5, true)) return;
   if (this.avoid_obstacles(20, true)) return;
   if (this.hunting(250)) return;
   if (this.avoid_obstacles(50, false)) return;
   if (this.schooling(80)) return;
+  this.did_random_flight = true;
   this.random_flight();  
 }

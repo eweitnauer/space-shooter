@@ -45,6 +45,7 @@ Ufo.prototype.adjust_rot = function() {
 }
 
 Ufo.prototype.hit = function(energy) {
+  if (this.destroyed) return;
   if (this.energy<=energy) this.destroy();
   else this.energy -= energy;
 }
@@ -119,7 +120,7 @@ Ufo.prototype.is_moving = function() {
 }
 
 Ufo.prototype.release_mine = function() {
-  console.log(new Mine(this.x, this.y + 25));
+  console.log(new Mine(this.x, this.y + 25, 0, 1));
   this.mines--;
 }
 
