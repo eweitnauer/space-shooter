@@ -30,10 +30,8 @@ Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
       var l = dv * (r1-d) / r1;
       obj.vx = dir.x*l; obj.vy = dir.y*l;
     }
-    console.log(d,r2);
     if (d <= r2) {
       obj.hit(damage*(r2-d)/r2);
-      console.log(damage*(r2-d)/r2);
     }
   }
   // iterate aliens
