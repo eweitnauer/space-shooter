@@ -18,7 +18,9 @@ var Mine = function(x, y, vx, vy) {
 }
 
 Mine.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite(80, 'alien_small_rocket'));
+    // alternativ : alien_rocket
+    // dann allerdings ohne flame, und mit 100ms
+  jQuery.extend(this, new Sprite(80, 'alien_small_rocket')); 
   this.scale = 0.8; // christof changed this from 0.8
   this.collision_radius = 4;
   this.restitution = 0.3;
@@ -27,6 +29,7 @@ Mine.prototype.init_sprite = function() {
   this.rot = Math.random()*Math.PI*2;
   this.drot = Math.randomSign() * 0.04;
 
+  // die flame brauchen wir nur für die small rocket!
   var flame_sprite = new Sprite(200, 'small_rocket_flame');
   flame_sprite.scale = 1;
   flame_sprite.y = 14; flame_sprite.alpha = 0.9;
