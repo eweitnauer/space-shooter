@@ -18,14 +18,22 @@ var Mine = function(x, y, vx, vy) {
 }
 
 Mine.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite(100, 'alien_rocket'));
-  this.scale = 0.6; // christof changed this from 0.8
+  jQuery.extend(this, new Sprite(80, 'alien_small_rocket'));
+  this.scale = 0.8; // christof changed this from 0.8
   this.collision_radius = 4;
   this.restitution = 0.3;
   this.mass = 0.1;
   this.display = false;
   this.rot = Math.random()*Math.PI*2;
   this.drot = Math.randomSign() * 0.04;
+
+  var flame_sprite = new Sprite(200, 'small_rocket_flame');
+  flame_sprite.scale = 1;
+  flame_sprite.y = 14; flame_sprite.alpha = 0.9;
+  //flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
+  flame_sprite.draw_in_front_of_parent = false;
+  this.child_sprites.push(flame_sprite);
+
   Game.main_sprite.child_sprites.push(this);
   Game.aliens.push(this);
 }
