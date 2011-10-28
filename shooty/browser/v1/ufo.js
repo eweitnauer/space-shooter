@@ -1,5 +1,5 @@
 var Ufo = function() {
-  this.type = 'alien';
+  this.type = 'alien_ship';
   this.max_vx = 1.5; this.max_vy = 0.75;
   this.release_rate = 1000; // 1 mine released per x ms
   this.production_time = 5000; // between mine releases we have x ms

@@ -3,6 +3,15 @@ function dist(o1, o2) {
   return Math.sqrt(dx*dx+dy*dy);
 }
 
+/// Returns the euclidian distance between the passed objects (with x, y attrs.)
+/// and subtracts the collision_radius of both objects if it is set.
+function inner_dist(o1, o2) {
+  var d = dist(o1, o2);
+  if ('collision_radius' in o1) d -= o1.collision_radius;
+  if ('collision_radius' in o2) d -= o2.collision_radius;
+  return d;
+}
+
 Physics = {
 /// Pass two shape objects (they have properties x,y,r) and a function that is
 /// called when a collision occours. It is passed the following parameter:

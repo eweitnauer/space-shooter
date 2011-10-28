@@ -1,4 +1,5 @@
 var Ship = function(session_code) {
+  this.type = 'ship';
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
   this.player_name = '???';

@@ -21,7 +21,7 @@ var keyboard_init = function() {
     } else if (evt.keyCode == 40) {
       evt.preventDefault();
     } else if (evt.keyCode == 190) { // .
-      Game.spawn_mines(3);
+      Game.spawn_missiles(3);
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
       

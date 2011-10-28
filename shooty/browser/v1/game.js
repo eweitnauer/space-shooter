@@ -25,6 +25,7 @@ var Game = {
       Game.infobar = new Infobar();
       Game.painter.add(Game.infobar);
       Game.lines = load_collision_data_from_svg(Game.coll_data);
+      for (l in Game.lines) {Game.lines[l].type = 'landscape'}
       this.spawn_aliens();
    }
   ,forEachActiveShip: function(fn) {
@@ -32,20 +33,23 @@ var Game = {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
     }
   }
-  ,spawn_mines: function(num) {
-      for (var i=0; i<num; i++) {
+  /// iterates over all aliens, ships and landscape lines
+  ,forEachPhysicalObject: function(fn) {
+    Game.aliens.forEach(fn);
+    Game.lines.forEach(fn);
+    Game.forEachActiveShip(fn);
+  }
+  ,spawn_missiles: function(num) {
+    for (var i=0; i<num; i++) {
       var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
       var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
-      new Mine(x,y,0,1);
+      new Missile(x,y,0,1);
     }
   }
   ,spawn_aliens: function(){
-    Game.aliens.push(new Ufo());
+    //Game.aliens.push(new Ufo());
       
-    var alien = new Alien();
-    alien.x = 300+Math.random()*600;
-    alien.y = 200+Math.random()*200;
-    Game.aliens.push(alien);
+    new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
