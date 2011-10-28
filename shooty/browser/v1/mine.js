@@ -6,7 +6,7 @@ var Mine = function(x,y,vx,vy) {
   this.type = 'alien_shot';
   this.sensor_count = 2; // number of sensors
   this.sensors = []; // an array of sensors results
-  this.acceleration = 0.02;
+  this.acceleration = 0.01;
   this.v_max = 2;
 
   this.init_sprite();
@@ -58,29 +58,32 @@ Mine.prototype.explode = function() {
   expl.shockwave(2, 60, 40, 30, 20);
 }
 
-Mine.prototype.get_closest_ship = function() {
-  var ship = null, d=null, self=this;
-  Game.forEachActiveShip(function(s) {
-    if (d == null || inner_dist(self, s) < d) {
-      ship = s;
-      d = inner_dist(self, s);
+Mine.prototype.self_destruct_behavior = function(max_dist) {
+  var self=this;
+  Game.forEachActiveShip(function(ship) {
+    if (inner_dist(self, ship) <= max_dist) {
+      self.destroy();
+      return;
     }
   });
-  return ship;
+  return this.destroyed;
 }
 
-Mine.prototype.move_towards = function(x, y) {
-  if (this.y > y) return;
-  if (this.x > x) this.vx -= this.acceleration;
-  else if (this.x < x) this.vx += this.acceleration;
+Mine.prototype.move_towards_ships = function(max_x_dist) {
+  var dx = null, self=this;
+  Game.forEachActiveShip(function(s) {
+    if (self.y > s.y) return;
+    if (dx == null || Math.abs(s.x-self.x) < Math.abs(dx)) {
+      dx = s.x-self.x;
+    }
+  });
+  if (dx == null || dx>max_x_dist) return;
+  dx < 0 ? this.vx -= this.acceleration : this.vx += this.acceleration;
 }
   
 Mine.prototype.think = function() {
-  var ship = this.get_closest_ship();
-  if (!ship) return;
-  var dist = inner_dist(this, ship);
-  if (dist <= 20) this.destroy();
-  else if (dist <= 150) this.move_towards(ship.x, ship.y);
+  if (this.self_destruct_behavior(20)) return;
+  this.move_towards_ships(150);
 }
 
 Mine.prototype.step = function() {

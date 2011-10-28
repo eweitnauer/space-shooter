@@ -92,15 +92,15 @@ Ufo.prototype.step = function() {
 Ufo.prototype.think = function() {
   if (this.state == 'flying') {
     if (Animation.time >= this.next_production_finished_at) {
-      if (this.is_moving()) {
-        this.slow_down();
-        this.adjust_rot(); 
-      } else {
+//      if (this.is_moving()) {
+//        this.slow_down();
+//        this.adjust_rot(); 
+//      } else {
         console.log('switching to state "releasing mines"');
         this.state = 'releasing mines';
         this.mines = this.max_mine_count;
         this.next_mine_release_at = Animation.time + this.release_rate;
-      }
+//      }
     } else {
       this.random_walk();
     }
