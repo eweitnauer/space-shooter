@@ -70,7 +70,6 @@ Missile.prototype.destroy = function() {
 Missile.prototype.explode = function() {
   var expl = new Explosion(this.x, this.y, 'M');
   expl.shockwave(0, 0, 30, 15, 5);
-  expl.rot = Math.random()*Math.PI*2;
 }
 
 Missile.prototype.step = function() {
@@ -265,7 +264,7 @@ Missile.prototype.random_flight = function() {
 Missile.prototype.think = function() {
   this.sense(250);
   this.did_random_flight = false;
-  if (this.self_destruct(5, true)) return;
+  if (this.self_destruct(5)) return;
   if (this.avoid_obstacles(20, true)) return;
   if (this.hunting(250)) return;
   if (this.avoid_obstacles(50, false)) return;

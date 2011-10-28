@@ -43,13 +43,12 @@ var Game = {
     for (var i=0; i<num; i++) {
       var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
       var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
-      new Missile(x,y,0,1);
+      new Mine(x,y,0,1);
     }
   }
   ,spawn_aliens: function(){
-    //Game.aliens.push(new Ufo());
-      
-    new Pyramid();
+    //new Ufo();
+    //new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -156,8 +155,8 @@ var Game = {
             line.mass = 100; line.vx = 0; line.vy = 0; line.x = p.x, line.y = p.y;
             line.restitution = 0.4;
             var energy = Physics.letCollide(alien, line, true, false);
-            alien.hit(Math.max(1,energy));
-            new Explosion(p.x, p.y, 'S');
+            alien.hit(Math.max(1,energy), 'landscape');
+            if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'S');
           });
         }
       });
@@ -167,9 +166,9 @@ var Game = {
         el.forTail(function(alien2) {
           Physics.checkCollision(alien1, alien2,
             function(alien1, alien2, px, py) {
-              var energy = Math.max(Physics.letCollide(alien1, alien2), 1);
-              alien1.hit(energy);
-              alien2.hit(energy);
+              var energy = Math.max(Physics.letCollide(alien1, alien2), 3);
+              alien1.hit(energy, alien2.type);
+              alien2.hit(energy, alien1.type);
               new Explosion(px, py, 'S');
           });
         });

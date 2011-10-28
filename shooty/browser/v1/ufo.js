@@ -17,6 +17,7 @@ Ufo.prototype.init_sprite = function() {
   this.mass = 3;
   this.display = false;
   Game.main_sprite.child_sprites.push(this);
+  Game.aliens.push(this);
 }
 
 Ufo.prototype.spawn = function() {

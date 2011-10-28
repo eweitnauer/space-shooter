@@ -11,6 +11,7 @@ Explosion.prototype.init_sprite = function(size) {
   else if (size == 'M') var sprite = new Sprite(80, 'small_explosion');
   else if (size == 'S') var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
   else var sprite = new Sprite();
+  sprite.rot = Math.random()*Math.PI*2;
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
@@ -19,11 +20,9 @@ Explosion.prototype.init_sprite = function(size) {
 Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
   var self = this;
   var apply_to = function(obj) {
-    var d = dist(obj, self);
-    if (d==0) return;
-    if ('collision_radius' in obj) d -= obj.collision_radius;
-    d -= inner_radius;
-    if (d<0) d = 0;
+    if (self === obj) return;
+    var d = inner_dist(obj, self);
+    if (d<0) return;
     if (d <= r1) {
       var dir = new Point(obj.x-self.x, obj.y-self.y);
       dir.normalize();
@@ -31,7 +30,8 @@ Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
       obj.vx = dir.x*l; obj.vy = dir.y*l;
     }
     if (d <= r2) {
-      obj.hit(damage*(r2-d)/r2);
+      if (d<inner_radius) obj.hit(damage);
+      else obj.hit(damage*(1-(d-inner_radius)/(r2-inner_radius)));
     }
   }
   // iterate aliens
