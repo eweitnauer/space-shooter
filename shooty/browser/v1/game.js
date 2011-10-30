@@ -11,6 +11,7 @@ var Game = {
    ,aliens: new LinkedList
    ,smokes: new LinkedList
    ,lines: []
+   ,level: 0 
    ,start: function() {
       Animation.time = Date.now();
       this.canvas = document.getElementById("canvas");
@@ -213,6 +214,35 @@ var Game = {
             smoke.step();
             if(smoke.animation.finished) el.remove();
         });
+    }
+    ,stepStory: function(){ 
+    
+     /*if (lifes == 0) {  
+             // Display Game over Message
+             //lifes = 3
+             };
+
+     if (level == 0) {
+             // Display Greetings
+            };
+     if (level == 1) {
+	   // Display Level Description`
+           // if start condition is not established, do that
+           // if finished level++ 
+           };
+     if (level == 2) {
+	   // Display Level Description`
+           // if start condition is not established, do that
+           // if finished level++ 
+           };
+     if (level == 3) {
+	   // Display Level Description`
+           // if start condition is not established, do that
+           // if finished level++ 
+           };  */
+        
+        
+
     }
 
   ,step: function() {
