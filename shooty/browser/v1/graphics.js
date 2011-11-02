@@ -14,6 +14,8 @@ ImageBank.load_animation('smoke', 'graphics/effects/smoke-', 4);
 ImageBank.load_animation('smoke-large', 'graphics/effects/smoke-large-lighter-', 21);
 ImageBank.load_animation('lighter-smoke-large', 'graphics/effects/lighter-smoke-large-', 30);
 ImageBank.load_animation('lighter-smoke-large-colored', 'graphics/effects/lighter-smoke-large-colored-', 30);
+ImageBank.load_animation('small-rocket-smoke', 'graphics/effects/small-rocket-smoke-', 12);
+ImageBank.load_animation('very-small-rocket-smoke', 'graphics/effects/very-small-rocket-smoke-', 8);
 ImageBank.load_animation('bullet', 'graphics/effects/bullet-', 3);
 ImageBank.load_animation('big_explosion', 'graphics/effects/ship-explosion-', 28);
 ImageBank.load_animation('huge_explosion', 'graphics/effects/very-large-explosion-', 26);
