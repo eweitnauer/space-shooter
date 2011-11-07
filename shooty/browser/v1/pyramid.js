@@ -10,6 +10,7 @@ var Pyramid = function() {
   this.turn_speed = 0.15;
   this.acceleration = 0.02;
   this.missile_time = 10000; // time between firing missiles
+  this.points = 125;
 
   this.init_sprite();
   this.spawn();

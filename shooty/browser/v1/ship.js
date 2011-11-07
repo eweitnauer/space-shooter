@@ -23,6 +23,8 @@ var Ship = function(session_code) {
   this.points = 0;
   this.destroyed = false;
   this.state = 'flying'; // 'opening, charging, closing, flying'
+  this.lives = 3;
+  this.respawn_delay = 3000;
 };
 
 Ship.prototype.steer = function(data) {
@@ -155,14 +157,14 @@ Ship.prototype.apply_physics = function() {
 
 Ship.max_land_speed = 0.5;
 
-Ship.prototype.destroy = function(respawn_delay) {
-  this.points = Math.max(0, this.points-1);
+Ship.prototype.destroy = function() {
+  this.lives-=1;
   this.heat = 0;
   this.energy = 0;
   this.explode();
   this.display = false;
   this.destroyed = true;
-  if (typeof(respawn_delay) != 'undefined') setTimeout(jQuery.proxy(this.spawn, this), respawn_delay);
+  if (this.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
 Ship.prototype.hit = function(energy) {
@@ -261,16 +263,12 @@ Ship.prototype.init_sprite = function() {
 Ship.prototype.createScoreSprite = function() {
   var ship = this;
   var sprite = new Sprite([], '');
-  var ship_sprite = new Sprite([], '');
-  ship_sprite.scale = 0.6; ship_sprite.x = 10; ship_sprite.y = 10;
-  var img_active = ImageBank.get('ship_'+this.color, 0);
-  var img_inactive = ImageBank.get('ship_gray', 0);
-  ship_sprite.animation.getCurrentImage = function() {
-    if (ship.destroyed) return img_inactive;
-    else return img_active;
-  }
-  ship_sprite.scale = 0.75; ship_sprite.x = 15;
-  sprite.child_sprites.push(ship_sprite);
+  var ship_sprite_1 = new Sprite(80, 'ship_'+this.color);
+  ship_sprite_1.animation.stop();
+  ship_sprite_1.scale = 0.7;
+  var ship_sprite_2 = new Sprite(80, 'ship_gray');
+  ship_sprite_2.animation.stop();
+  ship_sprite_2.scale = 0.7;
   sprite.extra_draw = function(ctx) {
     // energy and heat bar
     var l = 26;
@@ -288,6 +286,14 @@ Ship.prototype.createScoreSprite = function() {
     ctx.fillText(ship.player_name, 30, 9);
     ctx.font = '12px "Permanent Marker"';
     ctx.fillText('points: ' + ship.points, 30, 22);
+     // lives
+    ctx.save();
+    ctx.translate(8, 10);
+    for (var i=0; i<3; i++) {
+      ship.lives>i ? ship_sprite_1.draw(ctx) : ship_sprite_2.draw(ctx);
+      ctx.translate(7, 0);
+    }
+    ctx.restore();
   }
   return sprite;
 }

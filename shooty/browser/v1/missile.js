@@ -12,6 +12,7 @@ var Missile = function(x, y, vx, vy) {
   this.v_max = 0.8;
   this.turn_speed = 0.12;
   this.acceleration = 0.01;
+  this.points = 10;
 
   this.init_sprite();
   this.spawn(x, y, vx, vy);

@@ -8,6 +8,7 @@ var Mine = function(x,y,vx,vy) {
   this.sensors = []; // an array of sensors results
   this.acceleration = 0.01;
   this.v_max = 2;
+  this.points = 10;
 
   this.init_sprite();
   this.spawn(x,y,vx,vy);

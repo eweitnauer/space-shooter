@@ -4,6 +4,7 @@ var Ufo = function() {
   this.release_rate = 1000; // 1 mine released per x ms
   this.production_time = 5000; // between mine releases we have x ms
   this.max_mine_count = 3; // number of mines per production cycle
+  this.points = 100;
   this.init_sprite();
   this.spawn();
 }
