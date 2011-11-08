@@ -24,6 +24,7 @@ ImageBank.load_animation('small_explosion', 'graphics/effects/very-small-explosi
 ImageBank.load_animation('sploing_a', 'graphics/effects/a-sploing-', 4);
 ImageBank.load_animation('sploing_b', 'graphics/effects/b-sploing-', 4);
 ImageBank.load_single('background', 'graphics/bg');
+ImageBank.load_single('shop-background', 'graphics/shop');
 
 ImageBank.load_animation('alien_pyramid', 'graphics/aliens/pyramid-', 4);
 ImageBank.load_animation('alien_ufo', 'graphics/aliens/ufo-', 3);

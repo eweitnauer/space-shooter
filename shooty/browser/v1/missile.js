@@ -82,12 +82,12 @@ Missile.prototype.step = function() {
   // christof replaced this:  // this.rot += this.drot;
   this.rot = Math.atan2(this.vy, this.vx)+Math.PI/2;
 
-    if(Math.random() > 0.5){
+    if(Math.random() > 0.85){
         var r = 18;
         var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
         s.scale = 0.7;
         s.rot = Math.random() * 2*Math.PI;
-        s.alpha = 0.2 + Math.random() *  0.2;
+        s.alpha = 0.8 + Math.random() *  0.2;
         s.alpha_decay = 0.05 + Math.random() * 0.1;
     }
 }

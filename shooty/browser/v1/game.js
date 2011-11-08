@@ -12,11 +12,14 @@ var Game = {
    ,smokes: new LinkedList
    ,lines: []
    ,level: 0 
+   ,state: 'paused' //'paused','running','shop'
+   ,shopShip: null
    ,start: function() {
       Animation.time = Date.now();
       this.canvas = document.getElementById("canvas");
       this.canvas.width = this.w; 
       this.canvas.height = this.h;
+
       this.painter = new PaintEngine(this.canvas);
       this.step_timer = setInterval(this.step, 30);
       Game.main_sprite = new Sprite([], 'background');
@@ -28,6 +31,16 @@ var Game = {
       Game.lines = load_collision_data_from_svg(Game.coll_data);
       for (l in Game.lines) {Game.lines[l].type = 'landscape'}
       this.spawn_aliens();
+      this.state = 'running';
+   }
+   ,enterShop: function(ship){
+        if(Game.state != 'running') return;
+        Game.shopShip = ship;
+        Game.state = 'shop';
+   }
+   ,leaveShop: function(){
+       Game.shopShip = null,
+       Game.state = 'running';
    }
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
@@ -244,26 +257,39 @@ var Game = {
         
 
     }
-
   ,step: function() {
     Animation.time = Date.now();
-    // move the ships
-    Game.stepShips();
-    
-    // here ??
-    Game.stepAliens();
+    switch(Game.state){
+    case 'running':
+        // move the ships
+        Game.stepShips();
+        
+        // here ??
+        Game.stepAliens();
+        
+        // handle the shots
+        Game.handleShots();
+        
+        // collision dectection
+        Game.collisionDetection();
+        
+        // wind effect
+        Game.stepSmokes();
 
-    // handle the shots
-    Game.handleShots();
+        // update the display
+        Game.painter.draw();
+        
+        break;
+    case 'paused':
+        // update the display
+        Game.painter.draw();
 
-    // collision dectection
-    Game.collisionDetection();
-
-    // wind effect
-    Game.stepSmokes();
-    
-    // update the display
-    Game.painter.draw();
+        break;
+    case 'shop':
+        if(Game.shopShip.steer_data.shot) Game.leaveShop();
+        Game.painter.draw();
+        Shop.draw(Game.painter.context, Game.shopShip);
+    }
 
 
   }

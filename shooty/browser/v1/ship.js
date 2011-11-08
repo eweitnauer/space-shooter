@@ -48,6 +48,10 @@ Ship.prototype.step = function() {
       break;
     case 'charging':
       if (this.steer_data.accel) this.trigger_close();
+      if (this.steer_data.shot) {
+          // if(Game.state == 'shop') Game.leaveShop(); this is not executed if the game is in 'shop'-mode
+          if(Game.state == 'running') Game.enterShop(this);
+      }
       else {
         this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
         if (this.energy > 100) this.energy = 100;

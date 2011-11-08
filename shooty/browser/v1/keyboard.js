@@ -6,6 +6,7 @@ var keyboard_init = function() {
   //Game.ships['key'].spawn();
   
   document.onkeydown = function(evt) {
+      console.log(evt.keyCode);
     if(evt.keyCode == 37) {
       key_steer_data.pitch = 50;
       evt.preventDefault();
@@ -22,6 +23,12 @@ var keyboard_init = function() {
       evt.preventDefault();
     } else if (evt.keyCode == 190) { // .
       Game.spawn_missiles(3);
+    } else if (evt.keyCode == 80) { // p
+        console.log('pause pressed!');
+        if(Game.state == 'paused') Game.state = 'running';
+        else if(Game.state == 'running') Game.state = 'paused';
+    }else if(evt.keyCode == 83){ // s
+        Game.enterShop(Game.ships['key']);
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
       
