@@ -1,3 +1,4 @@
+
 var Ship = function(session_code) {
   this.type = 'ship';
   this.init_sprite();
@@ -25,13 +26,56 @@ var Ship = function(session_code) {
   this.state = 'flying'; // 'opening, charging, closing, flying'
   this.lives = 3;
   this.respawn_delay = 3000;
+  this.extras = new Extras();
+    
+  this.max_energy = 100;
+  this.acceleration = 0.1;
+  this.shot_speed = 10;
+  this.shot_energy = 10;
+  this.shot_max_dist = 250;
+  this.num_shots = 1;
+  this.shot_angle = 0.05;
 };
+
+Ship.prototype.update_from_extra = function(name){
+    var extraLevel = this.extras.levels[name];
+    switch(name){
+    case 'health':
+        this.energy = this.max_energy;
+        break;
+    case 'acceleration':
+        this.acceleration = 0.1 + extraLevel * 0.04;
+        break;
+    case 'bullet-speed':
+        this.shot_speed = 10 + extraLevel * 5;
+        break;
+    case 'life':
+        this.lives++;
+        break;
+    case 'shield':
+        this.max_energy *= 2;
+        break;
+    case 'shot':
+        this.num_shots = 1+extraLevel;
+        break;
+    case 'shot-angle':
+        this.shot_angle *= 1.2;
+        break;
+    case 'shot-length':
+        this.shot_max_dist = 250 + 50*extraLevel;
+        break;
+    case 'shot-steangth':
+        this.shot_energy = 10 + Math.pow(2,extraLevel);
+        break;
+    }
+}
 
 Ship.prototype.steer = function(data) {
   this.steer_data = data;
 }
 
 Ship.prototype.step = function() {
+    var self = this;
   if (!this.steer_data) return;
   switch(this.state) {
     case 'flying':
@@ -50,11 +94,11 @@ Ship.prototype.step = function() {
       if (this.steer_data.accel) this.trigger_close();
       if (this.steer_data.shot) {
           // if(Game.state == 'shop') Game.leaveShop(); this is not executed if the game is in 'shop'-mode
-          if(Game.state == 'running') Game.enterShop(this);
+          if(Game.state == 'running') Game.enterShop(self); // why is self somethimes null??
       }
       else {
         this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
-        if (this.energy > 100) this.energy = 100;
+        if (this.energy > this.max_energy) this.energy = max_energy;
       }
       break;
     case 'closing':
@@ -94,8 +138,8 @@ Ship.prototype.explode = function() {
 }
   
 Ship.prototype.accelerate = function() {
-  this.vx += Math.sin(this.rot) * 0.1;
-  this.vy += -Math.cos(this.rot) * 0.1;
+    this.vx += Math.sin(this.rot) * this.acceleration;
+    this.vy += -Math.cos(this.rot) * this.acceleration;
 }
 
 Ship.prototype.rotate = function(mode, pitch) {
@@ -140,7 +184,15 @@ Ship.prototype.shoot = function() {
   var dx = Math.sin(this.rot);
   var dy = -Math.cos(this.rot);
 
-  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot, 10));
+    var angleFix = !(this.num_shots % 2) ? this.shot_angle/2 : 0;   
+       for(var i=0;i<this.num_shots;++i){
+
+        Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
+                                 this.vx, this.vy, this.shot_speed, 
+                                 angleFix + this.rot + this.shot_angle * (i-this.num_shots/2),
+                                 this.shot_energy,this.shot_max_dist));
+    }
+
 //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.1, 100));
 //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.1, 100));
 //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.2, 100));
@@ -279,7 +331,7 @@ Ship.prototype.createScoreSprite = function() {
     ctx.strokeStyle = 'rgba(0,0,0,0.8)';
     ctx.fillStyle = 'rgba(0,255,0,0.5)';
     ctx.lineWidth = 1;
-    var w = l*ship.energy*0.01;
+      var w = l*ship.energy*(1.0/ship.max_energy); //0.01;
     ctx.fillRect(0,19,w,7);
     ctx.strokeRect(0,19,l,7);
     // write player name

@@ -4,10 +4,9 @@ function hit(geometry, x, y){
             && geometry.y + geometry.height >= y);
 }
 
-var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, description){
+var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, name){
     jQuery.extend(this, new Sprite([], image));
-    this.name = image;
-    this.description = description;
+    this.name = name;
     this.state = 'normal'; // 'normal', 'hovered', 'pressed', 'disabled'
     this.x = x+x_offset;
     this.y = y+y_offset;
@@ -32,6 +31,10 @@ var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, descriptio
     this.hovered_border.display = false;
     this.pressed_border.display = false;
 
+    this.normal_border.scale = 1.1;
+    this.hovered_border.scale = 1.1;
+    this.pressed_border.scale = 1.1;
+
     this.mouse = function(pressed, hit){
         var newState = hit ? (pressed ? 'pressed' : 'hovered') : 'normal';
         if(newState != this.state){
@@ -41,7 +44,6 @@ var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, descriptio
             this.pressed_border.display = (this.state == 'pressed');
         }
     }
-    console.log(parent_sprite);
     parent_sprite.child_sprites.push(this);
 };
 
@@ -51,6 +53,8 @@ var Shop = {
     ,painter: null
     ,main_sprite: null
     ,buttons: []
+    ,extras: null
+    ,ship: null
     ,mouse : function(evt,type){
         var x = this.main_sprite.x;
         var y = this.main_sprite.y;
@@ -61,7 +65,14 @@ var Shop = {
                              y: y+c.click_y-size.height/2,
                              width: size.width,
                              height: size.height };
-            c.mouse(type == 'down', hit(geometry,evt.x, evt.y));
+            var hitVal = hit(geometry,evt.offsetX, evt.offsetY);
+            var pressed = type == 'down';
+            c.mouse(pressed, hitVal);
+            
+            if(hitVal && pressed){
+                this.extras.levels[c.name]++;
+                this.ship.update_from_extra(c.name);
+            }
         }
     }
     ,initPainter : function(){
@@ -73,7 +84,6 @@ var Shop = {
         this.painter = new PaintEngine(canvas);
         this.main_sprite = new Sprite([],"shop-background");
 
-//        this.main_sprite.child_sprites.push(shopBG);
         this.main_sprite.x = this.geometry.x;
         this.main_sprite.y = this.geometry.y;
         this.main_sprite.center_img = false;
@@ -84,36 +94,55 @@ var Shop = {
         var y0 = 140;
         var dx = 180;
         var dy = 160;
-        extras = ['health','accelleration','bullet-speed','life','shield',
-                  'shot','shot-angle','shot-length','shot-steangth'];
-        descriptions = [
-            
-        ];
+        extras = new Extras().names;
+        //['health','acceleration','bullet-speed','life','shield',
+        //          'shot','shot-angle','shot-length','shot-steangth'];
         var yoffs = [0,-4,-2,-30,0,-6,-2,-2,-2];
 
         var idx = 0;
         for(var j = 0; j < 3 ; ++j){
             for(var i = 0; i < 3 ; ++i, ++idx){
                 var b = new ShopButton(x0 + i * dx, y0 + j * dy, 0, yoffs[idx],'extra-'+extras[idx],
-                                       this.main_sprite,descriptions[idx]);
+                                       this.main_sprite, extras[idx]);
                 this.buttons.push(b);
             }
         }
     }
     
     ,draw : function(ctx, ship){
-        if (!this.painter) this.initPainter();   
+        this.extras = ship.extras;
+        this.ship = ship;
+        
+        if (!this.painter) {
+            this.initPainter();   
+        }
+        
         this.painter.draw();
         ctx.save();
         ctx.translate(this.main_sprite.x, this.main_sprite.y);
         //      ctx.rotate(0.01);
 
         ctx.strokeStyle = "rgb(255,0,0)";
-        ctx.fillStyle = "rgb(255,0,0)";
-        ctx.font = '12px "Permanent Marker"';
+
+        ctx.font = '14px "Permanent Marker"';
+        var dy = 16;
+        var x0 = -40;
+        var y0 = 54;
         for(var i=0;i<this.buttons.length; i++){
+            ctx.fillStyle = "rgb(255,0,0)";
             var b = this.buttons[i];
-            ctx.fillText(b.name,b.click_x-40, b.click_y+50);
+            ctx.fillText(b.name,b.click_x+x0, b.click_y+y0);
+            var level = ship.extras.levels[b.name];
+            var costs = ship.extras.costs[b.name][level];
+            if(level == 0){
+                ctx.fillStyle = "rgb(100,100,100)";
+            }else if(level < 4){
+                ctx.fillStyle = "rgb(0,200,0)";
+            }else{
+                ctx.fillStyle = "rgb(255,0,0)";
+            }
+            ctx.fillText('level: ' + (level+1) + '/5',b.click_x+x0, b.click_y+y0 + 1*dy);
+            ctx.fillText('update: ' + costs + '$',b.click_x+x0, b.click_y+y0 + 2*dy);
         }
 
         ctx.restore();

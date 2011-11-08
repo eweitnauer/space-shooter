@@ -38,7 +38,7 @@ ImageBank.load_single('shop-button-pressed', 'graphics/extras/extra-button-press
 
 ImageBank.load_single('extra-shot', 'graphics/extras/extra-shot');
 ImageBank.load_single('extra-bullet-speed', 'graphics/extras/extra-bullet-speed');
-ImageBank.load_single('extra-accelleration', 'graphics/extras/extra-accelleration');
+ImageBank.load_single('extra-acceleration', 'graphics/extras/extra-acceleration');
 ImageBank.load_single('extra-health', 'graphics/extras/extra-health');
 ImageBank.load_single('extra-life', 'graphics/extras/extra-life');
 ImageBank.load_single('extra-shield', 'graphics/extras/extra-shield');

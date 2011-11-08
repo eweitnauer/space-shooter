@@ -6,7 +6,6 @@ var keyboard_init = function() {
   //Game.ships['key'].spawn();
   
   document.onkeydown = function(evt) {
-      console.log(evt.keyCode);
     if(evt.keyCode == 37) {
       key_steer_data.pitch = 50;
       evt.preventDefault();

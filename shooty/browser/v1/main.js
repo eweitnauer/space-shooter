@@ -1,10 +1,12 @@
 var comm;
 
 function init() {
-  comm = new Communicator(io);
-  registerListeners();
-  comm.connect();
-  comm.create_session();
+//    try{
+    comm = new Communicator(io);
+    registerListeners();
+    comm.connect();
+    comm.create_session();
+  //  }catch(e){}
   Game.start()
   keyboard_init();
 }

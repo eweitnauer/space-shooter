@@ -67,7 +67,7 @@ Smoke.prototype.init_sprite = function(img) {
   Game.main_sprite.child_sprites.push(this);
 }
 
-var Shot = function(shooter,x,y,vx,vy,v,rot,energy) {
+var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {
   this.init_sprite();
   this.energy = energy;
   this.collision_radius = 4;
@@ -81,13 +81,15 @@ var Shot = function(shooter,x,y,vx,vy,v,rot,energy) {
   this.vx = v *  Math.sin(rot) + vx;
   this.vy = v * -Math.cos(rot) + vy;
   this.rot = rot;
-  this.maxDist2 = 300*300;
+  this.maxDist = maxDist;
+    
   this.step = function(){
     this.x += this.vx;
     this.y += this.vy;
     var dx = this.x-this.initx;
     var dy = this.y-this.inity;
-    if (dx*dx+dy*dy > this.maxDist2) this.kill();
+    var flownDist = Math.sqrt(dx*dx+dy*dy);
+    if (flownDist > this.maxDist) this.kill();
   }
   this.kill = function() {
     this.display = false;

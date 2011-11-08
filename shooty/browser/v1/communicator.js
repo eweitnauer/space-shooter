@@ -6,18 +6,21 @@ Communicator = function(io) {
 }
 
 Communicator.prototype.connect = function() {
-  this.socket = this.io.connect(this.url);
+    this.socket = this.io.connect(this.url);
   for (var i=0; i<this.listener_queue.length; ++i) {
-    this.socket.on(this.listener_queue[i][0], this.listener_queue[i][1]);
+      this.socket.on(this.listener_queue[i][0], this.listener_queue[i][1]);
   }
-  this.listener_queue = [];
+    this.listener_queue = [];
+    
 }
 
 Communicator.prototype.on = function(event_name, fn) {
+    
   if (this.socket) this.socket.on(event_name, fn);
   else {
     this.listener_queue.push([event_name, fn]);
   }
+    
 }
 
 /// Creates a new session on the server and calls fn(session_code) after the
@@ -28,6 +31,7 @@ Communicator.prototype.create_session = function(fn) {
     if (success) self.session_code = code;
     if (success && fn) fn(code);
   });
+    
 }
 
 Communicator.prototype.send_data = function(code, data) {

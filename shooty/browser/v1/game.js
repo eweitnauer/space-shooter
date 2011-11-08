@@ -288,10 +288,28 @@ var Game = {
     case 'shop':
         if(Game.shopShip.steer_data.shot) Game.leaveShop();
         Game.painter.draw();
+        /** funny idea, but this does not work on a local server !
+        var w = Game.w;
+        var h = Game.h;
+        var pxOld = Game.painter.context.getImageData(0,0,w-1,h-1);
+        var pxNew = pxOld.slice();
+        var l = w*4; // y+1
+        for(var x=1;x<w-1;++x){
+            for(var y=1;y<h-1;++y){
+                for(var c=0;c<3;++c){
+                    var i = (x+w*y)*4+c;
+                    var iu = i-w4;
+                    var ib = i+w4;
+                    pxNew[i] = (pxOld[iu-4] + pxOld[iu] + pxOld[iu+4] +
+                                pxOld[i-4] + pxOld[i] + pxOld[i+4] +
+                                pxOld[ib-4] + pxOld[ib] + pxOld[ib+4]) / 9;
+                }
+            }
+        }
+        Game.painter.context.putImageData(0,0,pxNew);
+        */
         Shop.draw(Game.painter.context, Game.shopShip);
     }
-
-
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
    ,nextshipcolor : 0
@@ -307,7 +325,9 @@ Infobar = function() {
     ctx.save();
     ctx.translate(1080,112);
     ctx.rotate(0.02);
-    ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
+      if(comm){
+          ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
+      }
     ctx.restore();
   }
 }
