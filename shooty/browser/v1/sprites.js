@@ -14,6 +14,12 @@ Sprite = function(timeLine, imgs) {
   this.draw_in_front_of_parent = true;
   this.center_img = true;
   this.display = true;
+  this.getImageSize = function(idx){
+      if (typeof(idx) == 'undefined') idx = 0;
+      var size = { width: this.animation._imgs[idx].width,
+                   height: this.animation._imgs[idx].height };
+      return size;
+  }
 }
 
 /** Params:

@@ -32,4 +32,19 @@ ImageBank.load_animation('alien_mine', 'graphics/aliens/mine-', 3);
 ImageBank.load_animation('alien_rocket', 'graphics/aliens/rocket-', 6);
 ImageBank.load_animation('alien_small_rocket', 'graphics/aliens/small-rocket-', 3);
 
+ImageBank.load_single('shop-button-normal', 'graphics/extras/extra-button-normal');
+ImageBank.load_single('shop-button-hovered', 'graphics/extras/extra-button-hovered');
+ImageBank.load_single('shop-button-pressed', 'graphics/extras/extra-button-pressed');
+
+ImageBank.load_single('extra-shot', 'graphics/extras/extra-shot');
+ImageBank.load_single('extra-bullet-speed', 'graphics/extras/extra-bullet-speed');
+ImageBank.load_single('extra-accelleration', 'graphics/extras/extra-accelleration');
+ImageBank.load_single('extra-health', 'graphics/extras/extra-health');
+ImageBank.load_single('extra-life', 'graphics/extras/extra-life');
+ImageBank.load_single('extra-shield', 'graphics/extras/extra-shield');
+ImageBank.load_single('extra-shot', 'graphics/extras/extra-shot');
+ImageBank.load_single('extra-shot-angle', 'graphics/extras/extra-shot-angle');
+ImageBank.load_single('extra-shot-length', 'graphics/extras/extra-shot-length');
+ImageBank.load_single('extra-shot-steangth', 'graphics/extras/extra-shot-streangth');
+
 
