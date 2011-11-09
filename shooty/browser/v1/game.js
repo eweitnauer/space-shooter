@@ -13,7 +13,6 @@ var Game = {
    ,lines: []
    ,level: 0 
    ,state: 'paused' //'paused','running','shop'
-   ,shopShip: null
    ,start: function() {
       Animation.time = Date.now();
       this.canvas = document.getElementById("canvas");
@@ -33,15 +32,17 @@ var Game = {
       this.spawn_aliens();
       this.state = 'running';
    }
-   ,enterShop: function(ship){
-        if(Game.state != 'running') return;
-        Game.shopShip = ship;
-        Game.state = 'shop';
+   ,enterShop: function(ship) {
+      if(Game.state != 'running') return;
+      Shop.setup(this.painter.context, ship);
+      Game.state = 'shop';
    }
-   ,leaveShop: function(){
-       Game.shopShip = null,
-       Game.state = 'running';
+   ,leaveShop: function() {
+     Game.state = 'running';
    }
+  ,triggerShop: function(ship) {
+    Game.state == 'running' ? Game.enterShop(ship) : Game.leaveShop();
+  }
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
@@ -61,8 +62,8 @@ var Game = {
     }
   }
   ,spawn_aliens: function(){
-    new Ufo();
-    new Pyramid();
+    //new Ufo();
+    //new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -286,8 +287,8 @@ var Game = {
 
         break;
     case 'shop':
-        if(Game.shopShip.steer_data.shot) Game.leaveShop();
         Game.painter.draw();
+        Shop.draw();
         /** funny idea, but this does not work on a local server !
         var w = Game.w;
         var h = Game.h;
@@ -308,7 +309,6 @@ var Game = {
         }
         Game.painter.context.putImageData(0,0,pxNew);
         */
-        Shop.draw(Game.painter.context, Game.shopShip);
     }
   }
    ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']

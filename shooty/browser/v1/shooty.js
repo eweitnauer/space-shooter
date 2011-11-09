@@ -44,9 +44,9 @@ Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
   });    
 }
 
-var Smoke = function(x,y,img){
+var Smoke = function(x,y,img,parent_sprite){
   var img = typeof(img) != 'undefined' ? img : 'lighter-smoke-large-colored';
-  this.init_sprite(img);
+  this.init_sprite(img, parent_sprite);
   this.x = x;
   this.y = y;
   this.vx = 0;
@@ -60,11 +60,15 @@ var Smoke = function(x,y,img){
   Game.smokes.push(this);
 };
 
-Smoke.prototype.init_sprite = function(img) {
+Smoke.prototype.init_sprite = function(img, parent_sprite) {
   var sprite = new Sprite(100, img);
   sprite.animation.loop = false;
+  sprite.rot = Math.random()*Math.PI*2;
   jQuery.extend(this, sprite);
-  Game.main_sprite.child_sprites.push(this);
+  if (parent_sprite) {
+    parent_sprite.child_sprites.push(this);
+    this.draw_in_front_of_parent = false;
+  } else Game.main_sprite.child_sprites.push(this);
 }
 
 var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {

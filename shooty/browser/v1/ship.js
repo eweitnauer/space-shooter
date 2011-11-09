@@ -72,10 +72,18 @@ Ship.prototype.update_from_extra = function(name){
 
 Ship.prototype.steer = function(data) {
   this.steer_data = data;
+  
+  if (!data) return;
+  if (!data.shot) this.shop_flag = true;
+  else if (this.shop_flag) {
+    if (this.state != 'charging' && Game.state == 'running') return;
+    Game.triggerShop(this);
+    this.shop_flag = false;
+  }
 }
 
 Ship.prototype.step = function() {
-    var self = this;
+  var self = this;
   if (!this.steer_data) return;
   switch(this.state) {
     case 'flying':
@@ -93,12 +101,11 @@ Ship.prototype.step = function() {
     case 'charging':
       if (this.steer_data.accel) this.trigger_close();
       if (this.steer_data.shot) {
-          // if(Game.state == 'shop') Game.leaveShop(); this is not executed if the game is in 'shop'-mode
-          if(Game.state == 'running') Game.enterShop(self); // why is self somethimes null??
+        Game.enterShop(self);
       }
       else {
         this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
-        if (this.energy > this.max_energy) this.energy = max_energy;
+        if (this.energy > this.max_energy) this.energy = this.max_energy;
       }
       break;
     case 'closing':

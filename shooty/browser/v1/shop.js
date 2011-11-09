@@ -109,42 +109,41 @@ var Shop = {
         }
     }
     
-    ,draw : function(ctx, ship){
-        this.extras = ship.extras;
-        this.ship = ship;
-        
-        if (!this.painter) {
-            this.initPainter();   
-        }
-        
-        this.painter.draw();
-        ctx.save();
-        ctx.translate(this.main_sprite.x, this.main_sprite.y);
-        //      ctx.rotate(0.01);
+    ,setup: function(ctx, ship) {
+      this.ship = ship;
+      this.ctx = ctx;
+      this.ready_for_close = false;
+      this.extras = ship.extras;
+      if (!this.painter) this.initPainter();   
+    }
+    
+    ,draw : function() {
+     this.painter.draw();
+     this.ctx.save();
+     this.ctx.translate(this.main_sprite.x, this.main_sprite.y);
+     this.ctx.strokeStyle = "rgb(255,0,0)";
 
-        ctx.strokeStyle = "rgb(255,0,0)";
-
-        ctx.font = '14px "Permanent Marker"';
+        this.ctx.font = '14px "Permanent Marker"';
         var dy = 16;
         var x0 = -40;
         var y0 = 54;
         for(var i=0;i<this.buttons.length; i++){
-            ctx.fillStyle = "rgb(255,0,0)";
+            this.ctx.fillStyle = "rgb(255,0,0)";
             var b = this.buttons[i];
-            ctx.fillText(b.name,b.click_x+x0, b.click_y+y0);
-            var level = ship.extras.levels[b.name];
-            var costs = ship.extras.costs[b.name][level];
+            this.ctx.fillText(b.name,b.click_x+x0, b.click_y+y0);
+            var level = this.ship.extras.levels[b.name];
+            var costs = this.ship.extras.costs[b.name][level];
             if(level == 0){
-                ctx.fillStyle = "rgb(100,100,100)";
+                this.ctx.fillStyle = "rgb(100,100,100)";
             }else if(level < 4){
-                ctx.fillStyle = "rgb(0,200,0)";
+                this.ctx.fillStyle = "rgb(0,200,0)";
             }else{
-                ctx.fillStyle = "rgb(255,0,0)";
+                this.ctx.fillStyle = "rgb(255,0,0)";
             }
-            ctx.fillText('level: ' + (level+1) + '/5',b.click_x+x0, b.click_y+y0 + 1*dy);
-            ctx.fillText('update: ' + costs + '$',b.click_x+x0, b.click_y+y0 + 2*dy);
+            this.ctx.fillText('level: ' + (level+1) + '/5',b.click_x+x0, b.click_y+y0 + 1*dy);
+            this.ctx.fillText('update: ' + costs + '$',b.click_x+x0, b.click_y+y0 + 2*dy);
         }
 
-        ctx.restore();
+        this.ctx.restore();
     }
 }

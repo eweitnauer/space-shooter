@@ -26,8 +26,6 @@ var keyboard_init = function() {
         console.log('pause pressed!');
         if(Game.state == 'paused') Game.state = 'running';
         else if(Game.state == 'running') Game.state = 'paused';
-    }else if(evt.keyCode == 83){ // s
-        Game.enterShop(Game.ships['key']);
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
       
@@ -52,6 +50,9 @@ var keyboard_init = function() {
       evt.preventDefault();
     } else if (evt.keyCode == 40) {
       evt.preventDefault();
+    } else if(evt.keyCode == 83){ // s
+      if (Game.state == 'shop') Game.leaveShop();
+      else if (Game.ships['key']) Game.enterShop(Game.ships['key']);
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
   };
