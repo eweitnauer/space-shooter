@@ -100,9 +100,9 @@ Ship.prototype.step = function() {
       break;
     case 'charging':
       if (this.steer_data.accel) this.trigger_close();
-      if (this.steer_data.shot) {
-        Game.enterShop(self);
-      }
+      //if (this.steer_data.shot) {
+      //  Game.enterShop(self);
+      //}
       else {
         this.energy += this.heal_per_sec * (Animation.time-this.last_time) / 1000;
         if (this.energy > this.max_energy) this.energy = this.max_energy;

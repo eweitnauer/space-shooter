@@ -15,9 +15,15 @@ var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, name){
     this.normal_border = new Sprite([],"shop-button-normal");
     this.hovered_border = new Sprite([],"shop-button-hovered");
     this.pressed_border = new Sprite([],"shop-button-pressed");
+
+    this.normal_border.draw_in_front_of_parent = false;
+    this.hovered_border.draw_in_front_of_parent = false;
+    this.pressed_border.draw_in_front_of_parent = false;
+    
     this.child_sprites.push(this.normal_border);
     this.child_sprites.push(this.hovered_border);
     this.child_sprites.push(this.pressed_border);
+
     this.normal_border.offset_x = -x_offset;
     this.normal_border.offset_y = -y_offset;
 

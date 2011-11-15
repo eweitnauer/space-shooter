@@ -1,12 +1,12 @@
 var comm;
 
 function init() {
-//    try{
-    comm = new Communicator(io);
-    registerListeners();
-    comm.connect();
-    comm.create_session();
-  //  }catch(e){}
+    try{
+        comm = new Communicator(io);
+        registerListeners();
+        comm.connect();
+        comm.create_session();
+    }catch(e){}
   Game.start()
   keyboard_init();
 }
@@ -41,6 +41,8 @@ function sendVibrate(session_code, duration) {
   if (typeof(duration) != 'number') duration = 200;
   var now = Date.now();
   if (last_vibrate[session_code] && (now-last_vibrate[session_code]<200)) return;
-  comm.send_data(session_code, {vibrate: duration});
+  if(comm){
+      comm.send_data(session_code, {vibrate: duration});
+  }
   last_vibrate[session_code] = now;
 }
