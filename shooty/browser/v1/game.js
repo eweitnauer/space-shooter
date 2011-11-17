@@ -8,9 +8,11 @@ var Game = {
   ,step_timer: null
   ,ships: {}
   ,coins: 1000
+  ,points: 0
   ,shots: new LinkedList
   ,aliens: new LinkedList
   ,smokes: new LinkedList
+  ,pointObjects : new LinkedList
   ,lines: []
   ,level: 0 
   ,state: 'paused' //'paused','running','shop'
@@ -207,6 +209,11 @@ var Game = {
       });
     });
   }
+  ,stepPointObjects : function(){
+    Game.pointObjects.forEach(function(o,el){
+      if(o.animation.finished) el.remove();
+    });
+  }
   ,stepShips: function(){
     Game.forEachActiveShip(function(ship) { ship.step(); });
   }
@@ -273,9 +280,14 @@ var Game = {
       
       // wind effect
       Game.stepSmokes();
+
+      // point strings and coins
+      Game.stepPointObjects();
       
       // update the display
       Game.painter.draw();
+      
+
       
       break;
     case 'paused':
