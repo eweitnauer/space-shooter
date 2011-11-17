@@ -1,5 +1,5 @@
 /** An mine that can be released by alien ships. It will fall down ballistically
-and attach to the ground. If it comes close a ship, it will explode.*/
+    and attach to the ground. If it comes close a ship, it will explode.*/
 
 /// To create a mine, pass its initial position and speed.
 var Mine = function(x,y,vx,vy) {
@@ -81,7 +81,7 @@ Mine.prototype.move_towards_ships = function(max_x_dist) {
   if (dx == null || dx>max_x_dist) return;
   dx < 0 ? this.vx -= this.acceleration : this.vx += this.acceleration;
 }
-  
+
 Mine.prototype.think = function() {
   if (this.self_destruct_behavior(20)) return;
   this.move_towards_ships(150);

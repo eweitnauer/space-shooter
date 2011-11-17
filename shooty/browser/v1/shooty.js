@@ -86,7 +86,7 @@ var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {
   this.vy = v * -Math.cos(rot) + vy;
   this.rot = rot;
   this.maxDist = maxDist;
-    
+  
   this.step = function(){
     this.x += this.vx;
     this.y += this.vy;
@@ -142,7 +142,7 @@ function load_collision_data_from_svg(xml) {
   
   var root = svg.documentElement;
   var nsResolver = svg.createNSResolver(root);
-      
+  
   // read the collision paths
   var paths = svg.evaluate('//svg:path[@collision-object]',
                            root, nsResolver, 0, null);

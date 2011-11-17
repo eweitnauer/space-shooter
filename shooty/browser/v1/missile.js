@@ -1,8 +1,8 @@
 /** Flying missiles, that are released by alien ships. They fly towards the closest
-player and move in swarms. The behavior of missiles is implemented in a number of
-behavior methods. These methods rely on the missiles' sensors.
-The missiles have a number of radial sensors. Each sensor can only detect the
-closest object in its direction. */
+    player and move in swarms. The behavior of missiles is implemented in a number of
+    behavior methods. These methods rely on the missiles' sensors.
+    The missiles have a number of radial sensors. Each sensor can only detect the
+    closest object in its direction. */
 
 // To create a missile, pass along the initial position and speed.
 var Missile = function(x, y, vx, vy) {
@@ -19,8 +19,8 @@ var Missile = function(x, y, vx, vy) {
 }
 
 Missile.prototype.init_sprite = function() {
-    // alternativ : alien_rocket
-    // dann allerdings ohne flame, und mit 100ms
+  // alternativ : alien_rocket
+  // dann allerdings ohne flame, und mit 100ms
   jQuery.extend(this, new Sprite(80, 'alien_small_rocket')); 
   this.scale = 0.8; // christof changed this from 0.8
   this.collision_radius = 4;
@@ -77,19 +77,19 @@ Missile.prototype.step = function() {
   this.think();
   this.x += this.vx;//(this.vx + this.last_vx)/2;
   this.y += this.vy;//(this.vy + this.last_vy)/2;
-//  this.last_vx = this.vx;
-//  this.last_vy = this.vy;
+  //  this.last_vx = this.vx;
+  //  this.last_vy = this.vy;
   // christof replaced this:  // this.rot += this.drot;
   this.rot = Math.atan2(this.vy, this.vx)+Math.PI/2;
 
-    if(Math.random() > 0.85){
-        var r = 18;
-        var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
-        s.scale = 0.7;
-        s.rot = Math.random() * 2*Math.PI;
-        s.alpha = 0.8 + Math.random() *  0.2;
-        s.alpha_decay = 0.05 + Math.random() * 0.1;
-    }
+  if(Math.random() > 0.85){
+    var r = 18;
+    var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
+    s.scale = 0.7;
+    s.rot = Math.random() * 2*Math.PI;
+    s.alpha = 0.8 + Math.random() *  0.2;
+    s.alpha_decay = 0.05 + Math.random() * 0.1;
+  }
 }
 
 Missile.prototype.is_left_to = function(x, y) {
@@ -135,7 +135,7 @@ Missile.prototype.sense = function(max_dist) {
     if (d > max_dist) return;
     var angle = norm_rotation2(Math.atan2(P.y-my_pos.y, P.x-my_pos.x)-my_rot);
     var idx = Math.floor(angle/Math.PI/2*self.sensor_count);
-//    if (idx > 4 && idx < self.sensor_count-5) return;
+    //    if (idx > 4 && idx < self.sensor_count-5) return;
     if (self.sensors[idx] == null || self.sensors[idx][0] > d) {
       self.sensors[idx] = [d, type, P];
     }

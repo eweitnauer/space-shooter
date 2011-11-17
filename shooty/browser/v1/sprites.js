@@ -15,16 +15,16 @@ Sprite = function(timeLine, imgs) {
   this.center_img = true;
   this.display = true;
   this.getImageSize = function(idx){
-      if (typeof(idx) == 'undefined') idx = 0;
-      var size = { width: this.animation._imgs[idx].width,
-                   height: this.animation._imgs[idx].height };
-      return size;
+    if (typeof(idx) == 'undefined') idx = 0;
+    var size = { width: this.animation._imgs[idx].width,
+                 height: this.animation._imgs[idx].height };
+    return size;
   }
 }
 
 /** Params:
-  *   timeLine: array of milliseconds describing how long each frame is shown
-  *   imgs: name of image tag from ImageBank or array of images */
+ *   timeLine: array of milliseconds describing how long each frame is shown
+ *   imgs: name of image tag from ImageBank or array of images */
 Animation = function(timeLine, imgs) {
   this._imgs = [];      /// an array of images
   this._timeLine = [];  /// an array of durations in ms
@@ -198,23 +198,23 @@ Sprite.prototype.draw = function(ctx) {
 
 ImageBank = {
   imgs: {}
- ,prefix: ''
- ,extension: '.png'
- ,get: function(tag, number) {
+  ,prefix: ''
+  ,extension: '.png'
+  ,get: function(tag, number) {
     if (!(tag in this.imgs)) return null;
     var num = (typeof(number) == 'undefined') ? 0 : number;
     return this.imgs[tag][num];
   }
- /// load_animation('ship', './ship') will load the file ./ship.png 
- ,load_single: function(tag, url) {
+  /// load_animation('ship', './ship') will load the file ./ship.png 
+  ,load_single: function(tag, url) {
     this.imgs[tag] = [new Image()];
     this.imgs[tag][0].src = this.prefix + url + this.extension;
   }
- /// load_animation('ship', './ship', 3, 1) will load the files ./ship0.png
- /// ./ship1.png and ./ship2.png.
- /// If no 'digits' param is passed, the number of digits will be determined
- /// according to 'count'.
- ,load_animation: function(tag, url, count, digits) {
+  /// load_animation('ship', './ship', 3, 1) will load the files ./ship0.png
+  /// ./ship1.png and ./ship2.png.
+  /// If no 'digits' param is passed, the number of digits will be determined
+  /// according to 'count'.
+  ,load_animation: function(tag, url, count, digits) {
     var len = digits || String(count).length;
     this.imgs[tag] = [];
     for (var i=0; i<count; i++) {
