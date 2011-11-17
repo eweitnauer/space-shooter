@@ -5,16 +5,20 @@ function hit(geometry, x, y){
 }
 
 var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, name){
-  jQuery.extend(this, new Sprite([], image));
+  this.isExtra = image ? true : false;
+  jQuery.extend(this, image ? new Sprite([], image) : new Sprite([]));
   this.name = name;
   this.state = 'normal'; // 'normal', 'hovered', 'pressed', 'disabled'
   this.x = x+x_offset;
   this.y = y+y_offset;
   this.click_x = x;
   this.click_y = y;
-  this.normal_border = new Sprite([],"shop-button-normal");
-  this.hovered_border = new Sprite([],"shop-button-hovered");
-  this.pressed_border = new Sprite([],"shop-button-pressed");
+  var prefix = image ? 'shop-button-' : 'x-';
+
+  
+  this.normal_border = new Sprite([],prefix+'normal');
+  this.hovered_border = new Sprite([],prefix+'hovered');
+  this.pressed_border = new Sprite([],prefix+'pressed');
 
   this.normal_border.draw_in_front_of_parent = false;
   this.hovered_border.draw_in_front_of_parent = false;
@@ -68,7 +72,7 @@ var Shop = {
     var y = this.main_sprite.y;
     for(var i=0;i<this.buttons.length; i++){
       var c = this.buttons[i];
-      var size = c.getImageSize();
+      var size = c.isExtra ? c.getImageSize() : {width:20, height :20};
       var geometry = { x: x+c.click_x-size.width/2, 
                        y: y+c.click_y-size.height/2,
                        width: size.width,
@@ -78,8 +82,19 @@ var Shop = {
       c.mouse(pressed, hitVal);
       
       if(hitVal && pressed){
-        this.extras.levels[c.name]++;
-        this.ship.update_from_extra(c.name);
+        if(c.isExtra){
+          var level = this.extras.levels[c.name];
+          var costs = (this.name == 'health' ? this.ship.max_energy - this.ship.energy :
+                       this.extras.costs[c.name][level]);
+          
+          if((level < 5 || name=='life')  && Game.coins >= costs){
+            if(this.name != 'health') this.extras.levels[c.name]++;
+            this.ship.update_from_extra(c.name);
+            Game.coins -= costs;
+          }
+        }else{
+          Game.leaveShop();
+        }
       }
     }
   }
@@ -99,7 +114,7 @@ var Shop = {
 
 
     var x0 = 170;
-    var y0 = 140;
+    var y0 = 180;
     var dx = 180;
     var dy = 160;
     extras = new Extras().names;
@@ -115,6 +130,9 @@ var Shop = {
         this.buttons.push(b);
       }
     }
+    
+    this.x_button = new ShopButton(x0-80, y0-150, 0, 0, null, this.main_sprite, null);
+    this.buttons.push(this.x_button);
   }
   
   ,setup: function(ctx, ship) {
@@ -132,6 +150,11 @@ var Shop = {
     ];
     this.coin = new Sprite(120,'coin');
     this.coin.scale = 0.5;
+    this.large_coin = new Sprite(120,'coin');
+    this.ship_sprite = new Sprite(80,'ship_'+this.ship.color);
+    this.ship_sprite.scale = 1.5;
+//    this.ship_sprite.rot = Math.PI/2;
+
     if (!this.painter) this.initPainter();   
   }
   
@@ -139,7 +162,22 @@ var Shop = {
     this.painter.draw();
     this.ctx.save();
     this.ctx.translate(this.main_sprite.x, this.main_sprite.y);
-    this.ctx.strokeStyle = "rgb(255,0,0)";
+    this.ctx.fillStyle = "rgb(100,100,100)";
+    this.ctx.font = '22px "Permanent Marker"';
+    this.ctx.fillText('Shop for Player ' + this.ship.player_name,150,88);
+    
+    this.ctx.save();
+    this.ctx.translate(120,80);
+    this.ship_sprite.draw(this.ctx);
+    this.ctx.restore();
+    
+    this.ctx.save();
+    this.ctx.translate(530,80);
+    this.large_coin.draw(this.ctx);
+    this.ctx.fillText('' + Game.coins,20,8);
+    this.ctx.restore();
+    
+    
     
     this.ctx.font = '16px "Permanent Marker"';
     var dy = 16;
@@ -148,11 +186,18 @@ var Shop = {
     for(var i=0;i<this.buttons.length; i++){
       this.ctx.fillStyle = "rgb(100,100,100)";
       var b = this.buttons[i];
+      if(!b.isExtra) continue;
       this.ctx.fillText(b.name,b.click_x+x0, b.click_y-y0);
       var level = this.ship.extras.levels[b.name];
-      var costs = this.ship.extras.costs[b.name][level];
+      var costs = (b.name == 'health' ? this.ship.max_energy-this.ship.energy : 
+                   this.ship.extras.costs[b.name][level]);
       if(level < 5){
-        this.ctx.fillText('next:      ' + costs ,b.click_x+x0, b.click_y+y0 + dy);
+        this.ctx.fillText('next:',b.click_x+x0, b.click_y+y0 + dy);
+
+        if(costs > Game.coins){
+          this.ctx.fillStyle = "rgb(255,0,0)";
+        }
+        this.ctx.fillText('' + costs ,b.click_x+x0+70, b.click_y+y0 + dy);
         this.ctx.save();
         this.ctx.translate(b.click_x+x0+60, b.click_y+y0-6 + dy);
         this.coin.draw(this.ctx)      
@@ -165,11 +210,13 @@ var Shop = {
         this.ctx.fillText('max. level',b.click_x+x0-1, b.click_y+y0 + dy-1);
 
       }
-      this.ctx.save();
-      this.ctx.translate(b.click_x+55,b.click_y);
-      
-      this.star_sprites[Math.min(level,5)].draw(this.ctx);
-      this.ctx.restore();
+      if(b.name != 'health' && b.name != 'life'){
+        this.ctx.save();
+        this.ctx.translate(b.click_x+55,b.click_y);
+        this.star_sprites[Math.min(level,5)].draw(this.ctx);
+        this.ctx.restore();
+      }
+
     }
 
     this.ctx.restore();

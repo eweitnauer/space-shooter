@@ -58,6 +58,12 @@ Alien.prototype.destroy = function() {
   this.explode();
   this.display = false;
   this.animation.finished = true;
+
+  
+  Game.coins += this.coins;
+  var p = new PointObject(this.x,this.y, this.coins);
+  Game.pointObjects.push(p);
+  Game.main_sprite.child_sprites.push(p);
 }
 
 /// Trigger an explosion.

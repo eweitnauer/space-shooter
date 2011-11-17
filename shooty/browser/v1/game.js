@@ -7,9 +7,13 @@ var Game = {
   ,wind_vy: -0.01
   ,step_timer: null
   ,ships: {}
+  ,coins: 1000
+  ,points: 0
+  ,lives: 3
   ,shots: new LinkedList
   ,aliens: new LinkedList
   ,smokes: new LinkedList
+  ,pointObjects : new LinkedList
   ,lines: []
   ,level: 0 
   ,state: 'paused' //'paused','running','shop'
@@ -207,6 +211,11 @@ var Game = {
       });
     });
   }
+  ,stepPointObjects : function(){
+    Game.pointObjects.forEach(function(o,el){
+      if(o.animation.finished) el.remove();
+    });
+  }
   ,stepShips: function(){
     Game.forEachActiveShip(function(ship) { ship.step(); });
   }
@@ -273,6 +282,9 @@ var Game = {
       
       // wind effect
       Game.stepSmokes();
+
+      // point strings and coins
+      Game.stepPointObjects();
       
       // update the display
       Game.painter.draw();
@@ -286,26 +298,7 @@ var Game = {
     case 'shop':
       Game.painter.draw();
       Shop.draw();
-      /** funny idea, but this does not work on a local server !
-          var w = Game.w;
-          var h = Game.h;
-          var pxOld = Game.painter.context.getImageData(0,0,w-1,h-1);
-          var pxNew = pxOld.slice();
-          var l = w*4; // y+1
-          for(var x=1;x<w-1;++x){
-          for(var y=1;y<h-1;++y){
-          for(var c=0;c<3;++c){
-          var i = (x+w*y)*4+c;
-          var iu = i-w4;
-          var ib = i+w4;
-          pxNew[i] = (pxOld[iu-4] + pxOld[iu] + pxOld[iu+4] +
-          pxOld[i-4] + pxOld[i] + pxOld[i+4] +
-          pxOld[ib-4] + pxOld[ib] + pxOld[ib+4]) / 9;
-          }
-          }
-          }
-          Game.painter.context.putImageData(0,0,pxNew);
-      */
+     
     }
   }
   ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
@@ -315,6 +308,21 @@ var Game = {
 
 Infobar = function() {
   jQuery.extend(this, new Sprite([], ''));
+
+  this.coin_sprite = new Sprite(120,'coin');
+  this.child_sprites.push(this.coin_sprite);
+  this.coin_sprite.x = 1020;
+  this.coin_sprite.y = 740;
+  this.coin_sprite.scale = 0.8;
+  this.coin_sprite.extra_draw = function(ctx){
+    ctx.save();  
+    ctx.textAlign = "left";
+    ctx.font = '30px "Permanent Marker"';
+    ctx.fillStyle = 'rgb(100,100,100)';
+    ctx.fillText(''+Game.coins,30,-22);
+    ctx.restore();
+  }
+    
   this.extra_draw = function(ctx) {
     ctx.font = '20px "Permanent Marker"';
     ctx.textBaseline = "top";
@@ -327,6 +335,9 @@ Infobar = function() {
       ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
     }
     ctx.restore();
+    
+    
+
   }
 }
 
