@@ -25,7 +25,9 @@ var Alien = function() {
 /// Makes the alien into a sprite adds it to the main game sprite. Also adds
 /// itself to the Game's aliens list.
 Alien.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite(80, this.sprite_name));
+  // a bit complicated, but this way, the sprite does not override any
+  // properties already set in this
+  jQuery.extend(this, jQuery.extend(new Sprite(80, this.sprite_name), this));
   Game.main_sprite.child_sprites.push(this);
   Game.aliens.push(this);
 }

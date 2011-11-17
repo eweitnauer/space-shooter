@@ -1,10 +1,24 @@
 Ufo = function() {
-  this.type = 'alien_ship';
-  this.sprite_name = 'alien_ufo';
+  this.type = 'alien_ship'; // should be changed to 'alien_ship' or 'alien_shot'
+  this.sensor_count = 2;    // number of sensors
+  this.sensors = [];        // an array of sensors results
+  this.sensor_range = 80;   // max. sensor range
+  this.v_max = 1.0;         // maximum speed
+  this.turn_speed = 0.1;    // turning speed
+  this.acceleration = 0.02; // acceleration
+  this.points = 100;        // points the players get on destruction
+  this.coins = 100;         // coins the players get on destruction
+  
+  this.sprite_name = 'alien_ufo'; // visual appearance of the alien
+  this.explosion_size = 'L';      // size of the explosion when destroyed
+  this.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
+  this.offset_x = this.offset_y = 3; // img offset
+  this.collision_radius = 16;     // collision radius for physics
+  this.restitution = 0.9;         // restitution for collision
+  this.mass = 4;                  // mass of ship
+  this.energy = 100;              // energy at creation
   
   this.init_sprite();
-  this.offset_rot = Math.PI*0.25;
-  this.offset_x = 3; this.offset_y = 3;
   this.spawn();
 }
 
