@@ -63,7 +63,8 @@ var Game = {
   }
   ,spawn_aliens: function(){
     new Ufo();
-    new Pyramid();
+    new Ufo();
+    //new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -279,7 +280,7 @@ var Game = {
       break;
     case 'paused':
       // update the display
-      Game.painter.draw();
+      //Game.painter.draw();
       
       break;
     case 'shop':

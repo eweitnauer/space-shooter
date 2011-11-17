@@ -19,7 +19,7 @@ var Alien = function() {
   this.collision_radius = 12; // collision radius for physics
   this.restitution = 0.5;   // restitution for collision
   this.mass = 2;            // mass of ship
-  this.energy = 100;        // energy at creation
+  this.max_energy = 100;    // energy at creation
 }
 
 /// Makes the alien into a sprite adds it to the main game sprite. Also adds
@@ -39,6 +39,7 @@ Alien.prototype.spawn = function() {
   var pos = Game.getRandomPos(this.collision_radius);
   this.x = pos.x; this.y = pos.y;
   this.vx = 0; this.vy = 0;
+  this.energy = this.max_energy;
 }
 
 /// Is called externally when something damaged the alien. The amount of damage
@@ -90,8 +91,9 @@ Alien.prototype.adjust_speed = function(slow_down) {
 }
 
 /// Set the sprite rotation according to the current vx.
-Alien.prototype.adjust_rot = function() {
-  this.rot = Math.PI*0.05*this.vx/this.v_max;
+Alien.prototype.adjust_rot = function(mult) {
+  if (arguments.length<1) var mult = 0.05;
+  this.rot = Math.PI*mult*this.vx/this.v_max;
 }
 
 

@@ -17,7 +17,7 @@ var Pyramid = function() {
   this.collision_radius = 12; // collision radius for physics
   this.restitution = 0.5;   // restitution for collision
   this.mass = 2;            // mass of ship
-  this.energy = 100;        // energy at creation
+  this.max_energy = 100;    // energy at creation
   
   this.missile_time = 10000; // time between firing missiles in ms
 

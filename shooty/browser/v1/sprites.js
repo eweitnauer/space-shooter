@@ -232,7 +232,7 @@ PaintEngine = function(canvas) {
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
   this.draw_physics = false;
-  this.draw_alien_sensors = false;
+  this.draw_alien_sensors = true;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
     this.sprites.forEach(function(sprite) {
@@ -249,8 +249,9 @@ PaintEngine = function(canvas) {
     }
     if (self.draw_alien_sensors) {
       Game.aliens.forEach(function(alien) {
-        if (alien instanceof Mine) alien.visualize_sensors(self.context);
-        if (alien instanceof Pyramid) alien.visualize_sensors(self.context);
+        if (alien instanceof Ufo) alien.visualize_sensors(self.context);
+        //if (alien instanceof Mine) alien.visualize_sensors(self.context);
+        //if (alien instanceof Pyramid) alien.visualize_sensors(self.context);
       });
     }
   } 
