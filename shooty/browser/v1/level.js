@@ -26,7 +26,7 @@ Level.prototype.step = function(){
 
 
 Level.prototype.greeter = function(){
-  
-  // display(this.greetings);
+   
+   // display(this.greetings);
 
 } 

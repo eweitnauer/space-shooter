@@ -1,6 +1,6 @@
 /** An alien ship looking like a flying pyramid. They move around on the whole
-    map and release three homing missles in direction of their edges from time to 
-    time. */
+map and release three homing missles in direction of their edges from time to 
+time. */
 
 var Pyramid = function() {
   this.type = 'alien_ship';
@@ -30,9 +30,9 @@ Pyramid.prototype.spawn = function() {
   this.energy = 100;
   this.destroyed = false;
   this.x = Game.borders.left + 2*this.collision_radius +
-    Math.random()*(Game.borders.right-Game.borders.left-4*this.collision_radius);
+           Math.random()*(Game.borders.right-Game.borders.left-4*this.collision_radius);
   this.y = Game.borders.top + 2*this.collision_radius + 
-    Math.random()*(Game.borders.bottom-Game.borders.top-4*this.collision_radius);
+           Math.random()*(Game.borders.bottom-Game.borders.top-4*this.collision_radius);
   this.vx = 0; this.vy = 0;
   this.prefered_dir = 'straight';
   this.slow_down = false;
@@ -82,7 +82,7 @@ Pyramid.prototype.fire_missiles_behavior = function() {
     for (var deg = 0; deg<360; deg+=120) {
       var rad = (deg-90) * Math.PI / 180;
       new Missile(this.x + Math.cos(rad)*20, this.y + Math.sin(rad)*20,
-                  Math.cos(rad), Math.sin(rad));
+               Math.cos(rad), Math.sin(rad));
     }
     this.fire_missiles_at = Animation.time + this.missile_time;
   }  
@@ -152,7 +152,7 @@ Pyramid.prototype.visualize_sensors = function(ctx) {
     ctx.stroke();
   }
 }
-
+  
 /// The prefered_dist parameter can either be a number (e.g. 80) or a type-distance
 /// hash (e.g. {'landscape':80, 'ship':120}. In the first case, the prefered
 /// distance is set for all object types, in the second case its set specific.
@@ -178,7 +178,7 @@ Pyramid.prototype.avoid_obstacles_behavior = function(prefered_dist) {
     if ((N % 2 == 1) && (i == N2)) continue;
     // get prefered dist for the type of object sensed
     var pd = (typeof(prefered_dist) == 'number')
-      ? prefered_dist : prefered_dist[this.sensors[i][1].type];
+             ? prefered_dist : prefered_dist[this.sensors[i][1].type];
     // continue if object is far enough
     if (this.sensors[i][0] > pd) continue;
     // add or sub difference between actual and prefered distance to the sum
@@ -198,7 +198,7 @@ Pyramid.prototype.avoid_obstacles_behavior = function(prefered_dist) {
 Pyramid.prototype.random_flight_behavior = function() {
   if (Math.random() < 0.04) {
     this.prefered_dir = Math.random() < 0.5 ? 'straight' : 
-      (Math.random() < 0.5 ? 'left' : 'right');
+                        (Math.random() < 0.5 ? 'left' : 'right');
   }
   if (this.prefered_dir != 'straight' && Math.random() < 0.2) {
     if (this.prefered_dir == 'left') this.turn_left();

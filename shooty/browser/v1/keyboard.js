@@ -23,12 +23,12 @@ var keyboard_init = function() {
     } else if (evt.keyCode == 190) { // .
       Game.spawn_missiles(3);
     } else if (evt.keyCode == 80) { // p
-      console.log('pause pressed!');
-      if(Game.state == 'paused') Game.state = 'running';
-      else if(Game.state == 'running') Game.state = 'paused';
+        console.log('pause pressed!');
+        if(Game.state == 'paused') Game.state = 'running';
+        else if(Game.state == 'running') Game.state = 'paused';
     }
     if ('key' in Game.ships) Game.ships['key'].steer(key_steer_data);
-    
+      
     if(evt.keyCode == 78){ // 'n'
       if ('key' in Game.ships) var code = ''+Math.random()*1000;
       else code = 'key';

@@ -1,5 +1,5 @@
 /** Classical U.F.O. type of alien ship. It moves on a horizontal line at the
-    top of the screen and releases mines. */
+top of the screen and releases mines. */
 
 var Ufo = function() {
   this.type = 'alien_ship';
@@ -73,9 +73,9 @@ Ufo.prototype.smoke = function() {
   if (this.energy > this.max_energy*0.5) return;
   if (Math.random()*this.max_energy*0.5 > this.energy && Math.random() > 0.25) {
     var s = new Smoke(this.x, this.y, 'smoke-large', this);
-    //    s.alpha = (60-this.engery)/60*0.7 + Math.random() * 0.3;
-    //    s.scale = 0.4+Math.random()*0.2;
-    //    s.alpha_decay = 0.02+Math.random()*0.3;
+//    s.alpha = (60-this.engery)/60*0.7 + Math.random() * 0.3;
+//    s.scale = 0.4+Math.random()*0.2;
+//    s.alpha_decay = 0.02+Math.random()*0.3;
   }
 }
 
@@ -98,15 +98,15 @@ Ufo.prototype.think = function() {
   this.vy = 0;
   if (this.state == 'flying') {
     if (Animation.time >= this.next_production_finished_at) {
-      //      if (this.is_moving()) {
-      //        this.slow_down();
-      //        this.adjust_rot(); 
-      //      } else {
-      console.log('switching to state "releasing mines"');
-      this.state = 'releasing mines';
-      this.mines = this.max_mine_count;
-      this.next_mine_release_at = Animation.time + this.release_rate;
-      //      }
+//      if (this.is_moving()) {
+//        this.slow_down();
+//        this.adjust_rot(); 
+//      } else {
+        console.log('switching to state "releasing mines"');
+        this.state = 'releasing mines';
+        this.mines = this.max_mine_count;
+        this.next_mine_release_at = Animation.time + this.release_rate;
+//      }
     }
   } else if (this.state == 'releasing mines') {
     if (Animation.time >= this.next_mine_release_at) {

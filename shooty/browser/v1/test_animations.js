@@ -35,17 +35,17 @@ function init_animations() {
     if (/mine/.test(img)) {
       setInterval(function() {sprite.offset_rot += Math.PI/90}, 1000/30);
     }
-    if (/coin/.test(img)){
-      sprite.scale = 0.5;
-      sprite.animation.setTimeLine(120);
-    }
-    if (/star/.test(img)){
-      sprite.scale = 0.5;
-    }
+      if (/coin/.test(img)){
+          sprite.scale = 0.5;
+          sprite.animation.setTimeLine(120);
+      }
+      if (/star/.test(img)){
+          sprite.scale = 0.5;
+      }
 
-    if(/shop-background/.test(img)){
-      sprite.scale = 0.1;
-    }
+      if(/shop-background/.test(img)){
+          sprite.scale = 0.1;
+      }
     sprites.push(sprite);
   }
 }
