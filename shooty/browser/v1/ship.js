@@ -54,6 +54,7 @@ Ship.prototype.update_from_extra = function(name){
     break;
   case 'shield':
     this.max_energy *= 2;
+    this.energy = this.max_energy;
     break;
   case 'shot':
     this.num_shots = 1+extraLevel;

@@ -84,10 +84,11 @@ var Shop = {
       if(hitVal && pressed){
         if(c.isExtra){
           var level = this.extras.levels[c.name];
-          var costs = this.extras.costs[c.name][level];
+          var costs = (this.name == 'health' ? this.ship.max_energy - this.ship.energy :
+                       this.extras.costs[c.name][level]);
           
-          if(level < 5  && Game.coins >= costs){
-            this.extras.levels[c.name]++;
+          if((level < 5 || name=='life')  && Game.coins >= costs){
+            if(this.name != 'health') this.extras.levels[c.name]++;
             this.ship.update_from_extra(c.name);
             Game.coins -= costs;
           }
@@ -188,7 +189,8 @@ var Shop = {
       if(!b.isExtra) continue;
       this.ctx.fillText(b.name,b.click_x+x0, b.click_y-y0);
       var level = this.ship.extras.levels[b.name];
-      var costs = this.ship.extras.costs[b.name][level];
+      var costs = (b.name == 'health' ? this.ship.max_energy-this.ship.energy : 
+                   this.ship.extras.costs[b.name][level]);
       if(level < 5){
         this.ctx.fillText('next:',b.click_x+x0, b.click_y+y0 + dy);
 
@@ -208,11 +210,13 @@ var Shop = {
         this.ctx.fillText('max. level',b.click_x+x0-1, b.click_y+y0 + dy-1);
 
       }
-      this.ctx.save();
-      this.ctx.translate(b.click_x+55,b.click_y);
-      
-      this.star_sprites[Math.min(level,5)].draw(this.ctx);
-      this.ctx.restore();
+      if(b.name != 'health' && b.name != 'life'){
+        this.ctx.save();
+        this.ctx.translate(b.click_x+55,b.click_y);
+        this.star_sprites[Math.min(level,5)].draw(this.ctx);
+        this.ctx.restore();
+      }
+
     }
 
     this.ctx.restore();
