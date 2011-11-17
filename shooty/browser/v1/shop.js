@@ -51,6 +51,8 @@ var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, name){
         }
     }
     parent_sprite.child_sprites.push(this);
+
+    
 };
 
 
@@ -120,6 +122,8 @@ var Shop = {
       this.ctx = ctx;
       this.ready_for_close = false;
       this.extras = ship.extras;
+      this.star_sprites = [new Sprite(80,'star-gray'),new Sprite(80,'star-gold')];
+        this.star_sprites[0].scale = this.star_sprites[1].scale = 0.4;
       if (!this.painter) this.initPainter();   
     }
     
@@ -128,7 +132,7 @@ var Shop = {
      this.ctx.save();
      this.ctx.translate(this.main_sprite.x, this.main_sprite.y);
      this.ctx.strokeStyle = "rgb(255,0,0)";
-
+     
         this.ctx.font = '14px "Permanent Marker"';
         var dy = 16;
         var x0 = -40;
@@ -148,6 +152,14 @@ var Shop = {
             }
             this.ctx.fillText('level: ' + (level+1) + '/5',b.click_x+x0, b.click_y+y0 + 1*dy);
             this.ctx.fillText('update: ' + costs + '$',b.click_x+x0, b.click_y+y0 + 2*dy);
+
+            this.ctx.save();
+            this.ctx.translate(b.click_x+55,b.click_y+35);
+            for(var j=0;j<5;++j){
+                this.star_sprites[(j >= level) ? 0 : 1].draw(this.ctx);
+                this.ctx.translate(0,-16);
+            }
+            this.ctx.restore();
         }
 
         this.ctx.restore();

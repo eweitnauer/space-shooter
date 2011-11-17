@@ -49,3 +49,8 @@ ImageBank.load_single('extra-shot-steangth', 'graphics/extras/extra-shot-streang
 
 ImageBank.load_animation('coin', 'graphics/extras/coin-', 7);
 ImageBank.load_animation('coin-2', 'graphics/extras/coin-', 7);
+
+ImageBank.load_single('star-gray', 'graphics/extras/star-gray');
+ImageBank.load_single('star-gold', 'graphics/extras/star-gold');
+
+ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');

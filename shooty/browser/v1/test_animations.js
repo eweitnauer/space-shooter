@@ -39,6 +39,10 @@ function init_animations() {
           sprite.scale = 0.5;
           sprite.animation.setTimeLine(120);
       }
+      if (/star/.test(img)){
+          sprite.scale = 0.5;
+      }
+
       if(/shop-background/.test(img)){
           sprite.scale = 0.1;
       }
