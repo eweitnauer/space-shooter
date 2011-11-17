@@ -354,6 +354,15 @@ ScoreBoard = function() {
   }
 }
 
+/// Returns a {x, y} object with a valid game position for alien spawning.
+Game.getRandomPos = function(r) {
+  return {x: Game.borders.left + 2*r + Math.random() * 
+             (Game.borders.right-Game.borders.left-4*r)
+         ,y: Game.borders.top + 2*r + Math.random() * 
+             (Game.borders.bottom-Game.borders.top-4*r)};
+}
+
+
 Game.coll_data = '\
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>\
 <svg\
