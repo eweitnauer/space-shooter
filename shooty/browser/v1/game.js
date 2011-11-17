@@ -7,6 +7,7 @@ var Game = {
   ,wind_vy: -0.01
   ,step_timer: null
   ,ships: {}
+  ,coins: 1000
   ,shots: new LinkedList
   ,aliens: new LinkedList
   ,smokes: new LinkedList

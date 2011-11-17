@@ -53,7 +53,6 @@ ImageBank.load_animation('coin-2', 'graphics/extras/coin-', 7);
 ImageBank.load_single('star-gray', 'graphics/extras/star-gray');
 ImageBank.load_single('star-gold', 'graphics/extras/star-gold');
 
-ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');
 
 ImageBank.load_single('zero-stars', 'graphics/extras/zero-stars');
 ImageBank.load_single('one-stars', 'graphics/extras/one-stars');
@@ -61,3 +60,13 @@ ImageBank.load_single('two-stars', 'graphics/extras/two-stars');
 ImageBank.load_single('three-stars', 'graphics/extras/three-stars');
 ImageBank.load_single('four-stars', 'graphics/extras/four-stars');
 ImageBank.load_single('five-stars', 'graphics/extras/five-stars');
+
+ImageBank.load_single('x-normal', 'graphics/extras/x-normal');
+ImageBank.load_single('x-hovered', 'graphics/extras/x-hovered');
+ImageBank.load_single('x-pressed', 'graphics/extras/x-pressed');
+
+
+
+
+
+ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');
