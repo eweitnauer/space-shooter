@@ -54,3 +54,10 @@ ImageBank.load_single('star-gray', 'graphics/extras/star-gray');
 ImageBank.load_single('star-gold', 'graphics/extras/star-gold');
 
 ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');
+
+ImageBank.load_single('zero-stars', 'graphics/extras/zero-stars');
+ImageBank.load_single('one-stars', 'graphics/extras/one-stars');
+ImageBank.load_single('two-stars', 'graphics/extras/two-stars');
+ImageBank.load_single('three-stars', 'graphics/extras/three-stars');
+ImageBank.load_single('four-stars', 'graphics/extras/four-stars');
+ImageBank.load_single('five-stars', 'graphics/extras/five-stars');

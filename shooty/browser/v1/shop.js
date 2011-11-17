@@ -105,7 +105,7 @@ var Shop = {
     extras = new Extras().names;
     //['health','acceleration','bullet-speed','life','shield',
     //          'shot','shot-angle','shot-length','shot-steangth'];
-    var yoffs = [0,-4,-2,-30,0,-6,-2,-2,-2];
+    var yoffs = [0,-4,-2,0,0,-6,-2,-2,-2];
 
     var idx = 0;
     for(var j = 0; j < 3 ; ++j){
@@ -122,8 +122,16 @@ var Shop = {
     this.ctx = ctx;
     this.ready_for_close = false;
     this.extras = ship.extras;
-    this.star_sprites = [new Sprite(80,'star-gray'),new Sprite(80,'star-gold')];
-    this.star_sprites[0].scale = this.star_sprites[1].scale = 0.4;
+    this.star_sprites = [
+      new Sprite(80,'zero-stars'),
+      new Sprite(80,'one-stars'),
+      new Sprite(80,'two-stars'),
+      new Sprite(80,'three-stars'),
+      new Sprite(80,'four-stars'),
+      new Sprite(80,'five-stars')
+    ];
+    this.coin = new Sprite(120,'coin');
+    this.coin.scale = 0.5;
     if (!this.painter) this.initPainter();   
   }
   
@@ -133,32 +141,34 @@ var Shop = {
     this.ctx.translate(this.main_sprite.x, this.main_sprite.y);
     this.ctx.strokeStyle = "rgb(255,0,0)";
     
-    this.ctx.font = '14px "Permanent Marker"';
+    this.ctx.font = '16px "Permanent Marker"';
     var dy = 16;
     var x0 = -40;
-    var y0 = 54;
+    var y0 = 44;
     for(var i=0;i<this.buttons.length; i++){
-      this.ctx.fillStyle = "rgb(255,0,0)";
+      this.ctx.fillStyle = "rgb(100,100,100)";
       var b = this.buttons[i];
-      this.ctx.fillText(b.name,b.click_x+x0, b.click_y+y0);
+      this.ctx.fillText(b.name,b.click_x+x0, b.click_y-y0);
       var level = this.ship.extras.levels[b.name];
       var costs = this.ship.extras.costs[b.name][level];
-      if(level == 0){
-        this.ctx.fillStyle = "rgb(100,100,100)";
-      }else if(level < 4){
-        this.ctx.fillStyle = "rgb(0,200,0)";
+      if(level < 5){
+        this.ctx.fillText('next:      ' + costs ,b.click_x+x0, b.click_y+y0 + dy);
+        this.ctx.save();
+        this.ctx.translate(b.click_x+x0+60, b.click_y+y0-6 + dy);
+        this.coin.draw(this.ctx)      
+        this.ctx.restore();
       }else{
-        this.ctx.fillStyle = "rgb(255,0,0)";
-      }
-      this.ctx.fillText('level: ' + (level+1) + '/5',b.click_x+x0, b.click_y+y0 + 1*dy);
-      this.ctx.fillText('update: ' + costs + '$',b.click_x+x0, b.click_y+y0 + 2*dy);
+        this.ctx.fillStyle = "rgb(255,120,50)";
+        this.ctx.fillText('max. level',b.click_x+x0, b.click_y+y0 + dy);
 
-      this.ctx.save();
-      this.ctx.translate(b.click_x+55,b.click_y+35);
-      for(var j=0;j<5;++j){
-        this.star_sprites[(j >= level) ? 0 : 1].draw(this.ctx);
-        this.ctx.translate(0,-16);
+        this.ctx.fillStyle = "rgb(255,240,50)";
+        this.ctx.fillText('max. level',b.click_x+x0-1, b.click_y+y0 + dy-1);
+
       }
+      this.ctx.save();
+      this.ctx.translate(b.click_x+55,b.click_y);
+      
+      this.star_sprites[Math.min(level,5)].draw(this.ctx);
       this.ctx.restore();
     }
 
