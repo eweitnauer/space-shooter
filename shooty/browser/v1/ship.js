@@ -24,7 +24,7 @@ var Ship = function(session_code) {
   this.points = 0;
   this.destroyed = false;
   this.state = 'flying'; // 'opening, charging, closing, flying'
-  this.lives = 3;
+//  this.lives = 3;
   this.respawn_delay = 3000;
   this.extras = new Extras();
   
@@ -50,7 +50,7 @@ Ship.prototype.update_from_extra = function(name){
     this.shot_speed = 10 + extraLevel * 5;
     break;
   case 'life':
-    this.lives++;
+    Game.lives++;
     break;
   case 'shield':
     this.max_energy *= 2;
@@ -222,13 +222,13 @@ Ship.prototype.apply_physics = function() {
 Ship.max_land_speed = 0.5;
 
 Ship.prototype.destroy = function() {
-  this.lives-=1;
+  Game.lives-=1;
   this.heat = 0;
   this.energy = 0;
   this.explode();
   this.display = false;
   this.destroyed = true;
-  if (this.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
+  if (Game.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
 Ship.prototype.hit = function(energy) {
@@ -335,9 +335,15 @@ Ship.prototype.createScoreSprite = function() {
   ship_sprite_2.scale = 0.7;
   sprite.extra_draw = function(ctx) {
     // energy and heat bar
-    var l = 26;
+    var l = 60;
     ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-    ctx.fillStyle = 'rgba(0,255,0,0.5)';
+    if(ship.state == 'charging' && ship.energy !=  ship.max_energy){
+      var g = Math.round(127*(1+Math.sin(Animation.time/10)));
+      console.log('green is '+g);
+      ctx.fillStyle = 'rgba(255,'+g+',0,0.5)';
+    }else{
+      ctx.fillStyle = 'rgba(0,255,0,0.5);'
+    }
     ctx.lineWidth = 1;
     var w = l*ship.energy*(1.0/ship.max_energy); //0.01;
     ctx.fillRect(0,19,w,7);
@@ -347,17 +353,23 @@ Ship.prototype.createScoreSprite = function() {
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.font = '15px "Permanent Marker"';
-    ctx.fillText(ship.player_name, 30, 9);
-    ctx.font = '12px "Permanent Marker"';
-    ctx.fillText('points: ' + ship.points, 30, 22);
+    ctx.fillText(ship.player_name, 20, 9);
+
+    ctx.save();
+    ctx.translate(8,4);
+    ship_sprite_1.draw(ctx);
+    ctx.restore();
+
+    /*
     // lives
     ctx.save();
     ctx.translate(8, 10);
     for (var i=0; i<3; i++) {
-      ship.lives>i ? ship_sprite_1.draw(ctx) : ship_sprite_2.draw(ctx);
-      ctx.translate(7, 0);
+    ship.lives>i ? ship_sprite_1.draw(ctx) : ship_sprite_2.draw(ctx);
+    ctx.translate(7, 0);
     }
     ctx.restore();
+    */
   }
   return sprite;
 }
