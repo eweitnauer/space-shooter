@@ -365,13 +365,12 @@ Ship.prototype.createScoreSprite = function() {
     // energy and heat bar
     var l = 60;
     ctx.strokeStyle = 'rgba(0,0,0,0.8)';
-    if(ship.state == 'charging' && ship.energy !=  ship.max_energy){
-      var g = Math.round(127*(1+Math.sin(Animation.time/10)));
-      console.log('green is '+g);
-      ctx.fillStyle = 'rgba(255,'+g+',0,0.5)';
-    }else{
-      ctx.fillStyle = 'rgba(0,255,0,0.5);'
-    }
+    //if(ship.state == 'charging' && ship.energy !=  ship.max_energy){
+      var g = Math.round(127*(1.5+0.5*Math.sin(Animation.time/70)));
+      ctx.fillStyle = 'rgba(50,'+g+',0,0.5)';
+    //}else{
+     // ctx.fillStyle = 'rgba(0,255,0,0.5);'
+    //}//
     ctx.lineWidth = 1;
     var w = l*ship.energy*(1.0/ship.max_energy); //0.01;
     ctx.fillRect(0,19,w,7);

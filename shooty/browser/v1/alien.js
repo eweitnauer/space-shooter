@@ -87,10 +87,14 @@ Alien.prototype.is_moving = function() { return this.vx != 0 || this.vy != 0; }
 Alien.prototype.turn_left = function() { this.turn(-this.turn_speed); }
 Alien.prototype.turn_right = function() { this.turn(this.turn_speed); }
 Alien.prototype.turn_towards = function(x, y) {
-  this.vx*(y-this.y) - this.vy*(x-this.x) < 0 ? this.turn_left() : this.turn_right();
+  var drot = -norm_rotation(Math.atan2(this.vy, this.vx) - Math.atan2(y-this.y, x-this.x));
+  if (drot > 0) this.turn(Math.min(drot, this.turn_speed));
+  else if (drot < 0) this.turn(Math.max(drot, -this.turn_speed));
 }
 Alien.prototype.turn_away_from = function(x, y) {
-  this.vx*(y-this.y) - this.vy*(x-this.x) < 0 ? this.turn_right() : this.turn_left();
+  var drot = norm_rotation(Math.atan2(this.vy, this.vx) - Math.atan2(y-this.y, x-this.x));
+  if (drot > 0) this.turn(Math.min(drot, this.turn_speed));
+  else if (drot < 0) this.turn(Math.max(drot, -this.turn_speed));
 }
 Alien.prototype.turn = function(angle) {
   var dir = Math.atan2(this.vy, this.vx);
