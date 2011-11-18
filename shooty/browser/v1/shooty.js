@@ -72,7 +72,8 @@ Smoke.prototype.init_sprite = function(img, parent_sprite) {
   } else Game.main_sprite.child_sprites.push(this);
 }
 
-var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {
+var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist) {
+  this.level = level;
   this.init_sprite();
   this.energy = energy;
   this.collision_radius = 4;
@@ -89,6 +90,33 @@ var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {
   this.maxDist = maxDist;
   
   this.step = function(){
+    if(this.level == 4){
+      if(Math.random() > 0.2){
+        var s = new Smoke(this.x+(Math.random()-.5)*5, 
+                          this.y+(Math.random()-.5)*5, 
+                          Math.random() > 0.2 ? 'bullet-4-spark' : 'bullet-5-spark');
+        s.alpha = 0.8;
+        s.scale = 0.4+Math.random()*0.6;
+        s.alpha_decay = 0.2+Math.random() * 0.4;
+      }
+    }else if(this.level == 5){
+      var r = Math.random();
+      if(r > 0.8){
+        var s = new Smoke(this.x-this.vx, this.y-this.vy, "very-small-rocket-smoke");
+        s.scale = 0.3 + Math.random() * 0.5;
+        s.rot = Math.random() * 2*Math.PI;
+        s.alpha = 0.8 + Math.random() *  0.2;
+        s.alpha_decay = 0.05 + Math.random() * 0.1;
+      }else if(r > 0.3){
+        var s = new Smoke(this.x+(Math.random()-.5)*5, 
+                          this.y+(Math.random()-.5)*5, 
+                          'bullet-5-spark');
+        s.alpha = 0.8;
+        s.scale = 0.4+Math.random()*0.6;
+        s.alpha_decay = 0.2+Math.random() * 0.4;
+      }
+    }
+
     this.x += this.vx;
     this.y += this.vy;
     var dx = this.x-this.initx;
@@ -103,7 +131,7 @@ var Shot = function(shooter,x,y,vx,vy,v,rot,energy,maxDist) {
 };
 
 Shot.prototype.init_sprite = function() {
-  var sprite = new Sprite(80, 'bullet');
+  var sprite = new Sprite(80, 'bullet-'+this.level);
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
 }

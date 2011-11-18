@@ -68,5 +68,14 @@ ImageBank.load_single('x-pressed', 'graphics/extras/x-pressed');
 
 ImageBank.load_animation('boom-blast', 'graphics/effects/boom-blast-', 7);
 
+ImageBank.load_animation('bullet-0', 'graphics/bullets/bullet-level-0-', 3);
+ImageBank.load_animation('bullet-1', 'graphics/bullets/bullet-level-1-', 3);
+ImageBank.load_animation('bullet-2', 'graphics/bullets/bullet-level-2-', 3);
+ImageBank.load_animation('bullet-3', 'graphics/bullets/bullet-level-3-', 3);
+ImageBank.load_animation('bullet-4', 'graphics/bullets/bullet-level-4-', 3);
+ImageBank.load_animation('bullet-5', 'graphics/bullets/bullet-level-5-', 3);
+
+ImageBank.load_animation('bullet-4-spark', 'graphics/bullets/bullet-level-4-spark-', 3);
+ImageBank.load_animation('bullet-5-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
 
 ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');

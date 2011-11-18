@@ -35,6 +35,7 @@ var Ship = function(session_code) {
   this.shot_max_dist = 250;
   this.num_shots = 1;
   this.shot_angle = 0.05;
+  this.shot_level = 0;
 };
 
 Ship.prototype.update_from_extra = function(name){
@@ -67,6 +68,7 @@ Ship.prototype.update_from_extra = function(name){
     break;
   case 'shot-steangth':
     this.shot_energy = 10 + Math.pow(2,extraLevel);
+    this.shot_level++;
     break;
   }
 }
@@ -195,18 +197,12 @@ Ship.prototype.shoot = function() {
   var angleFix = !(this.num_shots % 2) ? this.shot_angle/2 : 0;   
   for(var i=0;i<this.num_shots;++i){
 
-    Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
+    Game.shots.push(new Shot(this.shot_level,
+                             this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
                              this.vx, this.vy, this.shot_speed, 
                              angleFix + this.rot + this.shot_angle * (i-this.num_shots/2),
                              this.shot_energy,this.shot_max_dist));
   }
-
-  //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.1, 100));
-  //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.1, 100));
-  //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot-0.2, 100));
-  //  Game.shots.push(new Shot(this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, this.vx, this.vy, 10, this.rot+0.2, 100));
-
-
 }
 
 Ship.prototype.apply_physics = function() {
