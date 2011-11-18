@@ -18,31 +18,38 @@ Explosion.prototype.init_sprite = function(size) {
   Game.main_sprite.child_sprites.push(this);
 }
 
-Explosion.prototype.shockwave = function(dv, r1, damage, r2, inner_radius) {
+/// Simulates an instantanious shockwave around the explosion, that damages and
+/// pushes away any object close enough.
+/// Parameters are passed as an args object:
+///   args.damage    ... max. damage for affected objects
+///   args.damage_r1 ... if obj. is closer than this, deal max. damage
+///   args.damage_r2 ... if obj. is farer than this, deal no damage
+///   args.dvel      ... max. delta velocity for affected objects
+///   args.vel_r     ... if obj. is farer than this, don't change vel.
+/// If the damage or the velocity attributes are not set in the args object, the
+/// respective effect is not applied to the near objects.
+Explosion.prototype.shockwave = function(args) {
+  if (!args.damage && !args.dvel) return;
   var self = this;
   var apply_to = function(obj) {
     if (self === obj) return;
+    if (obj.destroyed) return;
     var d = inner_dist(obj, self);
-    if (d<0) return;
-    if (d <= r1) {
+    if (d<0) d=0;
+    if (args.dvel && d <= args.vel_r) {
       var dir = new Point(obj.x-self.x, obj.y-self.y);
       dir.normalize();
-      var l = dv * (r1-d) / r1;
-      obj.vx = dir.x*l; obj.vy = dir.y*l;
+      var l = args.dvel * (args.vel_r-d) / args.vel_r;
+      obj.vx += dir.x*l; obj.vy += dir.y*l;
     }
-    if (d <= r2) {
-      if (d<inner_radius) obj.hit(damage);
-      else obj.hit(damage*(1-(d-inner_radius)/(r2-inner_radius)));
+    if (args.damage && 'hit' in obj && d <= args.damage_r2) {
+      if (d<args.damage_r1) obj.hit(args.damage);
+      else obj.hit(args.damage * (1 - (d-args.damage_r1) / 
+                                      (args.damage_r2-args.damage_r1)));
     }
   }
-  // iterate aliens
-  Game.aliens.forEach(function(alien) {
-    apply_to(alien);
-  });
-  // iterate ships
-  Game.forEachActiveShip(function(ship) {
-    apply_to(ship);
-  });    
+  // iterate over all movable objects (ships, aliens, smokes)
+  Game.forEachMovableObject(apply_to);
 }
 
 var Smoke = function(x,y,img,parent_sprite){

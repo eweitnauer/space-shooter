@@ -58,16 +58,29 @@ var Game = {
     Game.lines.forEach(fn);
     Game.forEachActiveShip(fn);
   }
+  /// iterates over all aliens, ships and landscape lines
+  ,forEachMovableObject: function(fn) {
+    Game.aliens.forEach(fn);
+    Game.forEachActiveShip(fn);
+    Game.smokes.forEach(fn);
+  }
   ,spawn_missiles: function(num) {
     for (var i=0; i<num; i++) {
       var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
       var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
-      new Mine(x,y,0,1);
+      new Missile(x,y,0,0);
+    }
+  }
+  ,spawn_mines: function(num) {
+    for (var i=0; i<num; i++) {
+      var x = Game.borders.left + 20 + Math.random()*(Game.borders.right-Game.borders.left-40);
+      var y = Game.borders.top + 20 + Math.random()*(Game.borders.bottom-Game.borders.top-40);
+      new Mine(x,y,0,0);
     }
   }
   ,spawn_aliens: function(){
-    new Ufo();
-    new Ufo();
+    //new Ufo();
+    //new Ufo();
     //new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)

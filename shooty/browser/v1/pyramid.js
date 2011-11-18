@@ -9,7 +9,6 @@ var Pyramid = function() {
   this.v_max = 1.2;         // maximum speed
   this.turn_speed = 0.15;   // turning speed
   this.acceleration = 0.02; // acceleration
-  this.points = 100;        // points the players get on destruction
   this.coins = 100;         // coins the players get on destruction
   
   this.sprite_name = 'alien_pyramid'; // visual appearance of the alien

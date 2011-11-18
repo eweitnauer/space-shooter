@@ -21,6 +21,8 @@ var keyboard_init = function() {
     } else if (evt.keyCode == 40) {
       evt.preventDefault();
     } else if (evt.keyCode == 190) { // .
+      Game.spawn_mines(3);
+    } else if (evt.keyCode == 188) { // ,
       Game.spawn_missiles(3);
     } else if (evt.keyCode == 80) { // p
       console.log('pause pressed!');

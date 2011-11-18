@@ -249,9 +249,7 @@ PaintEngine = function(canvas) {
     }
     if (self.draw_alien_sensors) {
       Game.aliens.forEach(function(alien) {
-        if (alien instanceof Ufo) alien.visualize_sensors(self.context);
-        //if (alien instanceof Mine) alien.visualize_sensors(self.context);
-        //if (alien instanceof Pyramid) alien.visualize_sensors(self.context);
+        if ('visualize_sensors' in alien) alien.visualize_sensors(self.context);
       });
     }
   } 

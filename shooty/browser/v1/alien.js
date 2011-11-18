@@ -11,11 +11,17 @@ var Alien = function() {
   this.v_max = 1.0;         // maximum speed
   this.turn_speed = 0.15;   // turning speed
   this.acceleration = 0.02; // acceleration
-  this.points = 100;        // points the players get on destruction
   this.coins = 1;           // coins the players get on destruction
   
-  this.sprite_name = '';    // visual appearance of the alien
+  this.sprite_name = '';     // visual appearance of the alien
   this.explosion_size = 'L'; // size of the explosion when destroyed
+  this.shockwave =           // shockwave parameters (on explosion)
+    { damage: 0              // max. damage dealt for affected objects
+     ,damage_r1: 0           // if sth. is closer than this, deal max. damage
+     ,damage_r2: 0           // if sth. is farer than this, deal no damage
+     ,dvel: 0                // max. delta velocity for affected objects
+     ,vel_r: 0               // if sth. is farer than this, don't change vel.
+    };
   this.collision_radius = 12; // collision radius for physics
   this.restitution = 0.5;   // restitution for collision
   this.mass = 2;            // mass of ship
@@ -69,6 +75,7 @@ Alien.prototype.destroy = function() {
 /// Trigger an explosion.
 Alien.prototype.explode = function() {
   var expl = new Explosion(this.x, this.y, this.explosion_size);
+  expl.shockwave(this.shockwave);
 }
 
 Alien.prototype.is_moving = function() { return this.vx != 0 || this.vy != 0; }
@@ -77,6 +84,12 @@ Alien.prototype.is_moving = function() { return this.vx != 0 || this.vy != 0; }
 /// change the total speed.
 Alien.prototype.turn_left = function() { this.turn(-this.turn_speed); }
 Alien.prototype.turn_right = function() { this.turn(this.turn_speed); }
+Alien.prototype.turn_towards = function(x, y) {
+  this.vx*(y-this.y) - this.vy*(x-this.x) < 0 ? this.turn_left() : this.turn_right();
+}
+Alien.prototype.turn_away_from = function(x, y) {
+  this.vx*(y-this.y) - this.vy*(x-this.x) < 0 ? this.turn_right() : this.turn_left();
+}
 Alien.prototype.turn = function(angle) {
   var dir = Math.atan2(this.vy, this.vx);
   var v = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
