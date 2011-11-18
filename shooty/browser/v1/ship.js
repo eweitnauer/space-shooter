@@ -17,7 +17,6 @@ var Ship = function(session_code) {
   this.last_shot_time = 0;
   this.shot_delay = 250; // in ms
   this.energy = 100;
-  this.heal_per_sec = 15;
   this.last_time = 0;
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
@@ -36,6 +35,10 @@ var Ship = function(session_code) {
   this.num_shots = 1;
   this.shot_angle = 0.05;
   this.shot_level = 0;
+  
+  this.rocket_level = 0; // todo
+  this.heal_per_sec = 15;
+  this.rotation_speed = 1;
 };
 
 Ship.prototype.update_from_extra = function(name){
@@ -70,6 +73,16 @@ Ship.prototype.update_from_extra = function(name){
     this.shot_energy = 10 + Math.pow(2,extraLevel);
     this.shot_level++;
     break;
+  case 'recharge-speed':
+    this.heal_per_sec = (this.heal_per_sec + 5)*1.5;
+    break;
+  case 'rotation-speed':
+    this.rotation_speed = (this.rotation_speed+0.1)*1.05;
+    break;
+  case 'rocket':
+
+    break;
+
   }
 }
 
@@ -154,8 +167,8 @@ Ship.prototype.accelerate = function() {
 
 Ship.prototype.rotate = function(mode, pitch) {
   if (mode == 'relative') {
-    this.rot -= pitch/500;
-  } else if (mode == 'absolute') {
+    this.rot -= (pitch/500) * this.rotation_speed;
+  } else if (mode == 'absolute') { // here, rotation_speed is irrelevalt!
     var delta = (-pitch*Math.PI/180)-this.rot;
     delta = norm_rotation(delta);
     if (delta > 0.3) delta = 0.3;

@@ -115,16 +115,16 @@ var Shop = {
 
     var x0 = 170;
     var y0 = 180;
-    var dx = 180;
+    var dx = 140;
     var dy = 160;
     extras = new Extras().names;
     //['health','acceleration','bullet-speed','life','shield',
     //          'shot','shot-angle','shot-length','shot-steangth'];
-    var yoffs = [0,-4,-2,0,0,-6,-2,-2,-2];
+    var yoffs = [0,-4,-2,0,0,-6,-2,-2,-2,0,0,0];
 
     var idx = 0;
     for(var j = 0; j < 3 ; ++j){
-      for(var i = 0; i < 3 ; ++i, ++idx){
+      for(var i = 0; i < 4 ; ++i, ++idx){
         var b = new ShopButton(x0 + i * dx, y0 + j * dy, 0, yoffs[idx],'extra-'+extras[idx],
                                this.main_sprite, extras[idx]);
         this.buttons.push(b);
@@ -189,7 +189,7 @@ var Shop = {
       if(!b.isExtra) continue;
       this.ctx.fillText(b.name,b.click_x+x0, b.click_y-y0);
       var level = this.ship.extras.levels[b.name];
-      var costs = (b.name == 'health' ? this.ship.max_energy-this.ship.energy : 
+      var costs = (b.name == 'health' ? Math.round(this.ship.max_energy-this.ship.energy) : 
                    this.ship.extras.costs[b.name][level]);
       if(level < 5){
         this.ctx.fillText('next:',b.click_x+x0, b.click_y+y0 + dy);

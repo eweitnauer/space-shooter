@@ -1,6 +1,7 @@
 var Extras = function(){
   this.names = [ 'health','acceleration','bullet-speed','life','shield',
-                 'shot','shot-angle','shot-length','shot-steangth' ];
+                 'shot','shot-angle','shot-length','shot-steangth',
+                 'recharge-speed','rotation-speed','rocket'];
   this.levels = {}
   this.costs = {}
   this._costs_values_raw = [
@@ -12,7 +13,10 @@ var Extras = function(){
     [ 1000, 2000, 5000, 10000, 20000],
     [ 100, 200, 400, 400, 400],
     [ 400, 800, 1600, 5000, 10000],
-    [ 1000, 2000, 5000, 10000, 20000]
+    [ 1000, 2000, 5000, 10000, 20000],
+    [ 500, 500, 1000, 1000, 5000],
+    [ 100, 200, 600, 1000, 5000],
+    [ 500, 1000, 4000, 6000, 10000],
   ];
 
   this.init = function(){

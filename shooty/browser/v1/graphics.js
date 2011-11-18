@@ -46,6 +46,9 @@ ImageBank.load_single('extra-shot', 'graphics/extras/extra-shot');
 ImageBank.load_single('extra-shot-angle', 'graphics/extras/extra-shot-angle');
 ImageBank.load_single('extra-shot-length', 'graphics/extras/extra-shot-length');
 ImageBank.load_single('extra-shot-steangth', 'graphics/extras/extra-shot-streangth');
+ImageBank.load_single('extra-recharge-speed', 'graphics/extras/extra-recharge');
+ImageBank.load_single('extra-rotation-speed', 'graphics/extras/extra-rotation-speed');
+ImageBank.load_single('extra-rocket', 'graphics/extras/extra-rocket');
 
 ImageBank.load_animation('coin', 'graphics/extras/coin-', 7);
 ImageBank.load_animation('coin-2', 'graphics/extras/coin-', 7);
@@ -77,5 +80,7 @@ ImageBank.load_animation('bullet-5', 'graphics/bullets/bullet-level-5-', 3);
 
 ImageBank.load_animation('bullet-4-spark', 'graphics/bullets/bullet-level-4-spark-', 3);
 ImageBank.load_animation('bullet-5-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
+
+ImageBank.load_animation('player-rocket', 'graphics/player-rocket/player-rocket-', 3);
 
 ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');
