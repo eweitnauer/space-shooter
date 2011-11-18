@@ -66,7 +66,7 @@ ImageBank.load_single('x-hovered', 'graphics/extras/x-hovered');
 ImageBank.load_single('x-pressed', 'graphics/extras/x-pressed');
 
 
-
+ImageBank.load_animation('boom-blast', 'graphics/effects/boom-blast-', 7);
 
 
 ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');

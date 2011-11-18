@@ -57,6 +57,11 @@ Mine.prototype.destroy = function() {
 Mine.prototype.explode = function() {
   var expl = new Explosion(this.x, this.y, 'L');
   expl.shockwave(2, 60, 40, 30, 20);
+
+  var blast = new Explosion(this.x, this.y, 'blast');
+  blast.scale = 1.5;
+  blast.rot = Math.random()*Math.M_PI*2;
+  blast.alpha_decay = 0.15;
 }
 
 Mine.prototype.self_destruct_behavior = function(max_dist) {

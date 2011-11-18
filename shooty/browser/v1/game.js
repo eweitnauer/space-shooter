@@ -311,15 +311,16 @@ Infobar = function() {
 
   this.coin_sprite = new Sprite(120,'coin');
   this.child_sprites.push(this.coin_sprite);
-  this.coin_sprite.x = 1020;
-  this.coin_sprite.y = 740;
-  this.coin_sprite.scale = 0.8;
+  this.coin_sprite.x = 1050;
+  this.coin_sprite.y = 725;
+  this.coin_sprite.scale = 0.5;
   this.coin_sprite.extra_draw = function(ctx){
     ctx.save();  
     ctx.textAlign = "left";
     ctx.font = '30px "Permanent Marker"';
     ctx.fillStyle = 'rgb(100,100,100)';
     ctx.fillText(''+Game.coins,30,-22);
+    ctx.fillText('total: ' + Game.points, 30,5)
     ctx.restore();
   }
     
