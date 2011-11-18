@@ -149,7 +149,9 @@ var Game = {
       Game.shots.forEach(function(shot) {
         Physics.checkCollision(alien, shot,
                                function(alien, shot, px, py) {
-                                 if (shot.shooter.type == 'alien') return; // aliens dont shoot each other
+                                 // aliens don't shoot each other
+                                 // ships don't shoot their own rockets
+                                 if (shot.shooter.type == 'alien' || alien.type == 'rocket') return; 
                                  
                                  var s = new Smoke(shot.x, shot.y);
                                  s.rot = Math.random()*1.5-0.75;
@@ -186,10 +188,23 @@ var Game = {
       el.forTail(function(alien2) {
         Physics.checkCollision(alien1, alien2,
                                function(alien1, alien2, px, py) {
-                                 var energy = Math.max(Physics.letCollide(alien1, alien2), 3);
-                                 alien1.hit(energy, alien2.type);
-                                 alien2.hit(energy, alien1.type);
-              new Explosion(px, py, 'S');
+                                 if(alien1.type != 'rocket' && alien2.type != 'rocket'){
+                                   var energy = Math.max(Physics.letCollide(alien1, alien2), 3);
+                                   alien1.hit(energy, alien2.type);
+                                   alien2.hit(energy, alien1.type);
+                                 }else{
+                                   var r = alien1.type == 'rocket' ? alien1 : alien2;
+                                   var o = alien1.type != 'rocket' ? alien1 : alien2;
+                                   r.energy = 0;
+                                   r.destroy();
+
+                                   if(o.type == 'rocket'){
+                                     o.destroy();
+                                   }else{
+                                     o.hit(r.warhead_energy);
+                                   }
+                                 }
+                                 new Explosion(px, py, 'S');
                                });
       });
     });

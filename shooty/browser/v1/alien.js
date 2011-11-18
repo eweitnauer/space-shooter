@@ -44,7 +44,7 @@ Alien.prototype.spawn = function() {
 
 /// Is called externally when something damaged the alien. The amount of damage
 /// is passed. The alien will destroy itself if its energy drops to or below 0.
-Alien.prototype.hit = function(energy) {
+Alien.prototype.hit = function(energy,otherType){
   if (this.destroyed) return;
   if (this.energy<=energy) this.destroy();
   else this.energy -= energy;
@@ -59,11 +59,13 @@ Alien.prototype.destroy = function() {
   this.display = false;
   this.animation.finished = true;
 
+  if(this.coins){
+    Game.coins += this.coins;
+    var p = new PointObject(this.x,this.y, this.coins);
+    Game.pointObjects.push(p);
+    Game.main_sprite.child_sprites.push(p);
+  }
   
-  Game.coins += this.coins;
-  var p = new PointObject(this.x,this.y, this.coins);
-  Game.pointObjects.push(p);
-  Game.main_sprite.child_sprites.push(p);
 }
 
 /// Trigger an explosion.
