@@ -5,7 +5,7 @@
     closest object in its direction. */
 
 // To create a missile, pass along the initial position and speed.
-var Missile = function(x, y, vx, vy) {
+var Missile = function(x, y, vx, vy, size) {
   this.type = 'alien_shot';
   this.sensor_count = 4; // number of sensors
   this.sensors = []; // an array of sensors results
@@ -13,30 +13,40 @@ var Missile = function(x, y, vx, vy) {
   this.turn_speed = 0.12;
   this.acceleration = 0.01;
   this.points = 10;
-
+  this.size = size;
   this.init_sprite();
   this.spawn(x, y, vx, vy);
 }
 
 Missile.prototype.init_sprite = function() {
-  // alternativ : alien_rocket
-  // dann allerdings ohne flame, und mit 100ms
-  jQuery.extend(this, new Sprite(80, 'alien_small_rocket')); 
-  this.scale = 0.8; // christof changed this from 0.8
-  this.collision_radius = 4;
-  this.restitution = 0.3;
-  this.mass = 0.1;
-  this.display = false;
-  this.rot = Math.random()*Math.PI*2;
-  this.drot = Math.randomSign() * 0.04;
-
-  // die flame brauchen wir nur für die small rocket!
-  var flame_sprite = new Sprite(30, 'small_rocket_flame');
-  flame_sprite.scale = 1;
-  flame_sprite.y = 14; flame_sprite.alpha = 0.9;
-  flame_sprite.draw_in_front_of_parent = false;
-  this.child_sprites.push(flame_sprite);
-
+  if(this.size == 'S'){
+    // alternativ : alien_rocket
+    // dann allerdings ohne flame, und mit 100ms
+    jQuery.extend(this, new Sprite(80, 'alien_small_rocket')); 
+    this.scale = 0.8; // christof changed this from 0.8
+    this.collision_radius = 4;
+    this.restitution = 0.3;
+    this.mass = 0.1;
+    this.display = false;
+    this.rot = Math.random()*Math.PI*2;
+    this.drot = Math.randomSign() * 0.04;
+    
+    // die flame brauchen wir nur für die small rocket!
+    var flame_sprite = new Sprite(30, 'small_rocket_flame');
+    flame_sprite.scale = 1;
+    flame_sprite.y = 14; flame_sprite.alpha = 0.9;
+    flame_sprite.draw_in_front_of_parent = false;
+    this.child_sprites.push(flame_sprite);
+  }else{ // the large one
+    jQuery.extend(this, new Sprite(80, 'alien_rocket')); 
+    this.scale = 0.8;
+    this.collision_radius = 6;
+    this.restitution = 0.5;
+    this.acceleration = 0.01;
+    this.point = 100;
+    this.v_max = 2;
+    this.mass = 0.5;
+  }
   Game.main_sprite.child_sprites.push(this);
   Game.aliens.push(this);
 }
@@ -82,9 +92,11 @@ Missile.prototype.step = function() {
   // christof replaced this:  // this.rot += this.drot;
   this.rot = Math.atan2(this.vy, this.vx)+Math.PI/2;
 
-  if(Math.random() > 0.85){
-    var r = 18;
+  var r = Math.random();
+  if(r > 0.85 || ( this.size == 'L' && r > 0.5) ){
+    var r = this.size == 'L' ? 5 : 18;
     var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
+
     s.scale = 0.7;
     s.rot = Math.random() * 2*Math.PI;
     s.alpha = 0.8 + Math.random() *  0.2;
