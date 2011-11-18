@@ -56,7 +56,7 @@ Mine.prototype.destroy = function() {
 
 Mine.prototype.explode = function() {
   var expl = new Explosion(this.x, this.y, 'L');
-  expl.shockwave(2, 60, 40, 30, 20);
+  expl.shockwave({dvel: 2, vel_r: 60, damage: 40, damage_r1: 20, damage_r2: 30});
 
   var blast = new Explosion(this.x, this.y, 'blast');
   blast.scale = 1.5;

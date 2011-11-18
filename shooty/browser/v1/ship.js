@@ -39,6 +39,15 @@ var Ship = function(session_code) {
   this.rocket_level = 0; // todo
   this.heal_per_sec = 15;
   this.rotation_speed = 1;
+
+  this.rocket_warhead_energy = 50;
+  this.rocket_mass = 0.5;
+  this.rocket_turn_speed = 0.0025;
+  this.rocket_sensor_range = 100;
+  this.rocket_count_max = 0;
+  this.rocket_scale = 0.4;
+  this.curr_rocket_count = 0;
+  
 };
 
 Ship.prototype.update_from_extra = function(name){
@@ -51,7 +60,7 @@ Ship.prototype.update_from_extra = function(name){
     this.acceleration = 0.1 + extraLevel * 0.04;
     break;
   case 'bullet-speed':
-    this.shot_speed = 10 + extraLevel * 5;
+    this.shot_speed = 10 + extraLevel * 2;
     break;
   case 'life':
     Game.lives++;
@@ -80,6 +89,12 @@ Ship.prototype.update_from_extra = function(name){
     this.rotation_speed = (this.rotation_speed+0.1)*1.05;
     break;
   case 'rocket':
+    this.rocket_warhead_energy = (this.rocket_warhead_energy+50)*1.2;
+    this.rocket_mass *= 1.1;
+    this.rocket_turn_speed *= 1.1;
+    this.rocket_sensor_range *= 1.2;
+    this.rocket_scale *= 1.1;
+    this.rocket_count_max ++;
 
     break;
 
@@ -209,12 +224,16 @@ Ship.prototype.shoot = function() {
 
   var angleFix = !(this.num_shots % 2) ? this.shot_angle/2 : 0;   
   for(var i=0;i<this.num_shots;++i){
-
     Game.shots.push(new Shot(this.shot_level,
                              this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
                              this.vx, this.vy, this.shot_speed, 
                              angleFix + this.rot + this.shot_angle * (i-this.num_shots/2),
                              this.shot_energy,this.shot_max_dist));
+
+  }
+  if(this.curr_rocket_count < this.rocket_count_max){
+    new Rocket(this,this.x,this.y,this.rot,this.rocket_warhead_energy, this.rocket_mass, 
+               this.rocket_sensor_range, this.rocket_turn_speed, this.rocket_scale);
   }
 }
 
@@ -242,7 +261,7 @@ Ship.prototype.destroy = function() {
 
 Ship.prototype.hit = function(energy) {
   if (this.destroyed) return;
-  if (this.status != 'flying') energy *= 2;
+  if (this.state != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;

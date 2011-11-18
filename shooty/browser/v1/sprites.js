@@ -232,7 +232,7 @@ PaintEngine = function(canvas) {
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
   this.draw_physics = false;
-  this.draw_alien_sensors = true;
+  this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
     this.sprites.forEach(function(sprite) {

@@ -4,36 +4,67 @@
     The missiles have a number of radial sensors. Each sensor can only detect the
     closest object in its direction. */
 
-// To create a missile, pass along the initial position and speed.
-var Missile = function(x, y, vx, vy) {
+/// To create a missile, pass along the initial position, speed and size (can be
+/// 'S' or 'L').
+var Missile = function(x, y, vx, vy, size) {
   this.type = 'alien_shot'; // should be changed to 'alien_ship' or 'alien_shot'
   this.sensor_count = 4;    // number of sensors
   this.sensor_range = 250;  // max. sensor range
-  this.v_max = 0.8;         // maximum speed
-  this.turn_speed = 0.12;   // turning speed
-  this.acceleration = 0.01; // acceleration
-  this.coins = 1;           // coins the players get on destruction
   
-  this.sprite_name = 'alien_small_rocket'; // visual appearance of the alien
-  this.scale = 0.8;
-  this.explosion_size = 'M'; // size of the explosion when destroyed
-  this.shockwave =           // shockwave parameters (on explosion)
-    { damage: 30             // max. damage dealt for affected objects
-     ,damage_r1: 5           // if sth. is closer than this, deal max. damage
-     ,damage_r2: 15          // if sth. is farer than this, deal no damage
-    };
-  this.collision_radius = 4; // collision radius for physics
-  this.restitution = 0.3;    // restitution for collision
-  this.mass = 0.1;           // mass of ship
-  this.max_energy = 15;      // energy at creation
+  this.size = arguments[4] || 'S';
+  if (this.size == 'S') {
+    // small rocket
+    this.v_max = 0.8;         // maximum speed
+    this.turn_speed = 0.12;   // turning speed
+    this.acceleration = 0.01; // acceleration
+    this.coins = 1;           // coins the players get on destruction
+
+    this.sprite_name = 'alien_small_rocket'; // visual appearance of the alien
+    this.scale = 0.8;
+    this.explosion_size = 'M'; // size of the explosion when destroyed
+    this.shockwave =           // shockwave parameters (on explosion)
+      { damage: 30             // max. damage dealt for affected objects
+       ,damage_r1: 5           // if sth. is closer than this, deal max. damage
+       ,damage_r2: 15          // if sth. is farer than this, deal no damage
+      };
+    this.collision_radius = 4; // collision radius for physics
+    this.restitution = 0.3;    // restitution for collision
+    this.mass = 0.1;           // mass of ship
+    this.max_energy = 15;      // energy at creation
+
+    this.self_destruct_range = 5;   // if ship comes closer than this, self destruct
+  } else {
+    // big rocket
+    this.v_max = 1.6;         // maximum speed
+    this.turn_speed = 0.15;   // turning speed
+    this.acceleration = 0.01; // acceleration
+    this.coins = 5;           // coins the players get on destruction
+
+    this.sprite_name = 'alien_rocket'; // visual appearance of the alien
+    this.scale = 0.8;
+    this.explosion_size = 'M'; // size of the explosion when destroyed
+    this.shockwave =           // shockwave parameters (on explosion)
+      { damage: 90             // max. damage dealt for affected objects
+       ,damage_r1: 10          // if sth. is closer than this, deal max. damage
+       ,damage_r2: 30          // if sth. is farer than this, deal no damage
+       ,dvel: 1                // max. delta velocity for affected objects
+       ,vel_r: 30              // if sth. is farer than this, don't change vel.
+      };
+    this.collision_radius = 6; // collision radius for physics
+    this.restitution = 0.3;    // restitution for collision
+    this.mass = 0.3;           // mass of ship
+    this.max_energy = 45;      // energy at creation
+
+    this.self_destruct_range = 10;   // if ship comes closer than this, self destruct
+  }
   
-  this.self_destruct_range = 5;   // if ship comes closer than this, self destruct
+
   this.obstacle_range_near = 20; // turn away from obstacles (hunting mode)
   this.obstacle_range_far = 50;  // turn away from obstacles (non hunting mode)
   this.hunting_range = 250;       // ship closer than this will be hunted
   this.schooling_range = 80;      // align with other missiles inside this range
 
-  this.my_init_sprite();
+  this.my_init_sprite(size);
   this.my_spawn(x,y,vx,vy);
 }
 
@@ -45,11 +76,13 @@ Missile.prototype.my_init_sprite = function() {
   // dann allerdings ohne flame, und mit 100ms
   this.init_sprite();
 
-  // die flame brauchen wir nur für die small rocket!
-  var flame_sprite = new Sprite(200, 'small_rocket_flame');
-  flame_sprite.y = 14; flame_sprite.alpha = 0.9;
-  flame_sprite.draw_in_front_of_parent = false;
-  this.child_sprites.push(flame_sprite);
+  if (this.size == 'S') {
+    // die flame brauchen wir nur für die small rocket!
+    var flame_sprite = new Sprite(200, 'small_rocket_flame');
+    flame_sprite.y = 14; flame_sprite.alpha = 0.9;
+    flame_sprite.draw_in_front_of_parent = false;
+    this.child_sprites.push(flame_sprite);
+  }
 }
 
 Missile.prototype.my_spawn = function(x, y, vx, vy) {
@@ -61,8 +94,10 @@ Missile.prototype.my_spawn = function(x, y, vx, vy) {
 }
 
 Missile.prototype.smoke = function() {
-  if(Math.random() > 0.9){
-    var r = 18;
+  if ((this.size == 'S' && Math.random() > 0.9) ||
+      (this.size == 'L' && Math.random() > 0.5))
+  {
+    var r = this.size == 'L' ? 5 : 18;
     var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
     s.scale = 0.7;
     s.alpha = 0.8 + Math.random() *  0.2;
