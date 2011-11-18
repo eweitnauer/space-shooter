@@ -67,8 +67,8 @@ var Game = {
   }
   ,spawn_aliens: function(){
     new Ufo();
-    new Ufo();
-    //new Pyramid();
+    //new Ufo();
+    new Pyramid();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {

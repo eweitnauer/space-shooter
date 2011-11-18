@@ -31,7 +31,7 @@ Rocket = function(ship, x, y, rot, warhead_energy, mass, sensor_range, turn_spee
 
   this.rot = Math.atan2(this.vx,this.vy);
   
-  this.scale = 0.5; // adapt from level
+  this.scale = scale; // adapt from level
   
   this.warhead_energy = warhead_energy;
 

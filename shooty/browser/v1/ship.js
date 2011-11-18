@@ -44,7 +44,7 @@ var Ship = function(session_code) {
   this.rocket_mass = 0.5;
   this.rocket_turn_speed = 0.0025;
   this.rocket_sensor_range = 100;
-  this.rocket_count_max = 1;
+  this.rocket_count_max = 0;
   this.rocket_scale = 0.4;
   this.curr_rocket_count = 0;
   
@@ -60,7 +60,7 @@ Ship.prototype.update_from_extra = function(name){
     this.acceleration = 0.1 + extraLevel * 0.04;
     break;
   case 'bullet-speed':
-    this.shot_speed = 10 + extraLevel * 5;
+    this.shot_speed = 10 + extraLevel * 2;
     break;
   case 'life':
     Game.lives++;
@@ -94,10 +94,7 @@ Ship.prototype.update_from_extra = function(name){
     this.rocket_turn_speed *= 1.1;
     this.rocket_sensor_range *= 1.2;
     this.rocket_scale *= 1.1;
-    if(extraLevel > 1){
-      this.rocket_count_max ++;
-    }
-    
+    this.rocket_count_max ++;
 
     break;
 
