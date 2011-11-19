@@ -31,6 +31,7 @@ ImageBank.load_animation('alien_ufo', 'graphics/aliens/ufo-', 3);
 ImageBank.load_animation('alien_mine', 'graphics/aliens/mine-', 3);
 ImageBank.load_animation('alien_rocket', 'graphics/aliens/rocket-', 6);
 ImageBank.load_animation('alien_small_rocket', 'graphics/aliens/small-rocket-', 3);
+ImageBank.load_animation('alien_fighter', 'graphics/aliens/fighter-', 4);
 
 ImageBank.load_single('shop-button-normal', 'graphics/extras/extra-button-normal-3');
 ImageBank.load_single('shop-button-hovered', 'graphics/extras/extra-button-hovered-3');

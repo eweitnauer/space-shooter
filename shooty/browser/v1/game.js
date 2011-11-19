@@ -82,6 +82,8 @@ var Game = {
     new Ufo();
     //new Ufo();
     new Pyramid();
+    new Fighter();
+    new Fighter();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -160,6 +162,7 @@ var Game = {
     // alien - shot  collisions
     Game.aliens.forEach(function(alien) {
       Game.shots.forEach(function(shot) {
+        if(!shot.shooter) return; // in this case, aliens cannot hit other aliens
         Physics.checkCollision(alien, shot,
                                function(alien, shot, px, py) {
                                  // aliens don't shoot each other
