@@ -42,6 +42,15 @@ function init_animations() {
     if (/star/.test(img)){
       sprite.scale = 0.5;
     }
+    if (/small-cube/.test(img)){
+      sprite.animation.setTimeLine(80);
+      sprite.scale = 0.5;
+    }
+    if (/large-cube/.test(img)){
+      sprite.animation.setTimeLine(120);
+      sprite.scale = 1.0;
+    }
+
 
     if(/shop-background/.test(img)){
       sprite.scale = 0.1;
