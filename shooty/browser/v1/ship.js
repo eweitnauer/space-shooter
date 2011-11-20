@@ -224,11 +224,11 @@ Ship.prototype.shoot = function() {
 
   var angleFix = !(this.num_shots % 2) ? this.shot_angle/2 : 0;   
   for(var i=0;i<this.num_shots;++i){
-    Game.shots.push(new Shot(this.shot_level,
-                             this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
-                             this.vx, this.vy, this.shot_speed, 
-                             angleFix + this.rot + this.shot_angle * (i-this.num_shots/2),
-                             this.shot_energy,this.shot_max_dist));
+    new Shot(this.shot_level,
+             this,this.x+dx*5+this.vx, this.y+dy*5+this.vy, 
+             this.vx, this.vy, this.shot_speed, 
+             angleFix + this.rot + this.shot_angle * (i-this.num_shots/2),
+             this.shot_energy,this.shot_max_dist);
 
   }
   if(this.curr_rocket_count < this.rocket_count_max){

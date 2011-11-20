@@ -141,6 +141,7 @@ Shot.prototype.init_sprite = function() {
   var sprite = new Sprite(80, 'bullet-'+this.level);
   jQuery.extend(this, sprite);
   Game.main_sprite.child_sprites.push(this);
+  Game.shots.push(this);
 }
 
 // ajax

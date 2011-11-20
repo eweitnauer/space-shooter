@@ -20,7 +20,7 @@ var Missile = function(x, y, vx, vy, size) {
     this.coins = 1;           // coins the players get on destruction
 
     this.sprite_name = 'alien_small_rocket'; // visual appearance of the alien
-    this.scale = 0.8;
+    this.scale = 0.7;
     this.explosion_size = 'M'; // size of the explosion when destroyed
     this.shockwave =           // shockwave parameters (on explosion)
       { damage: 30             // max. damage dealt for affected objects
@@ -41,7 +41,7 @@ var Missile = function(x, y, vx, vy, size) {
     this.coins = 5;           // coins the players get on destruction
 
     this.sprite_name = 'alien_rocket'; // visual appearance of the alien
-    this.scale = 0.8;
+    this.scale = 0.7;
     this.explosion_size = 'M'; // size of the explosion when destroyed
     this.shockwave =           // shockwave parameters (on explosion)
       { damage: 90             // max. damage dealt for affected objects
@@ -114,7 +114,7 @@ Missile.prototype.schooling_behavior = function() {
   for (var i=0; i<N; i++) {
     if (!this.sensors[i] || !(this.sensors[i][1] instanceof Missile)) continue;
     if (this.sensors[i][0] > this.schooling_range) continue;
-    if (i >= this.sensor_count*1/4 && i < this.sensor_count*3/4) continue;
+    if (i >= N*0.25 && i < N*0.75) continue;
     done = true;
     drot += norm_rotation(Math.atan2(this.sensors[i][1].vy, this.sensors[i][1].vx) - rot);
   }

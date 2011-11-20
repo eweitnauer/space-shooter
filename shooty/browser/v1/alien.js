@@ -82,20 +82,33 @@ Alien.prototype.explode = function() {
 
 Alien.prototype.is_moving = function() { return this.vx != 0 || this.vy != 0; }
 
-/// Functions for turning the object. It influences vx and vy but does not
-/// change the total speed.
-Alien.prototype.turn_left = function() { this.turn(-this.turn_speed); }
-Alien.prototype.turn_right = function() { this.turn(this.turn_speed); }
+/// Turn left by this.turn_speed*frac. If no frac is passed, it is set to 1.
+Alien.prototype.turn_left = function(frac) {
+  if (arguments.length < 1) var frac = 1;
+  this.turn(-this.turn_speed*frac);
+}
+
+/// Turn right by this.turn_speed*frac. If no frac is passed, it is set to 1.
+Alien.prototype.turn_right = function(frac) {
+  if (arguments.length < 1) var frac = 1;
+  this.turn(this.turn_speed*frac);
+}
+
+/// Turn towards the passed position (maximum rot. per step is this.turn_speed).
 Alien.prototype.turn_towards = function(x, y) {
   var drot = -norm_rotation(Math.atan2(this.vy, this.vx) - Math.atan2(y-this.y, x-this.x));
   if (drot > 0) this.turn(Math.min(drot, this.turn_speed));
   else if (drot < 0) this.turn(Math.max(drot, -this.turn_speed));
 }
+
+/// Turn away from the passed position (maximum rot. per step is this.turn_speed).
 Alien.prototype.turn_away_from = function(x, y) {
   var drot = norm_rotation(Math.atan2(this.vy, this.vx) - Math.atan2(y-this.y, x-this.x));
   if (drot > 0) this.turn(Math.min(drot, this.turn_speed));
   else if (drot < 0) this.turn(Math.max(drot, -this.turn_speed));
 }
+
+/// Turns around by modifying vx and vy.
 Alien.prototype.turn = function(angle) {
   var dir = Math.atan2(this.vy, this.vx);
   var v = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
@@ -224,11 +237,11 @@ Alien.prototype.avoid_obstacles_behavior = function(prefered_dist) {
     if (min_dist > this.sensors[i][0]) min_dist = this.sensors[i][0];
   }
   /// now turn away from the obstacle (higher probability for closer obstacles)
-  if ((sum != 0) && (Math.random() < 1-min_dist/max_dist)) {
-    sum < 0 ? this.turn_right() : this.turn_left();
-    return true;
+  if ((sum != 0) && (Math.random()*0.5 < 1-min_dist/max_dist)) {
+    var factor = 1-min_dist/max_dist;
+    sum < 0 ? this.turn_right(factor) : this.turn_left(factor);
   }
-  return false;
+  return sum!=0;
 }
 
 /// Step function that should be called every 
