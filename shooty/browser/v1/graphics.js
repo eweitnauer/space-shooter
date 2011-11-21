@@ -84,7 +84,12 @@ ImageBank.load_animation('bullet-5-spark', 'graphics/bullets/bullet-level-5-spar
 
 ImageBank.load_animation('player-rocket', 'graphics/player-rocket/player-rocket-', 3);
 
-ImageBank.load_animation('alien-large-cube', 'graphics/aliens/cube-',12);
-ImageBank.load_animation('alien-small-cube', 'graphics/aliens/cube-',12);
+ImageBank.load_animation('alien-large-cube', 'graphics/aliens/cube-',24);
+ImageBank.load_animation('alien-small-cube', 'graphics/aliens/cube-',24);
 
-ImageBank.load_animation('alien-cube-r', 'graphics/aliens/cube-',12);
+
+ImageBank.load_animation('alien-yellow-box', 'graphics/aliens/yellow-box-',3);
+
+
+// this one is rotating for some strange reason ..
+ImageBank.load_animation('alien-cube-r', 'graphics/aliens/cube-',24);
