@@ -80,11 +80,12 @@ var Game = {
   }
   ,spawn_aliens: function(){
     //new Ufo();
-    new Ufo();
-    new Pyramid();
+//    new Ufo();
+    //new Pyramid();
 //    new Fighter();
-    new Fighter();
+    //new Fighter();
     new YellowBox();
+    new Amoeba();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -205,7 +206,9 @@ var Game = {
       el.forTail(function(alien2) {
         Physics.checkCollision(alien1, alien2,
                                function(alien1, alien2, px, py) {
-                                 if(alien1.type != 'rocket' && alien2.type != 'rocket'){
+                                 if(alien1.is_yellow_box && alien1.is_yellow_box){
+                                   return;
+                                 }else if(alien1.type != 'rocket' && alien2.type != 'rocket'){
                                    var energy = Math.max(Physics.letCollide(alien1, alien2), 3);
                                    alien1.hit(energy, alien2.type);
                                    alien2.hit(energy, alien1.type);

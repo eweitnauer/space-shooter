@@ -260,3 +260,4 @@ Alien.prototype.think = function() {
   if (this.avoid_obstacles_behavior(this.sensor_range)) return;
   return;
 }
+

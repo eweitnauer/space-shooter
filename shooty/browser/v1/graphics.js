@@ -89,7 +89,10 @@ ImageBank.load_animation('alien-small-cube', 'graphics/aliens/cube-',24);
 
 
 ImageBank.load_animation('alien-yellow-box', 'graphics/aliens/yellow-box-',3);
+ImageBank.load_animation('alien-small-yellow-box', 'graphics/aliens/small-yellow-box-',3);
 
 
+ImageBank.load_animation('alien-amoeba-anim', 'graphics/aliens/amoeba-anim-',13);
 // this one is rotating for some strange reason ..
-ImageBank.load_animation('alien-cube-r', 'graphics/aliens/cube-',24);
+ImageBank.load_animation('alien-amoeba', 'graphics/aliens/amoeba-',18);
+
