@@ -21,6 +21,7 @@ ImageBank.load_animation('big_explosion', 'graphics/effects/ship-explosion-', 28
 ImageBank.load_animation('huge_explosion', 'graphics/effects/very-large-explosion-', 26);
 ImageBank.load_animation('med_explosion', 'graphics/effects/medium-explosion-', 11);
 ImageBank.load_animation('small_explosion', 'graphics/effects/very-small-explosion-', 15);
+ImageBank.load_animation('green_explosion', 'graphics/effects/green-splash-', 13);
 ImageBank.load_animation('sploing_a', 'graphics/effects/a-sploing-', 4);
 ImageBank.load_animation('sploing_b', 'graphics/effects/b-sploing-', 4);
 ImageBank.load_single('background', 'graphics/bg');
@@ -78,10 +79,23 @@ ImageBank.load_animation('bullet-2', 'graphics/bullets/bullet-level-2-', 3);
 ImageBank.load_animation('bullet-3', 'graphics/bullets/bullet-level-3-', 3);
 ImageBank.load_animation('bullet-4', 'graphics/bullets/bullet-level-4-', 3);
 ImageBank.load_animation('bullet-5', 'graphics/bullets/bullet-level-5-', 3);
+ImageBank.load_animation('bullet-6', 'graphics/bullets/bullet-level-6-', 3);
 
 ImageBank.load_animation('bullet-4-spark', 'graphics/bullets/bullet-level-4-spark-', 3);
 ImageBank.load_animation('bullet-5-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
+ImageBank.load_animation('bullet-6-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
 
 ImageBank.load_animation('player-rocket', 'graphics/player-rocket/player-rocket-', 3);
 
-ImageBank.load_single('star-gold-rotating', 'graphics/extras/star-gold');
+ImageBank.load_animation('alien-large-cube', 'graphics/aliens/cube-',24);
+ImageBank.load_animation('alien-small-cube', 'graphics/aliens/cube-',24);
+
+
+ImageBank.load_animation('alien-yellow-box', 'graphics/aliens/yellow-box-',3);
+ImageBank.load_animation('alien-small-yellow-box', 'graphics/aliens/small-yellow-box-',3);
+
+
+ImageBank.load_animation('alien-amoeba-anim', 'graphics/aliens/amoeba-anim-',13);
+// this one is rotating for some strange reason ..
+ImageBank.load_animation('alien-amoeba', 'graphics/aliens/amoeba-',18);
+

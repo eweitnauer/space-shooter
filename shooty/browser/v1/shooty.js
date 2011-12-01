@@ -11,6 +11,7 @@ Explosion.prototype.init_sprite = function(size) {
   else if (size == 'M') var sprite = new Sprite(80, 'small_explosion');
   else if (size == 'blast') var sprite = new Sprite(40, 'boom-blast');
   else if (size == 'S') var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
+  else if (size == 'green') var sprite = new Sprite(80, 'green_explosion');
   else var sprite = new Sprite();
   sprite.rot = Math.random()*Math.PI*2;
   sprite.animation.loop = false;
@@ -79,7 +80,7 @@ Smoke.prototype.init_sprite = function(img, parent_sprite) {
   } else Game.main_sprite.child_sprites.push(this);
 }
 
-var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist) {
+var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist,extra_step_func) {
   this.level = level;
   this.init_sprite();
   this.energy = energy;
@@ -96,8 +97,20 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist) {
   this.rot = rot;
   this.maxDist = maxDist;
   
+  this.extra_step_func = extra_step_func;
+  
   this.step = function(){
-    if(this.level == 4){
+    if(this.level == 6){ // this is no player shot
+      if(Math.random() > 0.5){
+        var s = new Smoke(this.x+(Math.random()-.5)*5, 
+                          this.y+(Math.random()-.5)*5, 
+                          'bullet-4-spark');
+        s.alpha = 0.8;
+        s.scale = 0.4+Math.random()*0.6;
+        s.alpha_decay = 0.2+Math.random() * 0.4;
+      }
+      
+    }else if(this.level == 4){
       if(Math.random() > 0.2){
         var s = new Smoke(this.x+(Math.random()-.5)*5, 
                           this.y+(Math.random()-.5)*5, 
@@ -122,14 +135,19 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist) {
         s.scale = 0.4+Math.random()*0.6;
         s.alpha_decay = 0.2+Math.random() * 0.4;
       }
+   
     }
-
+    
     this.x += this.vx;
     this.y += this.vy;
     var dx = this.x-this.initx;
     var dy = this.y-this.inity;
     var flownDist = Math.sqrt(dx*dx+dy*dy);
     if (flownDist > this.maxDist) this.kill();
+    
+    if(this.extra_step_func != null){
+      this.extra_step_func(this);
+    }
   }
   this.kill = function() {
     this.display = false;

@@ -49,8 +49,21 @@ LinkedList.prototype.push = function(data) {
   else return this.tail.append(data);
 }
 
+// dunno whether this works !
+LinkedList.prototype.pushFront = function(data) {
+  if (!this.head) {
+    return this.head = this.tail = new ListElement(this, data, null, null);
+  }
+  this.head.prepend(data);
+  return this.head;
+}
+
 LinkedList.prototype.forEach = function(fn) {
   for (var el = this.head; el; el=el.next) { fn(el.d, el) }
+}
+
+LinkedList.prototype.forEachReverse = function(fn) {
+  for (var el = this.tail; el; el=el.prev) { fn(el.d, el) }
 }
 
 LinkedList.prototype.toArray = function() {

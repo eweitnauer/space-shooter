@@ -14,6 +14,7 @@ Sprite = function(timeLine, imgs) {
   this.draw_in_front_of_parent = true;
   this.center_img = true;
   this.display = true;
+  this.hide_self_but_draw_children = false;
   this.getImageSize = function(idx){
     if (typeof(idx) == 'undefined') idx = 0;
     var size = { width: this.animation._imgs[idx].width,
@@ -169,7 +170,7 @@ Sprite.prototype.draw = function(ctx) {
   
   // draw self
   var img = this.animation.getCurrentImage();
-  if (img) {
+  if (img && !this.hide_self_but_draw_children) {
     ctx.save();
     ctx.translate(this.offset_x, this.offset_y);
     ctx.rotate(this.offset_rot);
