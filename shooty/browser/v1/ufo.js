@@ -102,9 +102,12 @@ Ufo.prototype.think = function() {
   this.drop_mines_behavior();
   if (this.avoid_obstacles_behavior({landscape: 10
                                     ,alien_ship: 10})) return;
-  this.my_avoid_obstacles_behavior({landscape: 100
-                                   ,alien_ship: 100});  
+  if(this.my_avoid_obstacles_behavior){
+    this.my_avoid_obstacles_behavior({landscape: 100
+                                      ,alien_ship: 100});  
+  }
 }
+
 
 Ufo.prototype.drop_mines_behavior = function() {
   if (this.state == 'flying') {
