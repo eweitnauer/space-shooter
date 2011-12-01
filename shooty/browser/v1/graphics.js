@@ -26,8 +26,6 @@ load_images('bullet',{'0':3,
                       '4':3,
                       '5':3,
                       '6':3,
-                      'spark-0':3,
-                      'spark-1':3,
                       'rocket':3});
 
 load_images('explosion',{'blast':7,
@@ -78,6 +76,8 @@ load_images('smoke',{'0':30,
                      '2':4,
                      '3':21,
                      '4':21,
+                     'spark-0':3,
+                     'spark-1':3,
                      'rocket-S':13,
                      'rocket-XS':8});
 
