@@ -73,11 +73,25 @@ load_images('flame',{ 'L':3,
                       'XL':4,
                       'muzzleflash':3 });
 
+load_images('smoke',{'0':30,
+                     '1':30,
+                     '2':4,
+                     '3':21,
+                     '4':21,
+                     'rocket-S':13,
+                     'rocket-XS':8});
+
 var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
 for (var i=0; i< global_ship_colors.length;++i){
   var c = global_ship_colors[i];
-  load_images('ship',{c:}]);
+  var list = {}; 
+  list[c] = 4;
+  list['solar-'+c] = 13;
+  list['solar-'+c+'-open'] = 3;
+  load_images('ship',list);
 }
+
+
 
 
 
