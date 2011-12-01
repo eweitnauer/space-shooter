@@ -3,7 +3,7 @@
 load_images = function(type,list){
   for(var i in list){
     var name = i, len = list[i];
-    ImageBank.load(type+'-'+list[i],'graphics/'+type+'/'+name, len);
+    ImageBank.load(type+'-'+name,'graphics/'+type+'/'+name, len);
   }
 }
 
@@ -73,8 +73,21 @@ load_images('flame',{ 'L':3,
                       'XL':4,
                       'muzzleflash':3 });
 
-//var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
-//for (var i=0; i< global_ship_colors.length;++i){
-//  var c = global_ship_colors[i];
-//  load_images('ship',{c:}]);
-//}
+load_images('smoke',{'0':30,
+                     '1':30,
+                     '2':4,
+                     '3':21,
+                     '4':21,
+                     'rocket-S':13,
+                     'rocket-XS':8});
+
+var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
+for (var i=0; i< global_ship_colors.length;++i){
+  var c = global_ship_colors[i];
+  var list = {}; 
+  list[c] = 4;
+  list['solar-'+c] = 13;
+  list['solar-'+c+'-open'] = 3;
+  load_images('ship',list);
+}
+

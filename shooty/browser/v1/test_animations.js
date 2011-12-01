@@ -22,39 +22,39 @@ function init_animations() {
       xcell = 1;
       ycell++;
     }
-    if (img == 'alien_ufo') sprite.offset_rot = Math.PI*0.25;
-    if (/solar/.test(img)) {
-      sprite.animation.setTimeLine(120);
-    }
-    if (/sploing/.test(img)) {
-      sprite.animation.setTimeLine(sprite.animation._timeLine.concat(500));
-    }
-    if (/expl/.test(img)) {
-      sprite.animation.setTimeLine(sprite.animation._timeLine.concat(500));
-    }
-    if (/mine/.test(img)) {
-      setInterval(function() {sprite.offset_rot += Math.PI/90}, 1000/30);
-    }
-    if (/coin/.test(img)){
-      sprite.scale = 0.5;
-      sprite.animation.setTimeLine(120);
-    }
-    if (/star/.test(img)){
-      sprite.scale = 0.5;
-    }
-    if (/small-cube/.test(img)){
-      sprite.animation.setTimeLine(80);
-      sprite.scale = 0.5;
-    }
-    if (/large-cube/.test(img)){
-      sprite.animation.setTimeLine(120);
-      sprite.scale = 1.0;
-    }
+//    if (img == 'alien_ufo') sprite.offset_rot = Math.PI*0.25;
+//    if (/solar/.test(img)) {
+//      sprite.animation.setTimeLine(120);
+//    }
+//    if (/sploing/.test(img)) {
+//      sprite.animation.setTimeLine(sprite.animation._timeline.concat(500));
+//    }
+//    if (/expl/.test(img)) {
+//      sprite.animation.setTimeLine(sprite.animation._timeline.concat(500));
+//    }
+//    if (/mine/.test(img)) {
+//      setInterval(function() {sprite.offset_rot += Math.PI/90}, 1000/30);
+//    }
+//    if (/coin/.test(img)){
+//      sprite.scale = 0.5;
+//      sprite.animation.setTimeLine(120);
+//    }
+//    if (/star/.test(img)){
+//      sprite.scale = 0.5;
+//    }
+//    if (/small-cube/.test(img)){
+//      sprite.animation.setTimeLine(80);
+//      sprite.scale = 0.5;
+//    }
+//    if (/large-cube/.test(img)){
+//      sprite.animation.setTimeLine(120);
+//      sprite.scale = 1.0;
+//    }
 
 
-    if(/shop-background/.test(img)){
-      sprite.scale = 0.1;
-    }
+//    if(/shop-background/.test(img)){
+//      sprite.scale = 0.1;
+//    }
     sprites.push(sprite);
   }
 }
@@ -62,12 +62,12 @@ function init_animations() {
 function solar_animation() {
   // closing of solar panel
   var trigger_close = function(sprite) {
-    sprite.animation.setAnimation(120, 'ship_solar_red');
+    sprite.animation.setAnimation(120, 'ship-solar-red');
     sprite.animation.reverse();
     sprite.animation.loop = false;
     sprite.animation.finished_callback = function() {
       // normal flying
-      this.setAnimation(80, 'ship_red');
+      this.setAnimation(80, 'ship-red');
       this.loop = true;
       this.finished_callback = null;
     }
@@ -75,7 +75,7 @@ function solar_animation() {
   
   // opening of solar panel
   var trigger_open = function(sprite) {
-    sprite.animation.setAnimation(120, 'ship_solar_red');
+    sprite.animation.setAnimation(120, 'ship-solar-red');
     sprite.animation.loop = false;
     sprite.animation.finished_callback = function() {
       // keep panel open
@@ -85,7 +85,7 @@ function solar_animation() {
     }
   }
   
-  var sprite = new Sprite(80, 'ship_red');
+  var sprite = new Sprite(80, 'ship-red');
   setInterval(function() {
     trigger_close(sprite);
     setTimeout(function() {trigger_open(sprite)}, 2500);
