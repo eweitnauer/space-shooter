@@ -30,6 +30,7 @@ load_images('bullet',{'0':3,
 
 load_images('explosion',{'blast':7,
                          'green':13,
+                         'XL':15,
                          'L':26,
                          'M':11,
                          'S':15,
