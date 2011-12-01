@@ -68,7 +68,7 @@ Fighter.prototype.smoke = function() {
   var r = 15;
   var p = new Point(this.vx, this.vy);
   p.normalize();
-  var s = new Smoke(this.x-p.x*r, this.y-p.y*r, "very-small-rocket-smoke"); 
+  var s = new Smoke(this.x-p.x*r, this.y-p.y*r, "rocket-XS");
   s.scale = 0.6;
   s.alpha = 0.7;
   s.alpha_decay = 0.05;

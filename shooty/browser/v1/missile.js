@@ -98,7 +98,7 @@ Missile.prototype.smoke = function() {
       (this.size == 'L' && Math.random() > 0.5))
   {
     var r = this.size == 'L' ? 5 : 18;
-    var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
+    var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "rocket-XS");
     s.scale = 0.7;
     s.alpha = 0.8 + Math.random() *  0.2;
     s.alpha_decay = 0.05 + Math.random() * 0.1;

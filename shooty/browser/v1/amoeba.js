@@ -118,7 +118,7 @@ Amoeba.prototype.divide_behaviour = function(){
       if(this.animation.frame == 0){
         this.is_dividing = true;
 
-        this.division_sprite = new Sprite(90,'alien-amoeba-anim');        
+        this.division_sprite = new Sprite(90,'alien-amoeba-division');        
         this.child_sprites.push(this.division_sprite);
 
         this.hide_self_but_draw_children=true;

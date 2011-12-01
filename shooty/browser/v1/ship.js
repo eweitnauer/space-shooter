@@ -203,7 +203,8 @@ Ship.prototype.smoke = function() {
       r = 15;
     }
     var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
-                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6,
+                     'rocket-S');
     
     s.rot = Math.random()*1.5-0.75;
     // shipSpeed \in [ 0 , 6 ]
