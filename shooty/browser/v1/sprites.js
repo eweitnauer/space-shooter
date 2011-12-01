@@ -226,17 +226,16 @@ ImageBank = {
     }
   }
   
-  ,getLoadedImgRatio: function() {
+  ,getLoadingInfo: function() {
     var N = 0, loaded = 0;
     for (var i in this.imgs) {
       var imgs = this.imgs[i]
       for (var k=0; k<imgs.length; k++) {
-        if (imgs[k].complete) loaded++; //imageLoaded(this.imgs[i][k])) loaded++;
-        //else console.log(i, k);
+        if (imageLoaded(imgs[k])) loaded++;
         N++;        
       }
     }
-    return N ? loaded / N : 1;
+    return [loaded, N];
   }
 }
 

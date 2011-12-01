@@ -7,10 +7,18 @@ function init() {
     comm.connect();
     comm.create_session();
   }catch(e){}
-  timer = setInterval(function() { console.log(ImageBank.getLoadedImgRatio()) }, 1);
-  setTimeout(function() { clearInterval(timer)}, 100)
-  //Game.start()
-  //keyboard_init();
+  var t1 = Date.now()
+  timer = setInterval(function() {
+    var info = ImageBank.getLoadingInfo() // [loaded, N]
+    if (info[0] == info[1]) {
+      clearInterval(timer)
+      timer = null
+      console.log('It took', (Date.now()-t1)*0.001, 'seconds to load all images. Starting game...')
+      Game.start() 
+      keyboard_init()
+    }
+    console.log('Waiting for images to load...')
+  }, 100);
 }
 
 function registerListeners() {
