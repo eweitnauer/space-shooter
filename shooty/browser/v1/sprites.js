@@ -224,7 +224,30 @@ ImageBank = {
       img.src = this.prefix + url + num + this.extension;
       this.imgs[tag].push(img);
     }
-  } 
+  }
+  
+  ,getLoadedImgRatio: function() {
+    var N = 0, loaded = 0;
+    for (var i in this.imgs) {
+      var imgs = this.imgs[i]
+      for (var k=0; k<imgs.length; k++) {
+        if (imgs[k].complete) loaded++; //imageLoaded(this.imgs[i][k])) loaded++;
+        //else console.log(i, k);
+        N++;        
+      }
+    }
+    return N ? loaded / N : 1;
+  }
+}
+
+function imageLoaded(img) {
+  if (!img.complete) {
+    return false;
+  }
+  if (typeof img.naturalWidth != 'undefined' && img.naturalWidth== 0) {
+    return false;
+  }
+  return true;
 }
 
 PaintEngine = function(canvas) {

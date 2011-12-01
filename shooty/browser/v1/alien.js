@@ -6,6 +6,7 @@ child classes. */
 var Alien = function() {
   this.type = 'alien';      // should be changed to 'alien_ship' or 'alien_shot'
   this.sensor_count = 6;    // number of sensors
+  this.sensor_type = 'rel'; // 'rel' (relative to current position) or 'abs'
   this.sensors = [];        // an array of sensors results
   this.sensor_range = 100;  // max. sensor range
   this.v_max = 1.0;         // maximum speed
@@ -142,6 +143,10 @@ Alien.prototype.adjust_rot = function(mult) {
 /// inside the sensor range. Sensors react only to the types of objects passed
 /// in the 'obj_type' argument. If nothing or 'false' is passed, all object types
 /// are sensed.
+/// The direction of the sensors depend on the value of this.sensor_type. If it
+/// is set to 'rel', the current moving direction of the alien is taken into
+/// account. If it is set to 'abs', the directions are fixed. The first sensor
+/// senses the segment 0 degrees to 360/N degrees.
 /// The sensor results are written into the sensors array as [dist, obj] pairs.
 Alien.prototype.sense = function(max_dist, obj_types) {
   // empty all sensors
@@ -149,7 +154,7 @@ Alien.prototype.sense = function(max_dist, obj_types) {
   // set own pos and dir
   var self = this;
   var my_pos = new Point(this.x, this.y);
-  var my_rot = Math.atan2(this.vy, this.vx);
+  var my_rot = (this.sensor_type == 'rel') ? Math.atan2(this.vy, this.vx) : 0;
   // helper function
   var sense_obj = function(P) {
     var d = inner_dist(P, self);
@@ -186,7 +191,7 @@ Alien.prototype.visualize_sensors = function(ctx) {
   }
   this.sense(this.sensor_range);
   var N = this.sensor_count;
-  var dir = Math.atan2(this.vy, this.vx);
+  var dir = (this.sensor_type == 'rel') ? Math.atan2(this.vy, this.vx) : 0;
   var colors = {alien_shot: 'orange', alien_ship: 'red', ship: 'green', landscape: 'green'};
   for (var i=0; i<N; i++) {
     if (!this.sensors[i]) continue;

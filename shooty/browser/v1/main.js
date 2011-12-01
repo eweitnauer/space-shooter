@@ -7,8 +7,10 @@ function init() {
     comm.connect();
     comm.create_session();
   }catch(e){}
-  Game.start()
-  keyboard_init();
+  timer = setInterval(function() { console.log(ImageBank.getLoadedImgRatio()) }, 1);
+  setTimeout(function() { clearInterval(timer)}, 100)
+  //Game.start()
+  //keyboard_init();
 }
 
 function registerListeners() {
