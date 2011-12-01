@@ -24,6 +24,7 @@ Sprite = function(timeline, img_tag) {
  *   img_tag: Image tag from ImageBank, can be null */
 Animation = function(timeline, img_tag) {
   this._img = null;                  // image of N vertically stacked frames, can be null
+  this.img_tag = img_tag;            // ImageBank tag, read only
   this._timeline = [];               // array of N frame durations in ms
   this._totalTime = 0;               // sum(timeline)
   this._last_time = Animation.time;  // used to calculate elapsed time since last call

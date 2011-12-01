@@ -22,6 +22,12 @@ function init_animations() {
       xcell = 1;
       ycell++;
     }
+    
+    sprite.extra_draw = function(ctx) {
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText(this.animation.img_tag,0,-40);
+    }
 //    if (img == 'alien_ufo') sprite.offset_rot = Math.PI*0.25;
 //    if (/solar/.test(img)) {
 //      sprite.animation.setTimeLine(120);
