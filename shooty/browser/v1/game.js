@@ -80,8 +80,9 @@ var Game = {
   }
   ,spawn_aliens: function(){
     //new Ufo();
-    new Ufo();
-    new Pyramid();
+    //new Ufo();
+    //new Pyramid();
+    new Fighter();
     new Fighter();
     new Fighter();
   }

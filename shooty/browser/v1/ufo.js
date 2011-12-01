@@ -3,8 +3,8 @@
 Ufo = function() {
   this.type = 'alien_ship'; // should be changed to 'alien_ship' or 'alien_shot'
   this.sensor_count = 6;    // number of sensors
-  this.sensors = [];        // an array of sensors results
-  this.sensor_range = 60;   // max. sensor range
+  this.sensor_type = 'abs'; // sensor positions don't depend on direction of movement
+  this.sensor_range = 100;   // max. sensor range
   this.v_max = 1.0;         // maximum speed
   this.turn_speed = 0.1;    // turning speed
   this.acceleration = 0.02; // acceleration
@@ -65,20 +65,45 @@ Ufo.prototype.step = function() {
 /// in the preferred_dir.
 Ufo.prototype.adjust_speed = function() {
   if (this.vy != 0) this.vy += (this.vy>0) ? -this.acceleration : this.acceleration;
+  if (this.vx > -this.v_max && this.preferred_dir == 'left') this.vx -= this.acceleration;
+  if (this.vx < this.v_max && this.preferred_dir == 'right') this.vx += this.acceleration;
   var dir = Math.atan2(this.vy, this.vx);
   var v = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
   if (v>this.v_max) v = Math.max(0, v-this.acceleration);
-  if (v<this.v_max) v = Math.min(this.v_max, v+this.acceleration);
+  //if (v<this.v_max) v = Math.min(this.v_max, v+this.acceleration);
   this.vx = v * Math.cos(dir);
   this.vy = v * Math.sin(dir);
 }
 
+Ufo.prototype.my_avoid_obstacles_behavior = function(prefered_dist) {
+  var sum = 0;
+  for (var i=0; i<3; i+=3) {  // do this for sensor 1 (right) and 4 (left)
+    // continue if sensor is empty
+    if (this.sensors[i] == null) continue;
+    // get prefered dist for the type of object sensed
+    var pd = (typeof(prefered_dist) == 'number')
+      ? prefered_dist : prefered_dist[this.sensors[i][1].type];
+    // continue if object is far enough
+    if (!pd || this.sensors[i][0] > pd) continue;
+    // add or sub difference between actual and prefered distance to the sum
+    // depending on which side the sensor is
+    if (i <= 2) sum += (pd - this.sensors[i][0]);
+    else sum -= (pd-this.sensors[i][0]);
+  }
+  /// now change direction if neccessary
+  if (sum != 0) {
+    if (sum < 0 && this.preferred_dir == 'left') this.preferred_dir = 'right';
+    if (sum > 0 && this.preferred_dir == 'right') this.preferred_dir = 'left';
+  }
+}
+
 Ufo.prototype.think = function() {
   this.sense(this.sensor_range);
-  this.avoid_obstacles_behavior({landscape: this.sensor_range,
-                                 alien_ship: this.sensor_range,
-                                 alien_shot: 10});
   this.drop_mines_behavior();
+  if (this.avoid_obstacles_behavior({landscape: 10
+                                    ,alien_ship: 10})) return;
+  this.my_avoid_obstacles_behavior({landscape: 100
+                                   ,alien_ship: 100});  
 }
 
 Ufo.prototype.drop_mines_behavior = function() {
@@ -89,6 +114,7 @@ Ufo.prototype.drop_mines_behavior = function() {
       this.next_mine_release_at = Animation.time + this.release_rate;
     }
   } else if (this.state == 'releasing mines') {
+    if (Math.abs(this.vy) > 0.1) return;
     if (Animation.time >= this.next_mine_release_at) {
       if (this.mines == 0) {
         this.state = 'flying';
