@@ -1,8 +1,19 @@
 //ImageBank.prefix = 'http://phigames.com/demos/shooty/';
 
+load_images = function(type,list){
+  for(var i=0;i<list.length();++i){
+    var x = list[i].split(':');
+    var name = x[0], len = x[1];
+    ImageBank.load_animation(type+'-'+list[i],'graphics/'+type+'/'+name, len);
+  }
+}
 
 
-ImageBank.load_animation('alien-amoeba', 'graphics/aliens/amoeba-',18);
+load_images('alien',['amoeba:18','amoeba-division:13',
+                     'fighter:4','mine:3','pyramid:4',
+                     'rocket:6', 'small-rocket:3','ufo:3',
+                     'small-yellow-box:3','yellow-box:3']);
+
 
 //var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
 //global_ship_colors.forEach(function(color) {
