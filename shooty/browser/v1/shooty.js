@@ -4,15 +4,13 @@ var Explosion = function(x, y, size) {
   this.x = x; this.y = y; this.rot = Math.random()*Math.PI*2;
 }
 
-Explosion.prototype.init_sprite = function(size) {
-  if (size == 'XXL') var sprite = new Sprite(80, 'huge_explosion');
-  else if (size == 'XL') var sprite = new Sprite(80, 'big_explosion');
-  else if (size == 'L') var sprite = new Sprite(80, 'med_explosion');
-  else if (size == 'M') var sprite = new Sprite(80, 'small_explosion');
-  else if (size == 'blast') var sprite = new Sprite(40, 'boom-blast');
-  else if (size == 'S') var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
-  else if (size == 'green') var sprite = new Sprite(80, 'green_explosion');
-  else var sprite = new Sprite();
+/// Pass as type on of 'sploing', 'ship', 'green', 'L', 'M', 'S'.
+Explosion.prototype.init_sprite = function(type) {
+  if (type == 'sploing') {
+    var sprite = new Sprite(80, (Math.random()<0.5)?'explosion-sploing-a':'explosion-sploing-b');
+  } else {
+    var sprite = new Sprite(80, 'explosion-'+type);
+  }
   sprite.rot = Math.random()*Math.PI*2;
   sprite.animation.loop = false;
   jQuery.extend(this, sprite);
@@ -53,9 +51,8 @@ Explosion.prototype.shockwave = function(args) {
   Game.forEachMovableObject(apply_to);
 }
 
-var Smoke = function(x,y,img,parent_sprite){
-  var img = typeof(img) != 'undefined' ? img : 'lighter-smoke-large-colored';
-  this.init_sprite(img, parent_sprite);
+var Smoke = function(x,y,type,parent_sprite){
+  this.init_sprite(type, parent_sprite);
   this.x = x;
   this.y = y;
   this.vx = 0;
@@ -69,8 +66,9 @@ var Smoke = function(x,y,img,parent_sprite){
   Game.smokes.push(this);
 };
 
-Smoke.prototype.init_sprite = function(img, parent_sprite) {
-  var sprite = new Sprite(100, img);
+/// Pass as type one of '0', '1', '2', '3', '4', 'rocket-S', 'rocket-XS', 
+Smoke.prototype.init_sprite = function(type, parent_sprite) {
+  var sprite = new Sprite(100, 'smoke-'+type);
   sprite.animation.loop = false;
   sprite.rot = Math.random()*Math.PI*2;
   jQuery.extend(this, sprite);

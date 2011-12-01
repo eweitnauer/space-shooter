@@ -110,7 +110,7 @@ var Game = {
                                    s.alpha_decay = 0.05+Math.random()*0.1;
                                  }
                                  
-                                 new Explosion(shot.x, shot.y, 'S');
+                                 new Explosion(shot.x, shot.y, 'sploing');
                                  // only move ship if it is not landed
                                  Physics.letCollide(ship, shot, ship.state == 'flying', false);
                                  ship.hit(shot.energy);
@@ -130,7 +130,7 @@ var Game = {
           var energy = Physics.letCollide(ship, line, true, false);
           if (!ship.attempt_land(line)) {
             ship.hit(Math.max(10,energy));
-            new Explosion(p.x, p.y, 'S');
+            new Explosion(p.x, p.y, 'sploing');
           }
         });
       }
@@ -156,7 +156,7 @@ var Game = {
           ship.hit(energy);
           alien.hit(energy);
           if (alien.destroyed) ship.points++;
-          new Explosion(px, py, 'S');
+          new Explosion(px, py, 'sploing');
         });  
       });
     });
@@ -176,7 +176,7 @@ var Game = {
                                  s.alpha = 0.8+Math.random()*0.2;
                                  s.scale = 0.3+Math.random()*0.7;
                                  s.alpha_decay = 0.05+Math.random()*0.1;
-                                 new Explosion(shot.x, shot.y, 'S');
+                                 new Explosion(shot.x, shot.y, 'sploing');
                                  
                                  // only move ship if it is not landed
                                  Physics.letCollide(alien, shot, true, false);
@@ -196,7 +196,7 @@ var Game = {
           line.restitution = 0.4;
           var energy = Physics.letCollide(alien, line, true, false);
           alien.hit(Math.max(1,energy), 'landscape');
-          if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'S');
+          if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'sploing');
         });
       }
     });
@@ -224,7 +224,7 @@ var Game = {
                                      o.hit(r.warhead_energy);
                                    }
                                  }
-                                 new Explosion(px, py, 'S');
+                                 new Explosion(px, py, 'sploing');
                                });
       });
     });
@@ -241,7 +241,7 @@ var Game = {
                                                             ship2.hit(energy);
                                                             if (ship1.destroyed && !(ship2.destroyed && pts2==0)) ship2.points++;
                                                             if (ship2.destroyed && !(ship1.destroyed && pts1==0)) ship1.points++;
-                                                            new Explosion(px, py, 'S');
+                                                            new Explosion(px, py, 'sploing');
                                                           });
       });
     });
