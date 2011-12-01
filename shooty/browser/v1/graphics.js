@@ -1,5 +1,7 @@
 //ImageBank.prefix = 'http://phigames.com/demos/shooty/';
 
+
+
 ImageBank.load_animation('alien-amoeba', 'graphics/aliens/amoeba-',18);
 
 //var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
