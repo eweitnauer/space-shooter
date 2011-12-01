@@ -47,7 +47,7 @@ Fighter.prototype.constructor = Fighter;
 Fighter.prototype.my_init_sprite = function() {
   this.init_sprite();
 
-  var flame_sprite = new Sprite(40, 'small_rocket_flame');
+  var flame_sprite = new Sprite(40, 'flame-rocket');
   flame_sprite.y = 20; flame_sprite.alpha = 0.9;
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);

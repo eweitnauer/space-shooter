@@ -102,7 +102,7 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist,extra_step_func
       if(Math.random() > 0.5){
         var s = new Smoke(this.x+(Math.random()-.5)*5, 
                           this.y+(Math.random()-.5)*5, 
-                          'bullet-4-spark');
+                          'spark-0');
         s.alpha = 0.8;
         s.scale = 0.4+Math.random()*0.6;
         s.alpha_decay = 0.2+Math.random() * 0.4;
@@ -112,7 +112,7 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist,extra_step_func
       if(Math.random() > 0.2){
         var s = new Smoke(this.x+(Math.random()-.5)*5, 
                           this.y+(Math.random()-.5)*5, 
-                          Math.random() > 0.2 ? 'bullet-4-spark' : 'bullet-5-spark');
+                          Math.random() > 0.2 ? 'spark-0' : 'spark-1');
         s.alpha = 0.8;
         s.scale = 0.4+Math.random()*0.6;
         s.alpha_decay = 0.2+Math.random() * 0.4;
@@ -120,7 +120,7 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist,extra_step_func
     }else if(this.level == 5){
       var r = Math.random();
       if(r > 0.8){
-        var s = new Smoke(this.x-this.vx, this.y-this.vy, "very-small-rocket-smoke");
+        var s = new Smoke(this.x-this.vx, this.y-this.vy, "rocket-XS");
         s.scale = 0.3 + Math.random() * 0.5;
         s.rot = Math.random() * 2*Math.PI;
         s.alpha = 0.8 + Math.random() *  0.2;
@@ -128,7 +128,7 @@ var Shot = function(level,shooter,x,y,vx,vy,v,rot,energy,maxDist,extra_step_func
       }else if(r > 0.3){
         var s = new Smoke(this.x+(Math.random()-.5)*5, 
                           this.y+(Math.random()-.5)*5, 
-                          'bullet-5-spark');
+                          'spark-1');
         s.alpha = 0.8;
         s.scale = 0.4+Math.random()*0.6;
         s.alpha_decay = 0.2+Math.random() * 0.4;

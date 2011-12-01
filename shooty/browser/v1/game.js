@@ -103,7 +103,7 @@ var Game = {
                                  if (shot.shooter == ship) return; // don't hit own ship
                                  
                                  for(var i=0;i<5;++i){
-                                   var s = new Smoke(shot.x, shot.y);
+                                   var s = new Smoke(shot.x, shot.y, '2');
                                    s.rot = Math.random()*1.5-0.75;
                                    s.alpha = 0.8+Math.random()*0.2;
                                    s.scale = 0.3+Math.random()*0.7;
@@ -171,7 +171,7 @@ var Game = {
                                  // ships don't shoot their own rockets
                                  if (shot.shooter.type == 'alien' || alien.type == 'rocket') return; 
                                  
-                                 var s = new Smoke(shot.x, shot.y);
+                                 var s = new Smoke(shot.x, shot.y, '2');
                                  s.rot = Math.random()*1.5-0.75;
                                  s.alpha = 0.8+Math.random()*0.2;
                                  s.scale = 0.3+Math.random()*0.7;

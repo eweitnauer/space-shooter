@@ -1,5 +1,5 @@
 var PointObject = function(x, y, points) {
-  jQuery.extend(this,new Sprite());// new Sprite(120, 'coin'));
+  jQuery.extend(this,new Sprite());
   this.x = x;
   this.y = y;
   this.points = points;

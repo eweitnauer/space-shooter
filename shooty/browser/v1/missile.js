@@ -78,7 +78,7 @@ Missile.prototype.my_init_sprite = function() {
 
   if (this.size == 'S') {
     // die flame brauchen wir nur für die small rocket!
-    var flame_sprite = new Sprite(200, 'small_rocket_flame');
+    var flame_sprite = new Sprite(200, 'flame-rocket');
     flame_sprite.y = 14; flame_sprite.alpha = 0.9;
     flame_sprite.draw_in_front_of_parent = false;
     this.child_sprites.push(flame_sprite);
