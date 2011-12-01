@@ -88,8 +88,8 @@ SmallYellowBox = function(parent,x,y){
   
   this.shoot_interval = 3200;
   this.last_shoot_time = Animation.time;
-  this.shot_level = 4;
-  this.shot_speed = 2;
+  this.shot_level = 6;
+  this.shot_speed = 1;
   this.shot_energy = 5;
   this.shot_max_dist = 100;
   this.shoot_interval_when_unwired = 500;
@@ -123,9 +123,12 @@ SmallYellowBox.prototype.shoot = function(){
     var s = new Shot(this.shot_level,null,
                      this.x+Math.sin(r)*10,
                      this.y-Math.cos(r)*10,
-                     this.vx,this.vy, this.shot_speed,r,
-                     this.shot_energy,this.shot_max_dist);
-    s.scale = 0.7;
+                     /*this.vx,this.vy,*/0,0, this.shot_speed,r,
+                     this.shot_energy,this.shot_max_dist,
+                     function(s){
+                       s.alpha *= 0.99;
+                     });
+    s.scale = 1;
     if(this.parent_yellow_box == null) break;
   }
 }

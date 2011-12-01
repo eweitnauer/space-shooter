@@ -79,9 +79,11 @@ ImageBank.load_animation('bullet-2', 'graphics/bullets/bullet-level-2-', 3);
 ImageBank.load_animation('bullet-3', 'graphics/bullets/bullet-level-3-', 3);
 ImageBank.load_animation('bullet-4', 'graphics/bullets/bullet-level-4-', 3);
 ImageBank.load_animation('bullet-5', 'graphics/bullets/bullet-level-5-', 3);
+ImageBank.load_animation('bullet-6', 'graphics/bullets/bullet-level-6-', 3);
 
 ImageBank.load_animation('bullet-4-spark', 'graphics/bullets/bullet-level-4-spark-', 3);
 ImageBank.load_animation('bullet-5-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
+ImageBank.load_animation('bullet-6-spark', 'graphics/bullets/bullet-level-5-spark-', 3);
 
 ImageBank.load_animation('player-rocket', 'graphics/player-rocket/player-rocket-', 3);
 
