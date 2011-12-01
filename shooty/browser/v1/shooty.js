@@ -11,6 +11,7 @@ Explosion.prototype.init_sprite = function(size) {
   else if (size == 'M') var sprite = new Sprite(80, 'small_explosion');
   else if (size == 'blast') var sprite = new Sprite(40, 'boom-blast');
   else if (size == 'S') var sprite = new Sprite(80, (Math.random()<0.5)?'sploing_a':'sploing_b');
+  else if (size == 'green') var sprite = new Sprite(80, 'green_explosion');
   else var sprite = new Sprite();
   sprite.rot = Math.random()*Math.PI*2;
   sprite.animation.loop = false;

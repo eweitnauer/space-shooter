@@ -12,7 +12,7 @@ Amoeba = function() {
   this.coins = 100;         // coins the players get on destruction
   
   this.sprite_name = 'alien-amoeba';    // visual appearance of the alien
-  this.explosion_size = 'XXL';       // size of the explosion when destroyed
+  this.explosion_size = 'green';       // size of the explosion when destroyed
   //this.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
   //this.offset_x = this.offset_y = 3; // img offset
   this.restitution = 0.9;            // restitution for collision

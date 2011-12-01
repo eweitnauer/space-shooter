@@ -21,6 +21,7 @@ ImageBank.load_animation('big_explosion', 'graphics/effects/ship-explosion-', 28
 ImageBank.load_animation('huge_explosion', 'graphics/effects/very-large-explosion-', 26);
 ImageBank.load_animation('med_explosion', 'graphics/effects/medium-explosion-', 11);
 ImageBank.load_animation('small_explosion', 'graphics/effects/very-small-explosion-', 15);
+ImageBank.load_animation('green_explosion', 'graphics/effects/green-splash-', 13);
 ImageBank.load_animation('sploing_a', 'graphics/effects/a-sploing-', 4);
 ImageBank.load_animation('sploing_b', 'graphics/effects/b-sploing-', 4);
 ImageBank.load_single('background', 'graphics/bg');
