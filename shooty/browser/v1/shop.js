@@ -13,7 +13,7 @@ var ShopButton = function(x,y,x_offset,y_offset,image, parent_sprite, name){
   this.y = y+y_offset;
   this.click_x = x;
   this.click_y = y;
-  var prefix = image ? 'shop-button-' : 'x-';
+  var prefix = image ? 'extra-button-' : 'extra-x-';
 
   
   this.normal_border = new Sprite([],prefix+'normal');
@@ -141,17 +141,17 @@ var Shop = {
     this.ready_for_close = false;
     this.extras = ship.extras;
     this.star_sprites = [
-      new Sprite(80,'zero-stars'),
-      new Sprite(80,'one-stars'),
-      new Sprite(80,'two-stars'),
-      new Sprite(80,'three-stars'),
-      new Sprite(80,'four-stars'),
-      new Sprite(80,'five-stars')
+      new Sprite(80,'extra-star-0'),
+      new Sprite(80,'extra-star-1'),
+      new Sprite(80,'extra-star-2'),
+      new Sprite(80,'extra-star-3'),
+      new Sprite(80,'extra-star-4'),
+      new Sprite(80,'extra-star-5')
     ];
     this.coin = new Sprite(120,'coin');
     this.coin.scale = 0.5;
     this.large_coin = new Sprite(120,'coin');
-    this.ship_sprite = new Sprite(80,'ship_'+this.ship.color);
+    this.ship_sprite = new Sprite(80,'ship-'+this.ship.color);
     this.ship_sprite.scale = 1.5;
 //    this.ship_sprite.rot = Math.PI/2;
 

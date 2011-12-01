@@ -62,7 +62,7 @@ Rocket.prototype.explode = function(){
 
 Rocket.prototype.smoke = function() {
   if(Math.random() > 0.5){
-    var s = new Smoke(this.x, this.y, "very-small-rocket-smoke");
+    var s = new Smoke(this.x, this.y, 'rockt-XS');
     s.scale = this.scale * (Math.random(0.5) + 0.5);
     s.rot = Math.random() * 2*Math.PI;
     s.alpha = 0.8 + Math.random() *  0.2;
