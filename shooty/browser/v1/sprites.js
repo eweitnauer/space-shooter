@@ -1,39 +1,35 @@
-Sprite = function(timeLine, imgs) {
-  this.x = 0;
-  this.y = 0;
-  this.offset_x = 0;
-  this.offset_y = 0;
-  this.offset_rot = 0;
-  this.rot = 0;
-  this.scale = 1;
-  this.alpha = 1;
-  this.alpha_decay = 0;
-  this.extra_draw = null;
-  this.child_sprites = [];
-  this.animation = new Animation(timeLine, imgs);
-  this.draw_in_front_of_parent = true;
-  this.center_img = true;
-  this.display = true;
-  this.hide_self_but_draw_children = false;
-  this.getImageSize = function(idx){
-    if (typeof(idx) == 'undefined') idx = 0;
-    var size = { width: this.animation._imgs[idx].width,
-                 height: this.animation._imgs[idx].height };
-    return size;
-  }
+/// Passes the arguments to the contructor of the Animation class.
+Sprite = function(timeline, img_tag) {
+  this.x = 0;              // x position of sprite in image
+  this.y = 0;              // y position of sprite in image
+  this.rot = 0;            // rotation of sprite in image, in rad
+  this.offset_x = 0;       // x offset when drawing the image, added to this.x
+  this.offset_y = 0;       // y offset when drawing the image, added to this.y
+  this.offset_rot = 0;     // rotation offset when drawing the image, added to this.rot, in rad.
+  this.scale = 1;          // scaling of sprite and its child sprites
+  this.alpha = 1;          // alpha of sprite (does not affect child sprites)
+  this.alpha_decay = 0;    // exponential decay of alpha over animation frames
+  this.extra_draw = null;  // custom draw method that is called after the sprite image is drawn
+  this.child_sprites = []; // list of child sprites, those position and rotation is relative to this sprite
+  this.animation = new Animation(timeline, imgs); // handles frame selection for animation
+  this.draw_in_front_of_parent = true;  // should this sprite be drawn in front of it parent sprite?
+  this.center_img = true;  // true: x,y is the center of the img / false: x,y is the upper left corner of the img
+  this.display = true;     // should this sprite be displayed?
+  this.hide_self_but_draw_children = false; // do we need this?
 }
 
 /** Params:
- *   timeLine: array of milliseconds describing how long each frame is shown
- *   imgs: name of image tag from ImageBank or array of images */
-Animation = function(timeLine, imgs) {
-  this._imgs = [];      /// an array of images
-  this._timeLine = [];  /// an array of durations in ms
-  this._totalTime = 0;
-  this._last_time = Animation.time;
-  this._pause_time = Animation.time;
-  this.delay_time = 0; /// time in ms to wait until first frame is shown
-  this.running = true;
+ *   timeline: Array of durations in ms describing how long each frame is shown.
+ *             If a number is passed, each frame will be shown for that time. 
+ *   img_tag: Image tag from ImageBank */
+Animation = function(timeline, img_tag) {
+  this._img = null;                  // image of N vertically stacked frames
+  this._timeline = [];               // array of N frame durations in ms
+  this._totalTime = 0;               // sum(timeline)
+  this._last_time = Animation.time;  // used to calculate elapsed time since last call
+  this._pause_time = Animation.time; // used to calculate since when the animation was paused
+  this.delay_time = 0;               // time in ms to wait until first frame is shown
+  this.running = true;               
   this.frame = 0;
   this.loop = true;
   this.finished_callback = null;
@@ -41,19 +37,19 @@ Animation = function(timeLine, imgs) {
   this.hide_after_finish = true;
   this.remove_after_finish = true;
   this.display = true;
-  this.setAnimation(timeLine, imgs);
+  this.setAnimation(timeline, imgs);
 }
 
 Animation.time = 0;
 
 Animation.prototype.reverse = function() {
-  this._timeLine.reverse();
+  this._timeline.reverse();
   this._imgs.reverse();
 }
 
-Animation.prototype.setAnimation = function(timeLine, imgs) {
+Animation.prototype.setAnimation = function(timeline, imgs) {
   this._setImages(imgs);
-  this.setTimeLine(timeLine);
+  this.setTimeLine(timeline);
 }
 
 Animation.prototype._setImages = function(imgs) {
@@ -67,20 +63,20 @@ Animation.prototype._setImages = function(imgs) {
   }
 }
 
-Animation.prototype.setTimeLine = function(timeLine) {
-  this._timeLine = [];
+Animation.prototype.setTimeLine = function(timeline) {
+  this._timeline = [];
   this.frame = 0;
   this._last_time = Animation.time;
-  if (typeof(timeLine) == 'undefined') {
+  if (typeof(timeline) == 'undefined') {
     this.setTimeLine(80);
-  } else if (typeof(timeLine) == 'number') {
+  } else if (typeof(timeline) == 'number') {
     var l = this._imgs.length;
-    this._totalTime = timeLine * l;
-    for (var i=0; i<l; ++i) this._timeLine.push(timeLine);
+    this._totalTime = timeline * l;
+    for (var i=0; i<l; ++i) this._timeline.push(timeline);
   } else {
-    this._timeLine = timeLine;
+    this._timeline = timeline;
     this._totalTime = 0;
-    for (var i=0;i<timeLine.length;++i) this._totalTime += timeLine[i];
+    for (var i=0;i<timeline.length;++i) this._totalTime += timeline[i];
   }
 }
 
@@ -112,14 +108,14 @@ Animation.prototype.step = function() {
 /// Returns false if the animation is finished.
 Animation.prototype._incFrame = function() {
   this.frame++;
-  if (this.frame >= this._timeLine.length) {
+  if (this.frame >= this._timeline.length) {
     if (this.loop) this.frame = 0;
     else {
       if (this.finished_callback) {
         this.finished_callback(this);
       } else {
         this.stop();
-        this.frame = this._timeLine.length-1;
+        this.frame = this._timeline.length-1;
         if (this.hide_after_finish) this.display = false;
         this.finished = true;
       }
@@ -136,11 +132,11 @@ Animation.prototype.updateFrame = function() {
     this._last_time = Animation.time;
     return;
   }
-  if (this._timeLine.length < 2) return;
+  if (this._timeline.length < 2) return;
   var delta = Animation.time - this._last_time;
   delta = delta % this._totalTime;
-  while (delta >= this._timeLine[this.frame]) {
-    delta -= this._timeLine[this.frame];
+  while (delta >= this._timeline[this.frame]) {
+    delta -= this._timeline[this.frame];
     if (!this._incFrame()) return;
   }
   this._last_time = Animation.time - delta;
@@ -201,42 +197,28 @@ ImageBank = {
   imgs: {}
   ,prefix: ''
   ,extension: '.png'
-  ,get: function(tag, number) {
-    if (!(tag in this.imgs)) return null;
-    var num = (typeof(number) == 'undefined') ? 0 : number;
-    return this.imgs[tag][num];
-  }
-  /// load_animation('ship', './ship') will load the file ./ship.png 
-  ,load_single: function(tag, url) {
-    this.imgs[tag] = [new Image()];
-    this.imgs[tag][0].src = this.prefix + url + this.extension;
-  }
-  /// load_animation('ship', './ship', 3, 1) will load the files ./ship0.png
-  /// ./ship1.png and ./ship2.png.
-  /// If no 'digits' param is passed, the number of digits will be determined
-  /// according to 'count'.
-  ,load_animation: function(tag, url, count, digits) {
-    var len = digits || String(count).length;
-    this.imgs[tag] = [];
-    for (var i=0; i<count; i++) {
-      var img = new Image();
-      var num = String(i); while (num.length < len) num = '0'+num;
-      img.src = this.prefix + url + num + this.extension;
-      this.imgs[tag].push(img);
-    }
+  ,get: function(tag) { return this.imgs[tag] }
+  
+  /// load('ship', './aship') will load the file ./aship.png into ImageBank.ship.
+  /// Uses ImageBank.prefix and ImageBank.extension to build the file name. The
+  /// 'frames' parameter specifies how many animation frames are stacked inside
+  /// the image and is written to the 'frames' attribute of the image object. If
+  /// not passed, it is set to 1.
+  ,load: function(tag, url, frames) {
+    if (arguments.length<3) var frames = 1
+    this.imgs[tag] = new Image();
+    this.imgs[tag].src = this.prefix + url + this.extension;
+    this.imgs[tag].frames = count
   }
   
+  /// Returns an array [#loaded_imgs, #total_imgs].
   ,getLoadedImgRatio: function() {
     var N = 0, loaded = 0;
     for (var i in this.imgs) {
-      var imgs = this.imgs[i]
-      for (var k=0; k<imgs.length; k++) {
-        if (imgs[k].complete) loaded++; //imageLoaded(this.imgs[i][k])) loaded++;
-        //else console.log(i, k);
-        N++;        
-      }
+      if (imageLoaded(this.imgs[i])) loaded++;
+      N++;        
     }
-    return N ? loaded / N : 1;
+    return [loaded, N];
   }
 }
 
