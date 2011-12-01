@@ -15,6 +15,7 @@ var Alien = function() {
   
   this.sprite_name = '';     // visual appearance of the alien
   this.explosion_size = 'L'; // size of the explosion when destroyed
+  this.explosion_scale = 1.0; // scale for explosions
   this.shockwave =           // shockwave parameters (on explosion)
     { damage: 0              // max. damage dealt for affected objects
      ,damage_r1: 0           // if sth. is closer than this, deal max. damage
@@ -78,6 +79,7 @@ Alien.prototype.destroy = function() {
 Alien.prototype.explode = function() {
   var expl = new Explosion(this.x, this.y, this.explosion_size);
   expl.shockwave(this.shockwave);
+  expl.scale = this.explosion_scale;
 }
 
 Alien.prototype.is_moving = function() { return this.vx != 0 || this.vy != 0; }

@@ -28,15 +28,18 @@ Amoeba = function() {
   this.my_spawn();
   
   this.scale_up_factor = 1.002;
-  this.scale_down_factor = 0.995;
+  this.scale_down_factor = 0.98;
   
   this.min_scale = 0.5;
-  this.max_scale = 1.0;
+  this.max_scale = 0.8;
   this.scale = this.min_scale;
   
   this.min_collision_radius = 6;
   this.max_collision_radius = 12;
   this.collision_radius = this.min_collision_radius;
+
+  this.explosion_scale = 0.7;
+
 }
 
 

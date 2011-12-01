@@ -88,7 +88,7 @@ SmallYellowBox = function(parent,x,y){
   
   this.shoot_interval = 3200;
   this.last_shoot_time = Animation.time;
-  this.shot_level = 6;
+  this.shot_level = 2;
   this.shot_speed = 1;
   this.shot_energy = 5;
   this.shot_max_dist = 100;
