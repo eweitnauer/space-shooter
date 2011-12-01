@@ -31,6 +31,7 @@ Animation = function(timeline, img_tag) {
   this.delay_time = 0;               // time in ms to wait until first frame is shown
   this.running = true;               // true if animation is running (not stopped or paused)
   this.frame = 0;                    // current frame
+  this.direction = 1;                // 1: forward / -1: backward playing of frames
   this.loop = true;                  // if true, animation will start over when finished
   this.finished_callback = null;     // function that is called on finish (not if loop is true)
   this.finished = false;             // true if the animation has finished
@@ -45,17 +46,20 @@ Animation = function(timeline, img_tag) {
 /// current time in the Game class before each drawing of the world.
 Animation.time = 0;
 
-Animation.prototype.reverse = function() {
-  // TODO: change direction of animation
-  //this._timeline.reverse();
-  //this._imgs.reverse();
-}
-
-Animation.prototype.setAnimation = function(timeline, img_tag) {
+/// direction can be 'forward' or 'backward', default value is 'forward'.
+Animation.prototype.setAnimation = function(timeline, img_tag, direction) {
   if (typeof(img_tag) != 'undefined') {
     this._img = ImageBank.get(img_tag)
   }
   this.setTimeLine();
+  if (arguments.length<3) direction = 'forward';
+  if (direction == 'backward') {
+    this.frame = this._timeline.length-1;
+    this.direction = -1;
+  } else {
+    this.frame = 0;
+    this.direction = 1;
+  }
 }
 
 Animation.prototype.setTimeLine = function(timeline) {
@@ -102,20 +106,20 @@ Animation.prototype.step = function() {
 
 /// Returns false if the animation is finished.
 Animation.prototype._incFrame = function() {
-  this.frame++;
-  if (this.frame >= this._timeline.length) {
-    if (this.loop) this.frame = 0;
-    else {
-      if (this.finished_callback) {
-        this.finished_callback(this);
-      } else {
-        this.stop();
-        this.frame = this._timeline.length-1;
-        if (this.hide_after_finish) this.display = false;
-        this.finished = true;
-      }
-      return !this.finished;
+  this.frame += this.direction;
+  if (this.frame >= this._timeline.length) if (this.loop) this.frame = 0;
+  if (this.frame < 0) if (this.loop) this.frame = this._timeline.length-1;
+  
+  if (this.frame >= this._timeline.length || this.frame < 0) {
+    if (this.finished_callback) {
+      this.finished_callback(this);
+    } else {
+      this.stop();
+      this.frame = this.direction > 0 ? this._timeline.length-1 : 0;
+      if (this.hide_after_finish) this.display = false;
+      this.finished = true;
     }
+    return !this.finished;
   }
   return true;
 }
@@ -140,10 +144,10 @@ Animation.prototype.updateFrame = function() {
 /// Returns whether the animation has something to display.
 /// If it returns true, it will have called updateFrame.
 Animation.prototype.hasCurrentImage = function() {
-  if (!this.display) return false;
-  if (!this._img) return false;
   this.updateFrame();
   if (this.delay_time>0) return false;
+  if (!this.display) return false;
+  if (!this._img) return false;
   return true;
 }
 

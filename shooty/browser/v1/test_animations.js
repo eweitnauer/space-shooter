@@ -62,8 +62,7 @@ function init_animations() {
 function solar_animation() {
   // closing of solar panel
   var trigger_close = function(sprite) {
-    sprite.animation.setAnimation(120, 'ship-solar-red');
-    sprite.animation.reverse();
+    sprite.animation.setAnimation(120, 'ship-solar-red', 'backward');
     sprite.animation.loop = false;
     sprite.animation.finished_callback = function() {
       // normal flying
@@ -75,11 +74,11 @@ function solar_animation() {
   
   // opening of solar panel
   var trigger_open = function(sprite) {
-    sprite.animation.setAnimation(120, 'ship-solar-red');
+    sprite.animation.setAnimation(120, 'ship-solar-red', 'forward');
     sprite.animation.loop = false;
     sprite.animation.finished_callback = function() {
       // keep panel open
-      this.setAnimation(120, 'ship_solar_open_red');
+      this.setAnimation(120, 'ship-solar-red-open');
       this.loop = true;
       this.finished_callback = null;
     }
