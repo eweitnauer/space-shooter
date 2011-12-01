@@ -1,18 +1,85 @@
 //ImageBank.prefix = 'http://phigames.com/demos/shooty/';
 
 load_images = function(type,list){
-  for(var i=0;i<list.length();++i){
-    var x = list[i].split(':');
-    var name = x[0], len = x[1];
+  for(var i in list){
+    var name = i, len = list[i];
     ImageBank.load_animation(type+'-'+list[i],'graphics/'+type+'/'+name, len);
   }
 }
 
 
-load_images('alien',['amoeba:18','amoeba-division:13',
-                     'fighter:4','mine:3','pyramid:4',
-                     'rocket:6', 'small-rocket:3','ufo:3',
-                     'small-yellow-box:3','yellow-box:3']);
+load_images('alien',{'amoeba':18,
+                     'amoeba-division':13,
+                     'fighter':4,
+                     'mine':3,
+                     'pyramid':4,
+                     'rocket':6, 
+                     'small-rocket':3,
+                     'ufo':3,
+                     'small-yellow-box':3,
+                     'yellow-box':3});
+
+load_images('bullet',{'0':3,
+                      '1':3,
+                      '2':3
+                      '3':3,
+                      '4':3,
+                      '5':3
+                      '6':3,
+                      'spark-0':3,
+                      'spark-1':3,
+                      'rocket':3});
+
+load_images('explosion',{'blast':7,
+                         'green':13,
+                         'L':26,
+                         'M':11,
+                         'S':15,
+                         'ship':28,
+                         'sploing-a':4,
+                         'sploing-b':4
+                        });
+
+
+load_images('extra',{ 'acceleration':1,
+                      'bullet-speed':1,
+                      'button-hovered':1,
+                      'button-normal':1,
+                      'button-pressed':1,
+                      'coin':7,
+                      'health':1,
+                      'life':1,
+                      'recharge':1,
+                      'rocket':1,
+                      'rotation-speed':1,
+                      'shield':1,
+                      'shot':1,
+                      'shot-angle':1,
+                      'shot-length':1,
+                      'shot-streangth':1,
+                      'stars-0':1,
+                      'stars-1':1,
+                      'stars-2':1,
+                      'stars-3':1,
+                      'stars-4':1,
+                      'stars-5':,
+                      'x-hovered':1,
+                      'x-normal':1,
+                      'x-pressed':1});
+
+load_images('flame',{ 'L':3,
+                      'M':3,
+                      'rocket':4,
+                      'XL':4,
+                      'muzzleflash':3 });
+
+var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
+for (var i=0; i< global_ship_colors.length;++i){
+  var c = global_ship_colors[i];
+  load_images('ship',{c:}]);
+}
+
+
 
 
 //var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
