@@ -61,7 +61,12 @@ function init_animations() {
 //    if(/shop-background/.test(img)){
 //      sprite.scale = 0.1;
 //    }
+    if(/bg/.test(img) || /shop/.test(img)){
+      sprite.scale = 0.1;
+    }
+    
     sprites.push(sprite);
+    
   }
 }
 
