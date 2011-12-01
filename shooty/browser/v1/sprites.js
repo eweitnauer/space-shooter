@@ -11,7 +11,7 @@ Sprite = function(timeline, img_tag) {
   this.alpha_decay = 0;    // exponential decay of alpha over animation frames
   this.extra_draw = null;  // custom draw method that is called after the sprite image is drawn
   this.child_sprites = []; // list of child sprites, those position and rotation is relative to this sprite
-  this.animation = new Animation(timeline, imgs); // handles frame selection for animation
+  this.animation = new Animation(timeline, img_tag); // handles frame selection for animation
   this.draw_in_front_of_parent = true;  // should this sprite be drawn in front of it parent sprite?
   this.center_img = true;  // true: x,y is the center of the img / false: x,y is the upper left corner of the img
   this.display = true;     // should this sprite be displayed?
@@ -20,63 +20,58 @@ Sprite = function(timeline, img_tag) {
 
 /** Params:
  *   timeline: Array of durations in ms describing how long each frame is shown.
- *             If a number is passed, each frame will be shown for that time. 
- *   img_tag: Image tag from ImageBank */
+ *             If a number is passed, each frame will be shown for that time.
+ *   img_tag: Image tag from ImageBank, can be null */
 Animation = function(timeline, img_tag) {
-  this._img = null;                  // image of N vertically stacked frames
+  this._img = null;                  // image of N vertically stacked frames, can be null
   this._timeline = [];               // array of N frame durations in ms
   this._totalTime = 0;               // sum(timeline)
   this._last_time = Animation.time;  // used to calculate elapsed time since last call
   this._pause_time = Animation.time; // used to calculate since when the animation was paused
   this.delay_time = 0;               // time in ms to wait until first frame is shown
-  this.running = true;               
-  this.frame = 0;
-  this.loop = true;
-  this.finished_callback = null;
-  this.finished = false;
-  this.hide_after_finish = true;
-  this.remove_after_finish = true;
-  this.display = true;
-  this.setAnimation(timeline, imgs);
+  this.running = true;               // true if animation is running (not stopped or paused)
+  this.frame = 0;                    // current frame
+  this.loop = true;                  // if true, animation will start over when finished
+  this.finished_callback = null;     // function that is called on finish (not if loop is true)
+  this.finished = false;             // true if the animation has finished
+  this.hide_after_finish = true;     // true: show nothing after finished / false: show last img after finish
+  this.remove_after_finish = true;   // if true, parents will remove their finished child sprites on draw()
+  this.display = true;               // should the animation be displayed?
+  this.setAnimation(timeline, img_tag); // called on construction to setup timeline and img
 }
 
+/// IMPORTANT
+/// This is the place everybody should get its current time from. Must be set to
+/// current time in the Game class before each drawing of the world.
 Animation.time = 0;
 
 Animation.prototype.reverse = function() {
-  this._timeline.reverse();
-  this._imgs.reverse();
+  // TODO: change direction of animation
+  //this._timeline.reverse();
+  //this._imgs.reverse();
 }
 
-Animation.prototype.setAnimation = function(timeline, imgs) {
-  this._setImages(imgs);
-  this.setTimeLine(timeline);
-}
-
-Animation.prototype._setImages = function(imgs) {
-  this._imgs = [];
-  if (typeof(imgs) == 'string' && imgs != '') {
-    // get image array from image bank
-    this._imgs = ImageBank.imgs[imgs].slice();
-  } else if (typeof(imgs) == 'object' && 'slice' in imgs){
-    // images passed as array already, just copy
-    this._imgs = imgs.slice();
+Animation.prototype.setAnimation = function(timeline, img_tag) {
+  if (typeof(img_tag) != 'undefined') {
+    this._img = ImageBank.get(img_tag)
   }
+  this.setTimeLine();
 }
 
 Animation.prototype.setTimeLine = function(timeline) {
   this._timeline = [];
   this.frame = 0;
   this._last_time = Animation.time;
-  if (typeof(timeline) == 'undefined') {
-    this.setTimeLine(80);
-  } else if (typeof(timeline) == 'number') {
-    var l = this._imgs.length;
-    this._totalTime = timeline * l;
-    for (var i=0; i<l; ++i) this._timeline.push(timeline);
+  if (typeof(timeline) == 'undefined') timeline = 80;
+  if (typeof(timeline) == 'number') {
+    var N = this._img ? this._img.frames : 0
+    this._totalTime = N * timeline;
+    for (var i=0; i<N; ++i) this._timeline.push(timeline);
   } else {
+    var N = timeline.length;
     this._timeline = timeline;
     this._totalTime = 0;
-    for (var i=0;i<timeline.length;++i) this._totalTime += timeline[i];
+    for (var i=0;i<N;++i) this._totalTime += timeline[i];
   }
 }
 
@@ -142,12 +137,26 @@ Animation.prototype.updateFrame = function() {
   this._last_time = Animation.time - delta;
 }
 
-Animation.prototype.getCurrentImage = function() {
-  if (!this.display) return null;
-  if (!this._imgs) return null;
+/// Returns whether the animation has something to display.
+/// If it returns true, it will have called updateFrame.
+Animation.prototype.hasCurrentImage = function() {
+  if (!this.display) return false;
+  if (!this._img) return false;
   this.updateFrame();
-  if (this.delay_time>0) return null;
-  return this._imgs[this.frame];
+  if (this.delay_time>0) return false;
+  return true;
+}
+
+/// You should call updateFrame() before.
+Animation.prototype.drawCurrentImage = function(ctx, center_img) {
+  if (!this._img.frame_height) this._img.frame_height = this._img.height / this._img.frames;
+  if (center_img) {
+    var dx = -this._img.width/2;
+    var dy = -this._img.frame_height/2;
+  } else var dx=0, dy=0;
+  ctx.drawImage(this._img, 0, this.frame*this._img.frame_height,
+                this._img.width, this._img.frame_height,
+                dx, dy, this._img.width, this._img.frame_height);
 }
 
 /// draws the sprite and all child sprites on the passed canvas context
@@ -165,15 +174,13 @@ Sprite.prototype.draw = function(ctx) {
   });
   
   // draw self
-  var img = this.animation.getCurrentImage();
-  if (img && !this.hide_self_but_draw_children) {
+  if (!this.hide_self_but_draw_children && this.animation.hasCurrentImage()) {
     ctx.save();
     ctx.translate(this.offset_x, this.offset_y);
     ctx.rotate(this.offset_rot);
-    if (this.center_img) ctx.translate(-img.width/2, -img.height/2);
     var alpha = ctx.globalAlpha;
     ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
-    ctx.drawImage(img, 0, 0);
+    this.animation.drawCurrentImage(ctx, this.center_img);
     ctx.globalAlpha = alpha;
     ctx.restore();
   }
@@ -208,7 +215,7 @@ ImageBank = {
     if (arguments.length<3) var frames = 1
     this.imgs[tag] = new Image();
     this.imgs[tag].src = this.prefix + url + this.extension;
-    this.imgs[tag].frames = count
+    this.imgs[tag].frames = frames
   }
   
   /// Returns an array [#loaded_imgs, #total_imgs].
