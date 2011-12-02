@@ -25,7 +25,7 @@ var Game = {
     
     this.painter = new PaintEngine(this.canvas);
     this.step_timer = setInterval(this.step, 30);
-    Game.main_sprite = new Sprite([], 'background');
+    Game.main_sprite = new Sprite([], 'bg');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
     Game.painter.add(new ScoreBoard());

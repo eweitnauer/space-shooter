@@ -204,14 +204,14 @@ Ship.prototype.smoke = function() {
     }
     var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
                       this.y+Math.sin(rot)*r+(Math.random()-0.5)*6,
-                     'rocket-S');
+                     '0');
     
     s.rot = Math.random()*1.5-0.75;
     // shipSpeed \in [ 0 , 6 ]
     var shipSpeed = Math.sqrt(this.vx*this.vx + this.vy*this.vy)/6;
 
     s.alpha = 0.98+Math.random()*0.02 - shipSpeed/6;
-    s.scale = 0.5+Math.random()*0.3;
+    s.scale = 0.3+Math.random()*0.3;
     s.alpha_decay = 0.02+Math.random()*0.2 + shipSpeed/6*0.6;
 
   }
@@ -295,7 +295,7 @@ Ship.prototype.attempt_land = function(line) {
 
 Ship.prototype.trigger_open = function() {
   if (this.state == 'closing') var frame = this.animation.frame;
-  this.animation.setAnimation(120, 'ship_solar_'+this.color);
+  this.animation.setAnimation(120, 'ship-solar-'+this.color);
   if (this.state == 'closing') this.animation.frame = this.animation._imgs.length-1-frame;
   this.animation.loop = false;
   var self = this;
@@ -306,7 +306,7 @@ Ship.prototype.trigger_open = function() {
 
 Ship.prototype.trigger_close = function() {
   if (this.state == 'opening') var frame = this.animation.frame;
-  this.animation.setAnimation(120, 'ship_solar_'+this.color);
+  this.animation.setAnimation(120, 'ship-solar-'+this.color);
   if (this.state == 'opening') this.animation.frame = this.animation._imgs.length-1-frame;
   this.animation.reverse();
   this.animation.loop = false;
@@ -316,14 +316,14 @@ Ship.prototype.trigger_close = function() {
 }
 
 Ship.prototype.trigger_charge = function() {
-  this.animation.setAnimation(120, 'ship_solar_open_'+this.color);
+  this.animation.setAnimation(120, 'ship-solar-'+this.color+'-open');
   this.animation.loop = true;
   this.animation.finished_callback = null;
   this.state = 'charging';
 }
 
 Ship.prototype.trigger_fly = function() {
-  this.animation.setAnimation(120, 'ship_'+this.color);
+  this.animation.setAnimation(120, 'ship-'+this.color);
   this.animation.loop = true;
   this.animation.finished_callback = null; 
   this.state = 'flying';
@@ -340,12 +340,12 @@ Ship.getNextColor = function() {
 
 Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
-  jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
+  jQuery.extend(this, new Sprite(80, 'ship-'+this.color));
   this.offset_x = 2; this.offset_y = -3;
   this.scale = 0.9;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
-  var flame_sprite = new Sprite(160, 'large_flame');
+  var flame_sprite = new Sprite(160, 'flame-XL');
   flame_sprite.scale = 0.8;
   flame_sprite.y = 18; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
@@ -356,7 +356,7 @@ Ship.prototype.init_sprite = function() {
 Ship.prototype.createScoreSprite = function() {
   var ship = this;
   var sprite = new Sprite([], '');
-  var ship_sprite_1 = new Sprite(80, 'ship_'+this.color);
+  var ship_sprite_1 = new Sprite(80, 'ship-'+this.color);
   ship_sprite_1.animation.stop();
   ship_sprite_1.scale = 0.7;
   var ship_sprite_2 = new Sprite(80, 'ship_gray');
