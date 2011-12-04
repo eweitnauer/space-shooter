@@ -47,12 +47,17 @@ Animation = function(timeline, img_tag) {
 /// current time in the Game class before each drawing of the world.
 Animation.time = 0;
 
+/// Get number of frames.
+Animation.prototype.frames = function() {
+  return this._timeline.length;
+}
+
 /// direction can be 'forward' or 'backward', default value is 'forward'.
 Animation.prototype.setAnimation = function(timeline, img_tag, direction) {
   if (typeof(img_tag) != 'undefined') {
     this._img = ImageBank.get(img_tag)
   }
-  this.setTimeLine();
+  this.setTimeLine(timeline);
   if (arguments.length<3) direction = 'forward';
   if (direction == 'backward') {
     this.frame = this._timeline.length-1;

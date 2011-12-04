@@ -296,19 +296,17 @@ Ship.prototype.attempt_land = function(line) {
 Ship.prototype.trigger_open = function() {
   if (this.state == 'closing') var frame = this.animation.frame;
   this.animation.setAnimation(120, 'ship-solar-'+this.color);
-  if (this.state == 'closing') this.animation.frame = this.animation._imgs.length-1-frame;
+  if (this.state == 'closing') this.animation.frame = frame;
   this.animation.loop = false;
   var self = this;
   this.animation.finished_callback = function() { self.trigger_charge.call(self) }
   this.state = 'opening';
-  
 }
 
 Ship.prototype.trigger_close = function() {
   if (this.state == 'opening') var frame = this.animation.frame;
-  this.animation.setAnimation(120, 'ship-solar-'+this.color);
-  if (this.state == 'opening') this.animation.frame = this.animation._imgs.length-1-frame;
-  this.animation.reverse();
+  this.animation.setAnimation(120, 'ship-solar-'+this.color, 'backward');
+  if (this.state == 'opening') this.animation.frame = frame;
   this.animation.loop = false;
   var self = this;
   this.animation.finished_callback = function() { self.trigger_fly.call(self) }
@@ -340,7 +338,7 @@ Ship.getNextColor = function() {
 
 Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
-  jQuery.extend(this, new Sprite(80, 'ship-'+this.color));
+  jQuery.extend(this, new Sprite(120, 'ship-'+this.color));
   this.offset_x = 2; this.offset_y = -3;
   this.scale = 0.9;
   Game.main_sprite.child_sprites.push(this);
