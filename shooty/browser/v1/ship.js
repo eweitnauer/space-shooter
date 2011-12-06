@@ -2,7 +2,7 @@
 var Ship = function(session_code) {
   this.type = 'ship';
   
-  this.shield = new Shield();
+  this.shield = new Shield(this);
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
   this.player_name = '???';
@@ -265,12 +265,13 @@ Ship.prototype.destroy = function() {
   if (Game.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
-Ship.prototype.hit = function(energy) {
+Ship.prototype.hit = function(energy, x, y) {
   if (this.destroyed) return;
   if (this.state != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
+  if(this.shield) this.shield.hit(x,y);
 }
 
 Ship.prototype.attempt_land = function(line) {

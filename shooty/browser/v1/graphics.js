@@ -83,7 +83,7 @@ load_images('smoke',{'0':30,
                      'rocket-S':13,
                      'rocket-XS':8});
 
-load_images('shield',{'1':1});
+load_images('shield',{'1':3});
 
 var global_ship_colors = ['red', 'yellow', 'purple', 'green', 'orange'];
 for (var i=0; i< global_ship_colors.length;++i){

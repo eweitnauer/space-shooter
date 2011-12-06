@@ -113,7 +113,7 @@ var Game = {
                                  new Explosion(shot.x, shot.y, 'sploing');
                                  // only move ship if it is not landed
                                  Physics.letCollide(ship, shot, ship.state == 'flying', false);
-                                 ship.hit(shot.energy);
+                                 ship.hit(shot.energy, shot.x, shot.y);
                                  if (ship.destroyed) shot.shooter.points++;
                                  shot.kill();
                                });
