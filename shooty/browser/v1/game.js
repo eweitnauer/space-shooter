@@ -82,10 +82,10 @@ var Game = {
     //new Ufo();
 //    new Ufo();
     //new Pyramid();
-//    new Fighter();
-    //new Fighter();
-    new YellowBox();
-    new Amoeba();
+    new Fighter();
+    new Fighter();
+    //new YellowBox();
+    //new Amoeba();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {

@@ -10,7 +10,7 @@ var Fighter = function() {
   this.acceleration = 0.02; // acceleration
   this.coins = 555;           // coins the players get on destruction
   
-  this.sprite_name = 'alien_fighter'; // visual appearance of the alien
+  this.sprite_name = 'alien-fighter'; // visual appearance of the alien
   this.scale = 0.7;
   this.explosion_size = 'L'; // size of the explosion when destroyed
 
@@ -36,8 +36,8 @@ var Fighter = function() {
   this.smoke_interval = 150;   // one puff every x ms
   this.shot_time = 500;    // time between two bullets
   this.shot_level = 2;
-  this.shot_speed = 5;
-  this.shot_energy = 4;
+  this.shot_speed = 10;
+  this.shot_energy = 2;
   this.shot_max_dist = 300;
 }
 
@@ -117,6 +117,7 @@ Fighter.prototype.shoot_behavior = function(){
          && this.sensors[N-1][0] <= this.hunting_range)) {
       var s = new Shot(this.shot_level,null,this.x,this.y,this.vx,this.vy,
                        this.shot_speed,this.rot,this.shot_energy,this.shot_max_dist);
+      s.shooter = this;
       this.last_time_shot = now;
       s.scale = 0.7;
 
