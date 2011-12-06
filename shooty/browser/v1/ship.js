@@ -1,6 +1,8 @@
 
 var Ship = function(session_code) {
   this.type = 'ship';
+  
+  this.shield = new Shield();
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
   this.player_name = '???';
@@ -47,8 +49,11 @@ var Ship = function(session_code) {
   this.rocket_count_max = 0;
   this.rocket_scale = 0.4;
   this.curr_rocket_count = 0;
-  
+
 };
+
+
+
 
 Ship.prototype.update_from_extra = function(name){
   var extraLevel = this.extras.levels[name];
@@ -349,6 +354,10 @@ Ship.prototype.init_sprite = function() {
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
+  
+  if(this.shield){
+    this.child_sprites.push(this.shield);
+  }
 }
 
 Ship.prototype.createScoreSprite = function() {
@@ -399,3 +408,4 @@ Ship.prototype.createScoreSprite = function() {
   }
   return sprite;
 }
+
