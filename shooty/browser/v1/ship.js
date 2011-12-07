@@ -119,6 +119,9 @@ Ship.prototype.steer = function(data) {
 }
 
 Ship.prototype.step = function() {
+  
+  if(this.shield) this.shield.step();
+  
   var self = this;
   if (!this.steer_data) return;
   switch(this.state) {
@@ -266,12 +269,14 @@ Ship.prototype.destroy = function() {
 }
 
 Ship.prototype.hit = function(energy, x, y) {
+  // the shield absorbs some shoot damage
+  if (this.shield) energy = this.shield.hit(x,y,energy);
   if (this.destroyed) return;
   if (this.state != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
-  if(this.shield) this.shield.hit(x,y);
+
 }
 
 Ship.prototype.attempt_land = function(line) {

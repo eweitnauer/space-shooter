@@ -84,6 +84,8 @@ var Game = {
     //new Pyramid();
     new Fighter();
     new Fighter();
+    new Fighter();
+    new Fighter();
     //new YellowBox();
     //new Amoeba();
   }
