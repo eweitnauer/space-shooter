@@ -87,6 +87,7 @@ Math.gaussRandom = function(mean, sigma){
 
 
 Shield.prototype.extra_draw = function(ctx){
+  if(!this.energyRatio) return;
   this.graphics.offset_y = -(this.radius - 10);
 //  this.angleStep = 0.32;
   this.angleStep = 0.32 * (22/this.radius);
@@ -106,17 +107,18 @@ Shield.prototype.extra_draw = function(ctx){
   var fb = ( this.energyRatio < 0.25 ? 0 :
              this.energyRatio < 0.50 ? 100 : 255);
   
+  var fa = ( Math.random() < this.energyRatio) ? 0.6 : 0.1;
   // draw the non-hit visualization
   for(var angle=0;angle<Math.PI*2;angle+= 0.1){
     for(var i=0;i<5;++i){
       var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/6;
       
-     
+      
       ctx.fillStyle = ("rgba(" 
                        + Math.round(Math.random() * fr) + ','
                        + Math.round(Math.random() * fg) + ','
                        + Math.round(Math.random() * fb) + ','
-                       + 0.5 +')' );
+                       + fa +')' );
       ctx.fillRect(self.x + Math.sin(angle) * r + (Math.random()-0.5) * 2,
                    self.y - Math.cos(angle) * r + (Math.random()-0.5) * 2,
                    1,1);
