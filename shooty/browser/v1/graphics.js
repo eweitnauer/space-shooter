@@ -36,7 +36,8 @@ load_images('explosion',{'blast':7,
                          'S':15,
                          'ship':28,
                          'sploing-a':4,
-                         'sploing-b':4
+                         'sploing-b':4,
+                         'shield-sploing':6
                         });
 
 

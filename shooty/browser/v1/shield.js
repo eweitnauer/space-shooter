@@ -8,15 +8,16 @@ var Hit = function(angle,time,alpha, damage){
 
 
 var Shield = function(ship, radius, maxEnergy, recoveryPerSec){
-  if(typeof(radius) == 'undefined') var radius = 22;
+  if(typeof(radius) == 'undefined') var radius = 25;
   if(typeof(maxEnergy) == 'undefined') var maxEnergy = 100;
-  if(typeof(recoveryPerSec) == 'undefined') var recoveryPerSec = 0.1;
+  if(typeof(recoveryPerSec) == 'undefined') var recoveryPerSec = 1;
 
   this.ship = ship;
   this.graphics = new Sprite([],"shield-1");
   this.angleStep = 0.32;
   this.radius = radius;
-  this.alpha_decay_factor = 0.92;
+  this.alphaDecayFactor = 0.92;
+  this.framesHitIsShown = 15;
   this.hits = new LinkedList();
   
   this.maxEnergy = maxEnergy;
@@ -24,6 +25,7 @@ var Shield = function(ship, radius, maxEnergy, recoveryPerSec){
   this.currEnergy = maxEnergy;
   this.energyRatio = 1;
   this.lastTime = null;
+
 }
 
 Shield.prototype = new Sprite();
@@ -37,14 +39,16 @@ Shield.prototype.hit = function(x,y, damage){
   var relx = x - this.ship.x;
   var rely = y - this.ship.y;
   var angle = -Math.atan2(relx,rely) + Math.PI;
-  this.hits.push(new Hit(angle,10,1.0,damage));
+
 
   this.currEnergy -= damage;
   if(this.currEnergy <= 0){
     var ret = -this.currEnergy;
     this.currEnergy = 0;
+    this.hits.push(new Hit(angle,this.framesHitIsShown * damage/ret,0.2,damage));
     return ret
   }else{
+    this.hits.push(new Hit(angle,this.framesHitIsShown,1.0,damage));
     return 0;
   }
 }
@@ -87,69 +91,65 @@ Math.gaussRandom = function(mean, sigma){
 
 
 Shield.prototype.extra_draw = function(ctx){
-  if(!this.energyRatio) return;
+  var self = this;
   this.graphics.offset_y = -(this.radius - 10);
-//  this.angleStep = 0.32;
+  //  this.angleStep = 0.32;
   this.angleStep = 0.32 * (22/this.radius);
-  /*
-    22 --> 0.32
-    44 --> 0.16
-   */
   ctx.save();
   ctx.setTransform(1,0,0,1,0,0);
   ctx.translate(this.ship.x, this.ship.y);
-  var self = this;
-  
+
+  // this is still crap
   var fr = ( this.energyRatio < 0.25 ? 255 :
              this.energyRatio < 0.50 ? 200 : 50);
   var fg = ( this.energyRatio < 0.25 ? 100 :
              this.energyRatio < 0.50 ? 255 : 200);
   var fb = ( this.energyRatio < 0.25 ? 0 :
              this.energyRatio < 0.50 ? 100 : 255);
+  var fa = ( Math.random() < this.energyRatio) ? 0.25 : 0.1;
+  if(this.energyRatio*100  > 1){
   
-  var fa = ( Math.random() < this.energyRatio) ? 0.6 : 0.1;
-  // draw the non-hit visualization
-  for(var angle=0;angle<Math.PI*2;angle+= 0.1){
-    for(var i=0;i<5;++i){
-      var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/6;
-      
-      
-      ctx.fillStyle = ("rgba(" 
-                       + Math.round(Math.random() * fr) + ','
-                       + Math.round(Math.random() * fg) + ','
-                       + Math.round(Math.random() * fb) + ','
-                       + fa +')' );
-      ctx.fillRect(self.x + Math.sin(angle) * r + (Math.random()-0.5) * 2,
-                   self.y - Math.cos(angle) * r + (Math.random()-0.5) * 2,
-                   1,1);
+    // draw the non-hit visualization
+    for(var angle=0;angle<Math.PI*2;angle+= 0.1){
+      for(var i=0;i<5;++i){
+        var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/6;
+        
+        
+        ctx.fillStyle = ("rgba(" 
+                         + Math.round(Math.random() * fr) + ','
+                         + Math.round(Math.random() * fg) + ','
+                         + Math.round(Math.random() * fb) + ','
+                         + fa +')' );
+        ctx.fillRect(self.x + Math.sin(angle) * r + (Math.random()-0.5) * 2,
+                     self.y - Math.cos(angle) * r + (Math.random()-0.5) * 2,
+                     1,1);
+      }
     }
   }
-  
   // visualize hits
   this.hits.forEach(function(h,el){
     for(var a=-3; a<=3; ++a){
-        var angle = h.angle + a* self.angleStep;;
-        self.graphics.rot = angle;
-        self.graphics.alpha = h.alpha * (1.0-Math.abs(a)/4);
-        self.graphics.draw(ctx);
+      var angle = h.angle + a* self.angleStep;;
+      self.graphics.rot = angle;
+      self.graphics.alpha = h.alpha * (1.0-Math.abs(a)/4);
+      self.graphics.draw(ctx);
       
-        for(var i=0;i<10;++i){
-          ctx.fillStyle = ("rgba(" 
-                           + Math.round(Math.random() * fr) + ','
-                           + Math.round(Math.random() * fg) + ','
-                           + Math.round(Math.random() * fb) + ','
-                           + self.graphics.alpha +')' );
-          ctx.fillRect(self.x + Math.sin(angle) * self.radius + Math.gaussRandom(0,3),
-                       self.y - Math.cos(angle) * self.radius + Math.gaussRandom(0,3),
-                       Math.random()*2,Math.random()*2);
-        }
+      for(var i=0;i<10;++i){
+        ctx.fillStyle = ("rgba(" 
+                         + Math.round(Math.random() * fr) + ','
+                         + Math.round(Math.random() * fg) + ','
+                         + Math.round(Math.random() * fb) + ','
+                         + self.graphics.alpha +')' );
+        ctx.fillRect(self.x + Math.sin(angle) * self.radius + Math.gaussRandom(0,3),
+                     self.y - Math.cos(angle) * self.radius + Math.gaussRandom(0,3),
+                     Math.random()*2,Math.random()*2);
+      }
     }
     h.time --;
-    h.alpha *= self.alpha_decay_factor;
+    h.alpha *= self.alphaDecayFactor;
     if(h.time < 0){
-        el.remove();
+      el.remove();
     }
-    
   });
   ctx.drawStyle = 'rgb(0,0,0)';
   ctx.fillStyle = 'rgb(0,0,0)';

@@ -269,14 +269,20 @@ Ship.prototype.destroy = function() {
 }
 
 Ship.prototype.hit = function(energy, x, y) {
+  if (this.destroyed) return 0;
+
   // the shield absorbs some shoot damage
-  if (this.shield) energy = this.shield.hit(x,y,energy);
-  if (this.destroyed) return;
+  var energyAbsorbedByShield = 0; 
+  if (this.shield) {
+    energyAbsorbedByShield = energy - this.shield.hit(x,y,energy);
+    energy -= energyAbsorbedByShield;
+  }
   if (this.state != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
 
+  return energyAbsorbedByShield;
 }
 
 Ship.prototype.attempt_land = function(line) {
@@ -395,6 +401,17 @@ Ship.prototype.createScoreSprite = function() {
     ctx.fillStyle = '#555';
     ctx.font = '15px "Permanent Marker"';
     ctx.fillText(ship.player_name, 20, 9);
+
+    // shield:
+    if(ship.shield){
+      if(ship.shield.energyRatio > 0.2){
+        ctx.fillStyle = "rgba(0,100,255,0.5)"
+      }else{
+        ctx.fillStyle = "rgba(255,0,0,0.5)"
+      }
+      ctx.fillRect(0,28,ship.shield.energyRatio*l,7);
+      ctx.strokeRect(0,28,l,7);
+    }
 
     ctx.save();
     ctx.translate(8,4);

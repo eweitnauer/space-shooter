@@ -111,11 +111,14 @@ var Game = {
                                    s.scale = 0.3+Math.random()*0.7;
                                    s.alpha_decay = 0.05+Math.random()*0.1;
                                  }
-                                 
-                                 new Explosion(shot.x, shot.y, 'sploing');
+                                 var energyAbsorbedByShield = ship.hit(shot.energy, shot.x, shot.y);
+                                 var ex = new Explosion(shot.x, shot.y, energyAbsorbedByShield ? 'shield-sploing' : 'sploing');
+                                 if(energyAbsorbedByShield){
+                                   ex.scale = 0.7;
+                                 }
                                  // only move ship if it is not landed
                                  Physics.letCollide(ship, shot, ship.state == 'flying', false);
-                                 ship.hit(shot.energy, shot.x, shot.y);
+
                                  if (ship.destroyed) shot.shooter.points++;
                                  shot.kill();
                                });
