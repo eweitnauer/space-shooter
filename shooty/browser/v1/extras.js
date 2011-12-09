@@ -1,6 +1,6 @@
 var Extras = function(){
   this.names = [ 'health','acceleration','bullet-speed','life','shield',
-                 'shot','shot-angle','shot-length','shot-steangth',
+                 'shot','shot-angle','shot-length','shot-strength',
                  'recharge-speed','rotation-speed','rocket'];
   this.levels = {}
   this.costs = {}

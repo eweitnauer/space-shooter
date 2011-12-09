@@ -18,6 +18,13 @@ Sprite = function(timeline, img_tag) {
   this.hide_self_but_draw_children = false; // do we need this?
 }
 
+/// Queries the animation for size, returns {width, height}.
+Sprite.prototype.getImageSize = function() {
+  if (this.animation._img == null) return {width:0, height:0};
+  if (!this.animation._img.frame_height) this.animation._img.frame_height = this.animation._img.height / this.animation._img.frames;
+  return {width:this.animation._img.width, height: this.animation._img.frame_height}
+}
+
 /** Params:
  *   timeline: Array of durations in ms describing how long each frame is shown.
  *             If a number is passed, each frame will be shown for that time.
