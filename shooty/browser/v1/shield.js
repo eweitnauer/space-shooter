@@ -67,7 +67,7 @@ Shield.prototype.step = function(){
 }
 
 Math.gaussRandom = function(mean, sigma){
-  if( typeof(meam) == 'undefined') var meam = 0;
+  if( typeof(mean) == 'undefined') var mean = 0;
   if( typeof(sigma) == 'undefined') var sigma = 1;
   Math.have_next_gaussian = false;
   Math.next_gaussian = 0;
@@ -85,7 +85,7 @@ Math.gaussRandom = function(mean, sigma){
     var fac = Math.sqrt(-2.0*Math.log(s)/s);
     Math.next_gaussian = v2 * fac;
     Math.have_next_gaussian = true;
-    return v1 * fac * sigma + meam;
+    return v1 * fac * sigma + mean;
   }
 }
 
@@ -112,7 +112,7 @@ Shield.prototype.extra_draw = function(ctx){
     // draw the non-hit visualization
     for(var angle=0;angle<Math.PI*2;angle+= 0.1){
       for(var i=0;i<5;++i){
-        var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/6;
+        var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/12;
         
         
         ctx.fillStyle = ("rgba(" 

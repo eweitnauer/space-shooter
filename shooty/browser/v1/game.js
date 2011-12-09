@@ -82,10 +82,9 @@ var Game = {
     //new Ufo();
 //    new Ufo();
     //new Pyramid();
-    new Fighter();
-    new Fighter();
-    new Fighter();
-    new Fighter();
+    for(var i=0;i<5;++i){
+      new Fighter();
+    }
     //new YellowBox();
     //new Amoeba();
   }
