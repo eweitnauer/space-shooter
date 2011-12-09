@@ -16,7 +16,8 @@ var Game = {
   ,pointObjects : new LinkedList
   ,lines: []
   ,level: 0 
-  ,state: 'paused' //'paused','running','shop'
+  ,state: 'paused' //'paused','running','shop', 'splash'
+  ,splashScreen: null
   ,start: function() {
     Animation.time = Date.now();
     this.canvas = document.getElementById("canvas");
@@ -47,6 +48,25 @@ var Game = {
   ,triggerShop: function(ship) {
     Game.state == 'running' ? Game.enterShop(ship) : Game.leaveShop();
   }
+  // can also be used to switch to next splash screen
+  ,enterSplashScreen: function(splashScreen){
+    if(Game.splashScreen){
+      Game.splashScreen.display = false;
+      Game.splashScreen.animation.finished = true;
+      Game.main_sprite.child_sprites.remove(Game.splashScreen);
+    }
+    Game.splashScreen = splashScreen;
+    Game.main_sprite.child_sprites.push(splashScreen);
+    Game.state = 'splash';
+  }
+  ,leaveSplashScreen: function(){
+    if(Game.splashScreen){
+      Game.splashScreen.display = false;
+      Game.splashScreen.animation.finished = true;
+      Game.splashScreen = null;
+    }
+    Game.state = 'running';
+  }  
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
@@ -337,7 +357,9 @@ var Game = {
     case 'shop':
       Game.painter.draw();
       Shop.draw();
-     
+      break;
+    case 'splash':
+      Game.painter.draw();
     }
   }
   ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']

@@ -58,6 +58,12 @@ LinkedList.prototype.pushFront = function(data) {
   return this.head;
 }
 
+LinkedList.prototype.findAndRemove = function(data){
+  console.log('before remove:', this.length);
+  this.forEach(function(d,el){ if(d == data) el.remove(); });
+  console.log('after remove:', this.length);
+}
+
 LinkedList.prototype.forEach = function(fn) {
   for (var el = this.head; el; el=el.next) { fn(el.d, el) }
 }

@@ -23,7 +23,13 @@ var keyboard_init = function() {
     } else if (evt.keyCode == 190) { // .
       Game.spawn_mines(3);
     } else if (evt.keyCode == 188) { // ,
-      Game.spawn_missiles(3);
+      //Game.spawn_missiles(3);
+      if(Game.splashScreen){
+        Game.leaveSplashScreen();
+      }else{
+        Game.enterSplashScreen( new SplashScreen() );
+      }
+      
     } else if (evt.keyCode == 80) { // p
       console.log('pause pressed!');
       if(Game.state == 'paused') Game.state = 'running';
