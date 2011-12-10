@@ -398,7 +398,7 @@ Ship.prototype.createScoreSprite = function() {
     // write player name
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = Colors.gray;
     ctx.font = '15px "Permanent Marker"';
     ctx.fillText(ship.player_name, 20, 9);
 
