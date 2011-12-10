@@ -76,13 +76,14 @@ SplashScreen.prototype.init = function() {
     
 SplashScreen.prototype.splash_screen_draw = function(ctx){
   ctx.font = '30px "Permanent Marker"';
-  ctx.translate(-250, -240);
+  ctx.translate(-260, -240);
 
   ctx.fillStyle = Colors.dark_gray;
   ctx.fillText('WAVE ' + this.wave, 1.5, 1.5);
-  ctx.fillStyle = Colors.gray;
+  ctx.fillStyle = Colors.blue;
   ctx.fillText('WAVE ' + this.wave, 0, 0);
-  
+  ctx.fillStyle = Colors.gray;  
+
   var minutes = Math.floor(this.timeSeconds/60);
   var seconds = (this.timeSeconds-60*minutes);
   ctx.font = '20px "Permanent Marker"';
@@ -91,11 +92,11 @@ SplashScreen.prototype.splash_screen_draw = function(ctx){
   this.entries.forEach(function(e){ e.draw(ctx); });
 
 
-  ctx.fillText(this.text_title, 0,350)
+  ctx.fillText(this.text_title, 0,332)
   ctx.font = '14px "Permanent Marker"';
   
   var lineYStep = 20;
-  var lineYOffs = 370;
+  var lineYOffs = 350;
   for(var i=0;i<this.text_lines.length; ++i){
     ctx.fillText(this.text_lines[i], 0,lineYOffs + i* lineYStep)
   }
