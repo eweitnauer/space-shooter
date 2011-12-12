@@ -17,6 +17,8 @@ load_images('alien',{'amoeba':18,
                      'small-rocket':3,
                      'ufo':3,
                      'small-yellow-box':3,
+                     'cannon':3,
+                     'cannon-pipe':1,
                      'yellow-box':3});
 
 load_images('bullet',{'0':3,

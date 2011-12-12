@@ -105,6 +105,7 @@ var Game = {
     for(var i=0;i<5;++i){
       new Fighter();
     }
+    new Cannon(720,455);
     //new YellowBox();
     //new Amoeba();
   }
