@@ -107,25 +107,33 @@ Shield.prototype.extra_draw = function(ctx){
   var fb = ( this.energyRatio < 0.25 ? 0 :
              this.energyRatio < 0.50 ? 100 : 255);
   var fa = ( Math.random() < this.energyRatio) ? 0.25 : 0.1;
-  if(this.energyRatio*100  > 1){
+  
+  
+  //if(this.energyRatio*100  > 1){
   
     // draw the non-hit visualization
-    for(var angle=0;angle<Math.PI*2;angle+= 0.1){
-      for(var i=0;i<5;++i){
-        var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/12;
-        
-        
-        ctx.fillStyle = ("rgba(" 
-                         + Math.round(Math.random() * fr) + ','
-                         + Math.round(Math.random() * fg) + ','
-                         + Math.round(Math.random() * fb) + ','
-                         + fa +')' );
-        ctx.fillRect(self.x + Math.sin(angle) * r + (Math.random()-0.5) * 2,
-                     self.y - Math.cos(angle) * r + (Math.random()-0.5) * 2,
-                     1,1);
-      }
-    }
+//    for(var angle=0;angle<Math.PI*2;angle+= 0.1){
+//      for(var i=0;i<5;++i){
+//        var r = this.radius - Math.abs(Math.gaussRandom()) * this.radius/12;
+//        
+//        
+//        ctx.fillStyle = ("rgba(" 
+//                         + Math.round(Math.random() * fr) + ','
+//                         + Math.round(Math.random() * fg) + ','
+//                         + Math.round(Math.random() * fb) + ','
+//                         + fa +')' );
+//        ctx.fillRect(self.x + Math.sin(angle) * r + (Math.random()-0.5) * 2,
+//                     self.y - Math.cos(angle) * r + (Math.random()-0.5) * 2,
+//                     1,1);
+//      }
+//    }
+//  }
+  for(var a=0; a<2*Math.PI; a+=self.angleStep) {
+    self.graphics.rot = a;
+    self.graphics.alpha = 0.05;
+    self.graphics.draw(ctx);
   }
+
   // visualize hits
   this.hits.forEach(function(h,el){
     for(var a=-3; a<=3; ++a){
