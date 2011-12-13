@@ -1,3 +1,9 @@
+var measure_duration = function(fn) {
+  var t0 = Date.now()
+  fn()
+  return Date.now()-t0
+}
+
 /// size must be one of 'L', 'M', 'S'.
 var Explosion = function(x, y, size) {
   this.init_sprite(size);

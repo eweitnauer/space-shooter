@@ -345,26 +345,34 @@ var Game = {
     Animation.time = Date.now();
     switch(Game.state){
     case 'running':
-      // move the ships
-      Game.stepShips();
-      
-      // here ??
-      Game.stepAliens();
-      
-      // handle the shots
-      Game.handleShots();
-      
-      // collision dectection
-      Game.collisionDetection();
-      
-      // wind effect
-      Game.stepSmokes();
+      var t_stepping = measure_duration(function() {
+        // move the ships
+        Game.stepShips();
+        
+        // alien AI and movement
+        Game.stepAliens();
+        
+        // handle the shots
+        Game.handleShots();
 
-      // point strings and coins
-      Game.stepPointObjects();
+        // wind effect
+        Game.stepSmokes();
+
+        // point strings and coins
+        Game.stepPointObjects();
+      });
+
+      var t_collisions = measure_duration(function() {
+        // collision dectection
+        Game.collisionDetection();
+      });
       
-      // update the display
-      Game.painter.draw();
+      var t_drawing = measure_duration(function() {
+        // update the display
+        Game.painter.draw();
+      });
+      
+      Game.painter.show_fps({stepping: t_stepping, collision: t_collisions, drawing: t_drawing});
       
       break;
     case 'paused':
