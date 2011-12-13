@@ -1,4 +1,4 @@
-var SplashEntry = function(sprite_name, count, attack, defense, specials){
+var WaveInfoEntry = function(sprite_name, count, attack, defense, specials){
   this.sprite = new Sprite(80,sprite_name);
   if(sprite_name == 'alien-ufo'){
     this.sprite.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
@@ -34,17 +34,17 @@ var SplashEntry = function(sprite_name, count, attack, defense, specials){
 }
 
 
-var SplashScreen = function(wave, entries,timeSeconds, text_title, text){
+var WaveInfoScreen = function(wave, entries,timeSeconds, text_title, text){
   // default are just for debugging and development
   if(typeof(wave) == 'undefined') var wave = 42;
   if(typeof(timeSeconds) == 'undefined') var timeSeconds = 125;
   if(typeof(entries) == 'undefined'){
-    var entries = [new SplashEntry('alien-ufo',10,100,80,'shield, fast'), 
-                   new SplashEntry('alien-fighter',5,40,10,''), 
-                   new SplashEntry('alien-mine',45,10,60,'invincible'),
-                   new SplashEntry('alien-amoeba',100,100,80,'crazy, strong'), 
-                   new SplashEntry('alien-yellow-box',1,40,10,'yellow'), 
-                   new SplashEntry('alien-rocket',33,10,60,'smoking,happy')
+    var entries = [new WaveInfoEntry('alien-ufo',10,100,80,'shield, fast'), 
+                   new WaveInfoEntry('alien-fighter',5,40,10,''), 
+                   new WaveInfoEntry('alien-mine',45,10,60,'invincible'),
+                   new WaveInfoEntry('alien-amoeba',100,100,80,'crazy, strong'), 
+                   new WaveInfoEntry('alien-yellow-box',1,40,10,'yellow'), 
+                   new WaveInfoEntry('alien-rocket',33,10,60,'smoking,happy')
                   ];
   }
   
@@ -67,7 +67,7 @@ var SplashScreen = function(wave, entries,timeSeconds, text_title, text){
   this.end_callback = null;
 }
 
-SplashScreen.prototype.init = function() {
+WaveInfoScreen.prototype.init = function() {
   jQuery.extend(this, new Sprite([], 'shop-background'));
   this.x = 720;
   this.y = 450;
@@ -75,7 +75,7 @@ SplashScreen.prototype.init = function() {
   this.layout_entries();
 }
     
-SplashScreen.prototype.splash_screen_draw = function(ctx){
+WaveInfoScreen.prototype.splash_screen_draw = function(ctx){
   ctx.font = '30px "Permanent Marker"';
   ctx.translate(-260, -240);
 
@@ -104,7 +104,7 @@ SplashScreen.prototype.splash_screen_draw = function(ctx){
   
 }
 
-SplashScreen.prototype.layout_row = function(yOffs,entries){
+WaveInfoScreen.prototype.layout_row = function(yOffs,entries){
   var n = entries.length;
 //  console.log(n);
   var xOffs = n==1 ? 200 : n==2 ? 100 : 30;
@@ -116,7 +116,7 @@ SplashScreen.prototype.layout_row = function(yOffs,entries){
   }
 }
 
-SplashScreen.prototype.layout_entries = function(){
+WaveInfoScreen.prototype.layout_entries = function(){
   // max 3 per row
 
   var currentRow = 0;

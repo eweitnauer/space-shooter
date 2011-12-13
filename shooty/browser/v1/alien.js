@@ -25,9 +25,11 @@ var Alien = function() {
      ,vel_r: 0               // if sth. is farer than this, don't change vel.
     };
   this.collision_radius = 12; // collision radius for physics
-  this.restitution = 0.5;   // restitution for collision
-  this.mass = 2;            // mass of ship
-  this.max_energy = 100;    // energy at creation
+  this.restitution = 0.5;     // restitution for collision
+  this.mass = 2;              // mass of ship
+  this.max_energy = 100;      // energy at creation
+  this.parent = null;         // this is set to true by the wave in order to indicate which
+                              // alies were actually by a wave
 }
 
 /// Makes the alien into a sprite adds it to the main game sprite. Also adds

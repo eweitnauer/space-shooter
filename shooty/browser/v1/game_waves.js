@@ -7,10 +7,10 @@ create_wave = function(level){
   switch(level){
   case 1:
     time = 60;
-    subwaves = [new SubWave(5,5,'fighter'), 
-                new SubWave(30,5,'fighter'),
-                new SubWave(35,1,'ufo'), 
-                new SubWave(35,1,'box')];
+    subwaves = [new SubWave(5,2,'fighter'), 
+                new SubWave(10,2,'fighter'),
+//                new SubWave(10,1,'ufo'), 
+                new SubWave(10,1,'box')];
     aliendefs = {fighter: new AlienDefinition(function(){ new Fighter(); },'alien-fighter',10,10,'none'),
                  ufo: new AlienDefinition(function(){ new Ufo(); },'alien-ufo',50,100,'none'),
                  box: new AlienDefinition(function(){ new YellowBox},'alien-yellow-box',20,200,'none') };

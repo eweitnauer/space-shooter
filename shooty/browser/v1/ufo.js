@@ -131,6 +131,6 @@ Ufo.prototype.drop_mines_behavior = function() {
 }
 
 Ufo.prototype.release_mine = function() {
-  new Mine(this.x, this.y + 25, 0, 1);
+  new Mine(this,this.x, this.y + 25, 0, 1);
   this.mines--;
 }

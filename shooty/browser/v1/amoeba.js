@@ -93,6 +93,7 @@ Amoeba.prototype.divide_behaviour = function(){
       this.animation.frame = 0;
       
       var other = new Amoeba();
+      other.parent = this;
       r = 36 * this.scale;
       dr = 0.35;
       var dx =   Math.sin(this.rot+dr) * r;

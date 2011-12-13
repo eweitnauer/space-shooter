@@ -6,7 +6,7 @@
 
 /// To create a missile, pass along the initial position, speed and size (can be
 /// 'S' or 'L').
-var Missile = function(x, y, vx, vy, size) {
+var Missile = function(parent, x, y, vx, vy, size) {
   this.type = 'alien_shot'; // should be changed to 'alien_ship' or 'alien_shot'
   this.sensor_count = 4;    // number of sensors
   this.sensor_range = 250;  // max. sensor range
@@ -66,6 +66,8 @@ var Missile = function(x, y, vx, vy, size) {
 
   this.my_init_sprite(size);
   this.my_spawn(x,y,vx,vy);
+
+  this.parent = parent;
 }
 
 Missile.prototype = new Alien();

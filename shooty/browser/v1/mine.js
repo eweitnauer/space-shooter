@@ -2,7 +2,7 @@
     and attach to the ground. If it comes close a ship, it will explode.*/
 
 /// To create a mine, pass its initial position and speed.
-var Mine = function(x,y,vx,vy) {
+var Mine = function(parent, x,y,vx,vy) {
   this.type = 'alien_shot';
   this.sensor_count = 2; // number of sensors
   this.sensors = []; // an array of sensors results
@@ -12,6 +12,7 @@ var Mine = function(x,y,vx,vy) {
 
   this.init_sprite();
   this.spawn(x,y,vx,vy);
+  this.parent = parent;
 }
 
 Mine.prototype.init_sprite = function() {

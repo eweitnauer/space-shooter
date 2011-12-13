@@ -27,7 +27,7 @@ var keyboard_init = function() {
       if(Game.splashScreen){
         Game.leaveSplashScreen();
       }else{
-        Game.enterSplashScreen( new SplashScreen() );
+        Game.enterSplashScreen( new WaveInfoScreen() );
       }
       
     } else if (evt.keyCode == 80) { // p

@@ -22,8 +22,13 @@ var Game = {
   ,nextWave: function(){
     var nextLevel = this.currentWave==null ? 1 : this.currentWave.level+1;
     this.currentWave = create_wave(1);
-    var splashScreen = this.currentWave.create_splash_screen();
+    var splashScreen = this.currentWave.create_info_screen();
     this.enterSplashScreen(splashScreen);
+  }
+  ,endWave: function(result){
+    console.log('wave ended: result: ', result);
+    console.log('aliens', Game.aliens);
+    this.enterSplashScreen(result.create_result_screen());
   }
   ,start: function() {
     
@@ -114,10 +119,10 @@ var Game = {
     //new Ufo();
 //    new Ufo();
     //new Pyramid();
-    for(var i=0;i<5;++i){
-      new Fighter();
-    }
-    new Cannon(720,455);
+    //for(var i=0;i<5;++i){
+    //  new Fighter();
+    //}
+    //new Cannon(720,455);
     //new YellowBox();
     //new Amoeba();
   }

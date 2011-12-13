@@ -38,7 +38,7 @@ var Ship = function(session_code) {
   this.shot_angle = 0.05;
   this.shot_level = 0;
   
-  this.rocket_level = 0; // todo
+  this.rocket_level = 1; // todo
   this.heal_per_sec = 15;
   this.rotation_speed = 1;
 
@@ -48,7 +48,7 @@ var Ship = function(session_code) {
   this.rocket_sensor_range = 100;
   this.rocket_count_max = 0;
   this.rocket_scale = 0.4;
-  this.curr_rocket_count = 0;
+  this.curr_rocket_count = 1;
 
 };
 

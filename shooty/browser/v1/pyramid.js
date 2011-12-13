@@ -43,7 +43,7 @@ Pyramid.prototype.fire_missiles_behavior = function() {
     // fire three missiles and set new time
     for (var deg = 0; deg<360; deg+=120) {
       var rad = (deg-90) * Math.PI / 180;
-      new Missile(this.x + Math.cos(rad)*20, this.y + Math.sin(rad)*20,
+      new Missile(this, this.x + Math.cos(rad)*20, this.y + Math.sin(rad)*20,
                   Math.cos(rad), Math.sin(rad), Math.random() > 0.05 ? 'S' : 'L');
     }
     this.fire_missiles_at = Animation.time + this.missile_time;

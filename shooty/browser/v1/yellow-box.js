@@ -93,6 +93,8 @@ SmallYellowBox = function(parent,x,y){
   this.shot_energy = 5;
   this.shot_max_dist = 100;
   this.shoot_interval_when_unwired = 500;
+  
+  this.parent = parent;
 }
 
 SmallYellowBox.prototype = new Alien();
