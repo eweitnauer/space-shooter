@@ -396,7 +396,7 @@ var Game = {
 Infobar = function() {
   jQuery.extend(this, new Sprite([], ''));
 
-  this.coin_sprite = new Sprite(120,'coin');
+  this.coin_sprite = new Sprite(120,'extra-coin');
   this.child_sprites.push(this.coin_sprite);
   this.coin_sprite.x = 1050;
   this.coin_sprite.y = 725;
