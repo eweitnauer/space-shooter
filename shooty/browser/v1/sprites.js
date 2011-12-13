@@ -266,7 +266,7 @@ PaintEngine = function(canvas) {
   this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
-    self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
+    //self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
     this.sprites.forEach(function(sprite) {
       sprite.draw(self.context);
     });

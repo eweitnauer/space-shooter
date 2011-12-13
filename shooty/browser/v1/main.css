@@ -2,7 +2,7 @@
   margin: 0;
   width: 1280px;
   height: 800px;
-  background-image: url(./graphics/bg.png);
+  /*background-image: url(./graphics/bg.png);*/
 }
 
 canvas {
