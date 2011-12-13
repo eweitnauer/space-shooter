@@ -6,14 +6,18 @@ create_wave = function(level){
   
   switch(level){
   case 1:
-    time = 60;
-    subwaves = [new SubWave(5,2,'fighter'), 
+    time = 50;
+    subwaves = [//new SubWave(2,20,'fighter'), 
+                new SubWave(3,4,'pyramid'), 
+                new SubWave(5,2,'fighter'), 
                 new SubWave(10,2,'fighter'),
-//                new SubWave(10,1,'ufo'), 
+                new SubWave(12,2,'ufo'), 
                 new SubWave(10,1,'box')];
     aliendefs = {fighter: new AlienDefinition(function(){ new Fighter(); },'alien-fighter',10,10,'none'),
                  ufo: new AlienDefinition(function(){ new Ufo(); },'alien-ufo',50,100,'none'),
-                 box: new AlienDefinition(function(){ new YellowBox},'alien-yellow-box',20,200,'none') };
+                 box: new AlienDefinition(function(){ new YellowBox},'alien-yellow-box',20,200,'none'),
+                 pyramid: new AlienDefinition(function(){ new Pyramid},'alien-pyramid',20,200,'none'),
+                };
     title = "Hello Shooty!";
     description = "The End is nigh, quick! kill all the aliens";
     break;

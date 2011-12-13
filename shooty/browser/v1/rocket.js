@@ -12,7 +12,7 @@ Rocket = function(ship, x, y, rot, warhead_energy, mass, sensor_range, turn_spee
   this.points = 0;        // points the players get on destruction
   this.coins = 0;         // coins the players get on destruction
   
-  this.sprite_name = 'player-rocket';    // visual appearance of the alien
+  this.sprite_name = 'bullet-rocket';    // visual appearance of the alien
   this.explosion_size = 'L';        // size of the explosion when destroyed
   this.offset_rot = Math.PI/2;               // rotate imgs by 45 deg.
   this.offset_x = this.offset_y = 3; // img offset
@@ -35,7 +35,7 @@ Rocket = function(ship, x, y, rot, warhead_energy, mass, sensor_range, turn_spee
   
   this.warhead_energy = warhead_energy;
 
-  var flame_sprite = new Sprite(40, 'small_rocket_flame');
+  var flame_sprite = new Sprite(40, 'flame-rocket');
   flame_sprite.scale = 1;
   flame_sprite.y = 3;
   flame_sprite.x = -12;

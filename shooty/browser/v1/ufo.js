@@ -11,7 +11,7 @@ Ufo = function() {
   this.points = 100;        // points the players get on destruction
   this.coins = 100;         // coins the players get on destruction
   
-  this.sprite_name = 'alien_ufo';    // visual appearance of the alien
+  this.sprite_name = 'alien-ufo';    // visual appearance of the alien
   this.explosion_size = 'L';         // size of the explosion when destroyed
   this.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
   this.offset_x = this.offset_y = 3; // img offset

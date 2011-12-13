@@ -16,7 +16,7 @@ var Mine = function(parent, x,y,vx,vy) {
 }
 
 Mine.prototype.init_sprite = function() {
-  jQuery.extend(this, new Sprite(80, 'alien_mine'));
+  jQuery.extend(this, new Sprite(80, 'alien-mine'));
   Game.main_sprite.child_sprites.push(this);
   Game.aliens.push(this);
 }
