@@ -1,3 +1,9 @@
+var measure_duration = function(fn) {
+  var t0 = Date.now()
+  fn()
+  return Date.now()-t0
+}
+
 /// size must be one of 'L', 'M', 'S'.
 var Explosion = function(x, y, size) {
   this.init_sprite(size);
@@ -52,6 +58,7 @@ Explosion.prototype.shockwave = function(args) {
 }
 
 var Smoke = function(x,y,type,parent_sprite){
+  return;
   this.init_sprite(type, parent_sprite);
   this.x = x;
   this.y = y;

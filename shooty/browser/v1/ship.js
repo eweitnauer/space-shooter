@@ -2,7 +2,7 @@
 var Ship = function(session_code) {
   this.type = 'ship';
   
-  this.shield = new Shield(this);
+//  this.shield = new Shield(this);
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
   this.player_name = '???';

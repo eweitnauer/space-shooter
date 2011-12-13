@@ -19,7 +19,7 @@ var Missile = function(x, y, vx, vy, size) {
     this.acceleration = 0.01; // acceleration
     this.coins = 1;           // coins the players get on destruction
 
-    this.sprite_name = 'alien_small_rocket'; // visual appearance of the alien
+    this.sprite_name = 'alien-small-rocket'; // visual appearance of the alien
     this.scale = 0.7;
     this.explosion_size = 'M'; // size of the explosion when destroyed
     this.shockwave =           // shockwave parameters (on explosion)

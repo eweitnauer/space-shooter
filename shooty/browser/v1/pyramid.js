@@ -11,7 +11,7 @@ var Pyramid = function() {
   this.acceleration = 0.02; // acceleration
   this.coins = 100;         // coins the players get on destruction
   
-  this.sprite_name = 'alien_pyramid'; // visual appearance of the alien
+  this.sprite_name = 'alien-pyramid'; // visual appearance of the alien
   this.explosion_size = 'L'; // size of the explosion when destroyed
   this.collision_radius = 12; // collision radius for physics
   this.restitution = 0.5;   // restitution for collision

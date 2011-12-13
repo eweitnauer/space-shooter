@@ -1,6 +1,6 @@
 //ImageBank.prefix = 'http://phigames.com/demos/shooty/';
 
-/*
+
 load_images = function(type,list){
   for(var i in list){
     var name = i, len = list[i];
@@ -98,6 +98,6 @@ for (var i=0; i< global_ship_colors.length;++i){
   list['solar-'+c+'-open'] = 3;
   load_images('ship',list);
 }
-*/
+
 ImageBank.load('bg','graphics/bg',1);
 ImageBank.load('shop-background','graphics/shop',1);

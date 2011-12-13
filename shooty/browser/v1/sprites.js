@@ -258,13 +258,15 @@ function imageLoaded(img) {
 
 PaintEngine = function(canvas) {
   var self = this;
+  this.last_time = 0;
   this.sprites = []; // top-level sprites
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
-  this.draw_physics = true;
+  this.draw_physics = false;
   this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
   this.draw = function() {
+    self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
     this.sprites.forEach(function(sprite) {
       sprite.draw(self.context);
     });
@@ -281,6 +283,20 @@ PaintEngine = function(canvas) {
       Game.aliens.forEach(function(alien) {
         if ('visualize_sensors' in alien) alien.visualize_sensors(self.context);
       });
+    }
+  }
+  
+  this.show_fps = function(tasks) {
+    var now = Date.now();
+    self.context.fillStyle = Colors.gray;
+    self.context.font = '15px "Arial"';
+    fps = 1000/(now-self.last_time);
+    self.last_time = now
+    self.context.fillText('fps: '+Math.round(fps), 500, 200);
+    var i=1
+    for (t in tasks) {
+      i++;
+      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
     }
   } 
 }
