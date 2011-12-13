@@ -100,4 +100,5 @@ for (var i=0; i< global_ship_colors.length;++i){
 }
 
 ImageBank.load('bg','graphics/bg',1);
+ImageBank.load('bg_small','graphics/bg_small',1);
 ImageBank.load('shop-background','graphics/shop',1);

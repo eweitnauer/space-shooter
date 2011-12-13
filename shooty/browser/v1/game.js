@@ -1,6 +1,6 @@
 var Game = {
   //w: 1237, h: 777
-  w: 1280, h: 800
+  w: 1024, h: 768
   ,borders: {left:336, top:158, right: 1171, bottom: 355}
   ,grav_x:0, grav_y:0.02
   ,air_friction: 0.01
@@ -27,7 +27,7 @@ var Game = {
     
     this.painter = new PaintEngine(this.canvas);
     this.step_timer = setInterval(this.step, 1000/500);
-    Game.main_sprite = new Sprite([], 'bg');
+    Game.main_sprite = new Sprite([], 'bg_small');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
     Game.painter.draw();
