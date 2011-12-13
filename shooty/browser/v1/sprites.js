@@ -260,6 +260,7 @@ PaintEngine = function(canvas) {
   var self = this;
   this.last_time = 0;
   this.sprites = []; // top-level sprites
+  this.fps = 0;
   this.canvas = canvas;
   this.context = canvas.getContext('2d');
   this.draw_physics = false;
@@ -287,12 +288,15 @@ PaintEngine = function(canvas) {
   }
   
   this.show_fps = function(tasks) {
+    self.context.fillStyle = 'white';
+    self.context.fillRect(500, 180, 100, 100);
     var now = Date.now();
     self.context.fillStyle = Colors.gray;
     self.context.font = '15px "Arial"';
     fps = 1000/(now-self.last_time);
+    this.fps = 0.99*this.fps+0.01*fps;
     self.last_time = now
-    self.context.fillText('fps: '+Math.round(fps), 500, 200);
+    self.context.fillText('fps: '+Math.round(this.fps), 500, 200);
     var i=1
     for (t in tasks) {
       i++;
