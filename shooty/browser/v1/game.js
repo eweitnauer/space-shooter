@@ -25,17 +25,18 @@ var Game = {
     this.canvas.height = this.h;
     
     this.painter = new PaintEngine(this.canvas);
-    this.step_timer = setInterval(this.step, 30);
+//    this.step_timer = setInterval(this.step, 30);
     Game.main_sprite = new Sprite([], 'bg');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
-    Game.painter.add(new ScoreBoard());
-    Game.infobar = new Infobar();
-    Game.painter.add(Game.infobar);
-    Game.lines = load_collision_data_from_svg(Game.coll_data);
-    for (l in Game.lines) {Game.lines[l].type = 'landscape'}
-    this.spawn_aliens();
-    this.state = 'running';
+    Game.painter.draw();
+//    Game.painter.add(new ScoreBoard());
+//    Game.infobar = new Infobar();
+//    Game.painter.add(Game.infobar);
+//    Game.lines = load_collision_data_from_svg(Game.coll_data);
+//    for (l in Game.lines) {Game.lines[l].type = 'landscape'}
+//    this.spawn_aliens();
+//    this.state = 'running';
   }
   ,enterShop: function(ship) {
     if(Game.state != 'running') return;
