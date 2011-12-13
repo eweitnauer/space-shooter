@@ -78,7 +78,7 @@ Missile.prototype.my_init_sprite = function() {
 
   if (this.size == 'S') {
     // die flame brauchen wir nur für die small rocket!
-    var flame_sprite = new Sprite(200, 'small_rocket_flame');
+    var flame_sprite = new Sprite(200, 'flame-rocket');
     flame_sprite.y = 14; flame_sprite.alpha = 0.9;
     flame_sprite.draw_in_front_of_parent = false;
     this.child_sprites.push(flame_sprite);
@@ -98,7 +98,7 @@ Missile.prototype.smoke = function() {
       (this.size == 'L' && Math.random() > 0.5))
   {
     var r = this.size == 'L' ? 5 : 18;
-    var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "very-small-rocket-smoke");
+    var s = new Smoke(this.x-this.vx*r, this.y-this.vy*r, "rocket-XS");
     s.scale = 0.7;
     s.alpha = 0.8 + Math.random() *  0.2;
     s.alpha_decay = 0.05 + Math.random() * 0.1;

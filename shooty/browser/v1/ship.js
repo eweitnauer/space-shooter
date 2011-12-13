@@ -1,6 +1,8 @@
 
 var Ship = function(session_code) {
   this.type = 'ship';
+  
+  this.shield = new Shield(this);
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
   this.player_name = '???';
@@ -47,8 +49,11 @@ var Ship = function(session_code) {
   this.rocket_count_max = 0;
   this.rocket_scale = 0.4;
   this.curr_rocket_count = 0;
-  
+
 };
+
+
+
 
 Ship.prototype.update_from_extra = function(name){
   var extraLevel = this.extras.levels[name];
@@ -114,6 +119,9 @@ Ship.prototype.steer = function(data) {
 }
 
 Ship.prototype.step = function() {
+  
+  if(this.shield) this.shield.step();
+  
   var self = this;
   if (!this.steer_data) return;
   switch(this.state) {
@@ -203,14 +211,15 @@ Ship.prototype.smoke = function() {
       r = 15;
     }
     var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
-                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6);
+                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6,
+                     '0');
     
     s.rot = Math.random()*1.5-0.75;
     // shipSpeed \in [ 0 , 6 ]
     var shipSpeed = Math.sqrt(this.vx*this.vx + this.vy*this.vy)/6;
 
     s.alpha = 0.98+Math.random()*0.02 - shipSpeed/6;
-    s.scale = 0.5+Math.random()*0.3;
+    s.scale = 0.3+Math.random()*0.3;
     s.alpha_decay = 0.02+Math.random()*0.2 + shipSpeed/6*0.6;
 
   }
@@ -259,12 +268,21 @@ Ship.prototype.destroy = function() {
   if (Game.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
-Ship.prototype.hit = function(energy) {
-  if (this.destroyed) return;
+Ship.prototype.hit = function(energy, x, y) {
+  if (this.destroyed) return 0;
+
+  // the shield absorbs some shoot damage
+  var energyAbsorbedByShield = 0; 
+  if (this.shield) {
+    energyAbsorbedByShield = energy - this.shield.hit(x,y,energy);
+    energy -= energyAbsorbedByShield;
+  }
   if (this.state != 'flying') energy *= 2;
   if (energy > 10) sendVibrate(this.code);
   if (this.energy<=energy) this.destroy(3000);
   else this.energy -= energy;
+
+  return energyAbsorbedByShield;
 }
 
 Ship.prototype.attempt_land = function(line) {
@@ -294,20 +312,18 @@ Ship.prototype.attempt_land = function(line) {
 
 Ship.prototype.trigger_open = function() {
   if (this.state == 'closing') var frame = this.animation.frame;
-  this.animation.setAnimation(120, 'ship_solar_'+this.color);
-  if (this.state == 'closing') this.animation.frame = this.animation._imgs.length-1-frame;
+  this.animation.setAnimation(120, 'ship-solar-'+this.color);
+  if (this.state == 'closing') this.animation.frame = frame;
   this.animation.loop = false;
   var self = this;
   this.animation.finished_callback = function() { self.trigger_charge.call(self) }
   this.state = 'opening';
-  
 }
 
 Ship.prototype.trigger_close = function() {
   if (this.state == 'opening') var frame = this.animation.frame;
-  this.animation.setAnimation(120, 'ship_solar_'+this.color);
-  if (this.state == 'opening') this.animation.frame = this.animation._imgs.length-1-frame;
-  this.animation.reverse();
+  this.animation.setAnimation(120, 'ship-solar-'+this.color, 'backward');
+  if (this.state == 'opening') this.animation.frame = frame;
   this.animation.loop = false;
   var self = this;
   this.animation.finished_callback = function() { self.trigger_fly.call(self) }
@@ -315,14 +331,14 @@ Ship.prototype.trigger_close = function() {
 }
 
 Ship.prototype.trigger_charge = function() {
-  this.animation.setAnimation(120, 'ship_solar_open_'+this.color);
+  this.animation.setAnimation(120, 'ship-solar-'+this.color+'-open');
   this.animation.loop = true;
   this.animation.finished_callback = null;
   this.state = 'charging';
 }
 
 Ship.prototype.trigger_fly = function() {
-  this.animation.setAnimation(120, 'ship_'+this.color);
+  this.animation.setAnimation(120, 'ship-'+this.color);
   this.animation.loop = true;
   this.animation.finished_callback = null; 
   this.state = 'flying';
@@ -339,23 +355,27 @@ Ship.getNextColor = function() {
 
 Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
-  jQuery.extend(this, new Sprite(80, 'ship_'+this.color));
+  jQuery.extend(this, new Sprite(120, 'ship-'+this.color));
   this.offset_x = 2; this.offset_y = -3;
   this.scale = 0.9;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
-  var flame_sprite = new Sprite(160, 'large_flame');
+  var flame_sprite = new Sprite(160, 'flame-XL');
   flame_sprite.scale = 0.8;
   flame_sprite.y = 18; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
+  
+  if(this.shield){
+    this.child_sprites.push(this.shield);
+  }
 }
 
 Ship.prototype.createScoreSprite = function() {
   var ship = this;
   var sprite = new Sprite([], '');
-  var ship_sprite_1 = new Sprite(80, 'ship_'+this.color);
+  var ship_sprite_1 = new Sprite(80, 'ship-'+this.color);
   ship_sprite_1.animation.stop();
   ship_sprite_1.scale = 0.7;
   var ship_sprite_2 = new Sprite(80, 'ship_gray');
@@ -378,9 +398,20 @@ Ship.prototype.createScoreSprite = function() {
     // write player name
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
-    ctx.fillStyle = '#555';
+    ctx.fillStyle = Colors.gray;
     ctx.font = '15px "Permanent Marker"';
     ctx.fillText(ship.player_name, 20, 9);
+
+    // shield:
+    if(ship.shield){
+      if(ship.shield.energyRatio > 0.2){
+        ctx.fillStyle = "rgba(0,100,255,0.5)"
+      }else{
+        ctx.fillStyle = "rgba(255,0,0,0.5)"
+      }
+      ctx.fillRect(0,28,ship.shield.energyRatio*l,7);
+      ctx.strokeRect(0,28,l,7);
+    }
 
     ctx.save();
     ctx.translate(8,4);
@@ -400,3 +431,4 @@ Ship.prototype.createScoreSprite = function() {
   }
   return sprite;
 }
+

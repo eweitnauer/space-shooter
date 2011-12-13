@@ -189,7 +189,7 @@ YellowBox = function(version) {
   this.coins = 100;         // coins the players get on destruction
   
   this.sprite_name = 'alien-yellow-box';
-  this.explosion_size = 'XXL';
+  this.explosion_size = 'L';
   this.collision_radius = 16;        // collision radius for physics
   this.restitution = 0.9;            // restitution for collision
   this.mass = 4;                     // mass of ship

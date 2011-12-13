@@ -16,7 +16,8 @@ var Game = {
   ,pointObjects : new LinkedList
   ,lines: []
   ,level: 0 
-  ,state: 'paused' //'paused','running','shop'
+  ,state: 'paused' //'paused','running','shop', 'splash'
+  ,splashScreen: null
   ,start: function() {
     Animation.time = Date.now();
     this.canvas = document.getElementById("canvas");
@@ -25,7 +26,7 @@ var Game = {
     
     this.painter = new PaintEngine(this.canvas);
     this.step_timer = setInterval(this.step, 30);
-    Game.main_sprite = new Sprite([], 'background');
+    Game.main_sprite = new Sprite([], 'bg');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
     Game.painter.add(new ScoreBoard());
@@ -47,6 +48,25 @@ var Game = {
   ,triggerShop: function(ship) {
     Game.state == 'running' ? Game.enterShop(ship) : Game.leaveShop();
   }
+  // can also be used to switch to next splash screen
+  ,enterSplashScreen: function(splashScreen){
+    if(Game.splashScreen){
+      Game.splashScreen.display = false;
+      Game.splashScreen.animation.finished = true;
+      Game.main_sprite.child_sprites.remove(Game.splashScreen);
+    }
+    Game.splashScreen = splashScreen;
+    Game.main_sprite.child_sprites.push(splashScreen);
+    Game.state = 'splash';
+  }
+  ,leaveSplashScreen: function(){
+    if(Game.splashScreen){
+      Game.splashScreen.display = false;
+      Game.splashScreen.animation.finished = true;
+      Game.splashScreen = null;
+    }
+    Game.state = 'running';
+  }  
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
@@ -82,10 +102,12 @@ var Game = {
     //new Ufo();
 //    new Ufo();
     //new Pyramid();
-//    new Fighter();
-    //new Fighter();
-    new YellowBox();
-    new Amoeba();
+    for(var i=0;i<5;++i){
+      new Fighter();
+    }
+    new Cannon(720,455);
+    //new YellowBox();
+    //new Amoeba();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -103,17 +125,20 @@ var Game = {
                                  if (shot.shooter == ship) return; // don't hit own ship
                                  
                                  for(var i=0;i<5;++i){
-                                   var s = new Smoke(shot.x, shot.y);
+                                   var s = new Smoke(shot.x, shot.y, '2');
                                    s.rot = Math.random()*1.5-0.75;
                                    s.alpha = 0.8+Math.random()*0.2;
                                    s.scale = 0.3+Math.random()*0.7;
                                    s.alpha_decay = 0.05+Math.random()*0.1;
                                  }
-                                 
-                                 new Explosion(shot.x, shot.y, 'S');
+                                 var energyAbsorbedByShield = ship.hit(shot.energy, shot.x, shot.y);
+                                 var ex = new Explosion(shot.x, shot.y, energyAbsorbedByShield ? 'shield-sploing' : 'sploing');
+                                 if(energyAbsorbedByShield){
+                                   ex.scale = 0.7;
+                                 }
                                  // only move ship if it is not landed
                                  Physics.letCollide(ship, shot, ship.state == 'flying', false);
-                                 ship.hit(shot.energy);
+
                                  if (ship.destroyed) shot.shooter.points++;
                                  shot.kill();
                                });
@@ -130,7 +155,7 @@ var Game = {
           var energy = Physics.letCollide(ship, line, true, false);
           if (!ship.attempt_land(line)) {
             ship.hit(Math.max(10,energy));
-            new Explosion(p.x, p.y, 'S');
+            new Explosion(p.x, p.y, 'sploing');
           }
         });
       }
@@ -156,7 +181,7 @@ var Game = {
           ship.hit(energy);
           alien.hit(energy);
           if (alien.destroyed) ship.points++;
-          new Explosion(px, py, 'S');
+          new Explosion(px, py, 'sploing');
         });  
       });
     });
@@ -171,12 +196,12 @@ var Game = {
                                  // ships don't shoot their own rockets
                                  if (shot.shooter.type == 'alien' || alien.type == 'rocket') return; 
                                  
-                                 var s = new Smoke(shot.x, shot.y);
+                                 var s = new Smoke(shot.x, shot.y, '2');
                                  s.rot = Math.random()*1.5-0.75;
                                  s.alpha = 0.8+Math.random()*0.2;
                                  s.scale = 0.3+Math.random()*0.7;
                                  s.alpha_decay = 0.05+Math.random()*0.1;
-                                 new Explosion(shot.x, shot.y, 'S');
+                                 new Explosion(shot.x, shot.y, 'sploing');
                                  
                                  // only move ship if it is not landed
                                  Physics.letCollide(alien, shot, true, false);
@@ -196,7 +221,7 @@ var Game = {
           line.restitution = 0.4;
           var energy = Physics.letCollide(alien, line, true, false);
           alien.hit(Math.max(1,energy), 'landscape');
-          if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'S');
+          if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'sploing');
         });
       }
     });
@@ -224,7 +249,7 @@ var Game = {
                                      o.hit(r.warhead_energy);
                                    }
                                  }
-                                 new Explosion(px, py, 'S');
+                                 new Explosion(px, py, 'sploing');
                                });
       });
     });
@@ -241,7 +266,7 @@ var Game = {
                                                             ship2.hit(energy);
                                                             if (ship1.destroyed && !(ship2.destroyed && pts2==0)) ship2.points++;
                                                             if (ship2.destroyed && !(ship1.destroyed && pts1==0)) ship1.points++;
-                                                            new Explosion(px, py, 'S');
+                                                            new Explosion(px, py, 'sploing');
                                                           });
       });
     });
@@ -333,7 +358,9 @@ var Game = {
     case 'shop':
       Game.painter.draw();
       Shop.draw();
-     
+      break;
+    case 'splash':
+      Game.painter.draw();
     }
   }
   ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']

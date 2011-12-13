@@ -12,7 +12,7 @@ Ufo = function() {
   this.coins = 100;         // coins the players get on destruction
   
   this.sprite_name = 'alien_ufo';    // visual appearance of the alien
-  this.explosion_size = 'XXL';       // size of the explosion when destroyed
+  this.explosion_size = 'L';         // size of the explosion when destroyed
   this.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
   this.offset_x = this.offset_y = 3; // img offset
   this.collision_radius = 16;        // collision radius for physics
@@ -47,7 +47,7 @@ Ufo.prototype.smoke = function() {
   if (this.energy > this.max_energy*0.5) return;
   if (Math.random() < 0.25 && Math.random()*this.max_energy*0.5 > this.energy) {
     var x = Math.random()*10-5, y = Math.random()*10-5;
-    var s = new Smoke(x, y, 'small-rocket-smoke', this);
+    var s = new Smoke(x, y, 'rocket-S', this);
     s.alpha = 1-(this.energy/this.max_energy);
   }
 }

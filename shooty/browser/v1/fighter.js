@@ -10,7 +10,7 @@ var Fighter = function() {
   this.acceleration = 0.02; // acceleration
   this.coins = 555;           // coins the players get on destruction
   
-  this.sprite_name = 'alien_fighter'; // visual appearance of the alien
+  this.sprite_name = 'alien-fighter'; // visual appearance of the alien
   this.scale = 0.7;
   this.explosion_size = 'L'; // size of the explosion when destroyed
 
@@ -36,8 +36,8 @@ var Fighter = function() {
   this.smoke_interval = 150;   // one puff every x ms
   this.shot_time = 500;    // time between two bullets
   this.shot_level = 2;
-  this.shot_speed = 5;
-  this.shot_energy = 4;
+  this.shot_speed = 10;
+  this.shot_energy = 2;
   this.shot_max_dist = 300;
 }
 
@@ -47,7 +47,7 @@ Fighter.prototype.constructor = Fighter;
 Fighter.prototype.my_init_sprite = function() {
   this.init_sprite();
 
-  var flame_sprite = new Sprite(40, 'small_rocket_flame');
+  var flame_sprite = new Sprite(40, 'flame-rocket');
   flame_sprite.y = 20; flame_sprite.alpha = 0.9;
   flame_sprite.draw_in_front_of_parent = false;
   this.child_sprites.push(flame_sprite);
@@ -68,7 +68,7 @@ Fighter.prototype.smoke = function() {
   var r = 15;
   var p = new Point(this.vx, this.vy);
   p.normalize();
-  var s = new Smoke(this.x-p.x*r, this.y-p.y*r, "very-small-rocket-smoke"); 
+  var s = new Smoke(this.x-p.x*r, this.y-p.y*r, "rocket-XS");
   s.scale = 0.6;
   s.alpha = 0.7;
   s.alpha_decay = 0.05;
@@ -117,6 +117,7 @@ Fighter.prototype.shoot_behavior = function(){
          && this.sensors[N-1][0] <= this.hunting_range)) {
       var s = new Shot(this.shot_level,null,this.x,this.y,this.vx,this.vy,
                        this.shot_speed,this.rot,this.shot_energy,this.shot_max_dist);
+      s.shooter = this;
       this.last_time_shot = now;
       s.scale = 0.7;
 
