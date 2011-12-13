@@ -1,4 +1,4 @@
-var SplashEntry = function(sprite_name,count, attack, defense, specials){
+var SplashEntry = function(sprite_name, count, attack, defense, specials){
   this.sprite = new Sprite(80,sprite_name);
   if(sprite_name == 'alien-ufo'){
     this.sprite.offset_rot = Math.PI*0.25;    // rotate imgs by 45 deg.
