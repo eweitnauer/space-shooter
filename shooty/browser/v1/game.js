@@ -372,7 +372,7 @@ var Game = {
         Game.painter.draw();
       });
       
-      Game.painter.show_fps({stepping: t_stepping, collision: t_collisions, drawing: t_drawing});
+      Game.painter.show_fps({KI: t_stepping, collision: t_collisions, render: t_drawing});
       
       break;
     case 'paused':

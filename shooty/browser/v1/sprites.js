@@ -285,17 +285,23 @@ PaintEngine = function(canvas) {
     }
   }
   
+  this.fps_buf = 0;
   this.show_fps = function(tasks) {
+    var ctx = self.context;
     var now = Date.now();
-    self.context.fillStyle = Colors.gray;
-    self.context.font = '15px "Arial"';
-    fps = 1000/(now-self.last_time);
+    ctx.save();
+    ctx.rotate(0.02);
+    ctx.fillStyle = Colors.white;
+    ctx.font = '15px "Arial"';
+    var fps = 1000/(now-self.last_time);
+    this.fps_buf = this.fps_buf *0.99 + fps * 0.01;
     self.last_time = now
-    self.context.fillText('fps: '+Math.round(fps), 500, 200);
-    var i=1
+    ctx.fillText('fps: '+Math.round(this.fps_buf), 330, 113);
+    var offs = [390, 480, 610, 730];
+    var i = 0;
     for (t in tasks) {
-      i++;
-      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
+      ctx.fillText(t+': '+tasks[t].toFixed(1)+' ms',offs[i++], 113 );
     }
+    ctx.restore();
   }
 }
