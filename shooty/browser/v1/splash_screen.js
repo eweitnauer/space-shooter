@@ -61,9 +61,10 @@ var SplashScreen = function(wave, entries,timeSeconds, text_title, text){
   this.entries = entries;
   this.timeSeconds = timeSeconds;
   this.text_lines = text.split('\n');
-  console.log(this.text_lines);
+//  console.log(this.text_lines);
   this.text_title = text_title;
   this.init();
+  this.end_callback = null;
 }
 
 SplashScreen.prototype.init = function() {
@@ -105,13 +106,13 @@ SplashScreen.prototype.splash_screen_draw = function(ctx){
 
 SplashScreen.prototype.layout_row = function(yOffs,entries){
   var n = entries.length;
-  console.log(n);
+//  console.log(n);
   var xOffs = n==1 ? 200 : n==2 ? 100 : 30;
   var xStep = n==1 ? 0 : n==2 ? 250 : 180;
   for(var i=0;i<n;++i){
     entries[i].sprite.x = xOffs + xStep * i;
     entries[i].sprite.y = yOffs;
-    console.log('row entry ' + i + ' at (' + entries[i].sprite.x+','+entries[i].sprite.y+')' );
+    //console.log('row entry ' + i + ' at (' + entries[i].sprite.x+','+entries[i].sprite.y+')' );
   }
 }
 
@@ -126,9 +127,9 @@ SplashScreen.prototype.layout_entries = function(){
 
   while(entries.length){
     var n = Math.min(3,entries.length);
-    console.log('row ', currentRow, ' has ',n, ' entries');
+    //console.log('row ', currentRow, ' has ',n, ' entries');
     var row = entries.splice(0,n);
-    console.log('remaining entries ', entries.length);
+   // console.log('remaining entries ', entries.length);
     this.layout_row(yOffs + currentRow*yStep, row);
 
     currentRow ++;

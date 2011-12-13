@@ -18,7 +18,15 @@ var Game = {
   ,level: 0 
   ,state: 'paused' //'paused','running','shop', 'splash'
   ,splashScreen: null
+  ,currentWave: null
+  ,nextWave: function(){
+    var nextLevel = this.currentWave==null ? 1 : this.currentWave.level+1;
+    this.currentWave = create_wave(1);
+    var splashScreen = this.currentWave.create_splash_screen();
+    this.enterSplashScreen(splashScreen);
+  }
   ,start: function() {
+    
     Animation.time = Date.now();
     this.canvas = document.getElementById("canvas");
     this.canvas.width = this.w; 
@@ -34,8 +42,9 @@ var Game = {
     Game.painter.add(Game.infobar);
     Game.lines = load_collision_data_from_svg(Game.coll_data);
     for (l in Game.lines) {Game.lines[l].type = 'landscape'}
-    this.spawn_aliens();
+    //this.spawn_aliens();
     this.state = 'running';
+    this.nextWave();
   }
   ,enterShop: function(ship) {
     if(Game.state != 'running') return;
@@ -63,6 +72,9 @@ var Game = {
     if(Game.splashScreen){
       Game.splashScreen.display = false;
       Game.splashScreen.animation.finished = true;
+      if(Game.splashScreen.end_callback != null){
+        Game.splashScreen.end_callback();
+      }
       Game.splashScreen = null;
     }
     Game.state = 'running';
