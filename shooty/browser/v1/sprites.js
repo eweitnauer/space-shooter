@@ -47,6 +47,7 @@ Animation = function(timeline, img_tag) {
   this.remove_after_finish = true;   // if true, parents will remove their finished child sprites on draw()
   this.display = true;               // should the animation be displayed?
   this.setAnimation(timeline, img_tag); // called on construction to setup timeline and img
+  this.frame_change_callback = null; // if this is set to a function(frame), it is invoked with the next frame id
 }
 
 /// IMPORTANT
@@ -132,8 +133,10 @@ Animation.prototype._incFrame = function() {
       if (this.hide_after_finish) this.display = false;
       this.finished = true;
     }
+    if(this.frame_change_callback) this.frame_change_callback(this.frame);
     return !this.finished;
   }
+  if(this.frame_change_callback) this.frame_change_callback(this.frame);
   return true;
 }
 

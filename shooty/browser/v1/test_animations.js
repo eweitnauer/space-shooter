@@ -28,17 +28,30 @@ function init_animations() {
       ctx.fillText(this.animation.img_tag,0,-40);
     }
     if(/material/.test(img)){
-      console.log("alien-materialization detected");
       var s = new Sprite;
       s.animation.finished = false;
       s.draw_in_front_of_parent = false;
-      s.extra_draw = function(ctx){
-        console.log("extra drawing");
-        ctx.fillStyle = 'rgb(230,230,230)';
-        ctx.fillRect(-20,-20,40,40);
+      if(/one/.test(img)){
+        s.extra_draw = function(ctx){
+          ctx.fillStyle = 'rgb(230,230,230)';
+          ctx.fillRect(-44,-44,88,88);
+        }
+      }else{
+        s.extra_draw = function(ctx){
+          ctx.fillStyle = 'rgb(230,230,230)';
+          ctx.fillRect(-44,-44,88,88);
+          //todo use animation.frame_change_callback!
+          if(s.animation.frame == 20){
+            //s.scale = 10;
+          }else{
+            //s.scale = 20;
+          }
+        }
       }
       sprite.child_sprites.push(s);
     }
+
+    
 
 //    if (img == 'alien_ufo') sprite.offset_rot = Math.PI*0.25;
 //    if (/solar/.test(img)) {

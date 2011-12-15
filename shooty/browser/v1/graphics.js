@@ -20,7 +20,11 @@ load_images('alien',{'amoeba':18,
                      'cannon':3,
                      'cannon-pipe':1,
                      'yellow-box':3,
-                     'materialization':21});
+                     'materialization':21,
+                     'materialization-one-big':1,
+                     'materialization-blue':21,
+                     'materialization-one-big-blue':1
+                    });
 
 load_images('bullet',{'0':3,
                       '1':3,
