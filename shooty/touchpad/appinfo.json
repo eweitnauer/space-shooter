@@ -1,0 +1,9 @@
+{
+  "id": "com.phigames.canvas2",
+  "version": "0.6.0",
+  "vendor": "phigames",
+  "type": "web",
+  "main": "index.html",
+  "title": "Canvas Test",
+  "uiRevision": "2"
+}
