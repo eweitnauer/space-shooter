@@ -21,17 +21,22 @@ var Game = {
   ,splashScreen: null
   ,start: function() {
     Animation.time = Date.now();
-    this.canvas = document.getElementById("canvas");
-    this.canvas.width = this.w; 
-    this.canvas.height = this.h;
+    //this.canvas.width = this.w; 
+    //this.canvas.height = this.h;
     
-    this.painter = new PaintEngine(this.canvas);
-    this.step_timer = setInterval(this.step, 1000/500);
-    Game.main_sprite = new Sprite([], 'bg_small');
+    this.painter = new PaintEngine(document.getElementById("fg"), document.getElementById("bg"));
+    //this.step_timer = setInterval(this.step, 1000/500);
+    this.step_timer = setInterval(Game.step, 1000/500);
+    
+    Game.main_sprite = new Sprite([], '');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
+    var bg = new Sprite([], 'bg_small');
+    bg.center_img = false;
+    bg.is_background = true;
+    Game.painter.add(bg);
     Game.painter.draw();
-    //Game.main_sprite.hide_self_but_draw_children = true;
+    bg.hide_self_but_draw_children = true;
     //Game.painter.add(new ScoreBoard());
     //Game.infobar = new Infobar();
     //Game.painter.add(Game.infobar);
@@ -111,9 +116,9 @@ var Game = {
     //new Ufo();
     //new Ufo();
     //new Pyramid();
-    //for(var i=0;i<20;++i){
-    //  new Fighter();
-    //}
+    for(var i=0;i<15;++i){
+      new Fighter();
+    }
     //new Cannon(720,455);
     //new YellowBox();
     //new Amoeba();

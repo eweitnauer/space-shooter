@@ -38,9 +38,8 @@
     <script src="main.js"></script>
   </head>
   <body onload="init();">
-    <p id='connecting'>Connecting to Phi-Server...</p>
-    <div id="bgdiv">
-      <canvas id="canvas"></canvas>
-    </div>
+    <p id='connecting' style="z-index: 2">Connecting to Phi-Server...</p>
+    <canvas id="bg" width=1024 height=768 style="position:absolute; z-index: 0"></canvas>
+    <canvas id="fg" width=1024 height=768 style="position:absolute; z-index: 1"></canvas>
   </body>
 </html>

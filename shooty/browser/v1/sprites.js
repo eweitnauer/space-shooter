@@ -256,51 +256,57 @@ function imageLoaded(img) {
   return true;
 }
 
-PaintEngine = function(canvas) {
+PaintEngine = function(fg_canvas, bg_canvas) {
   var self = this;
   this.last_time = 0;
   this.sprites = []; // top-level sprites
   this.fps = 0;
-  this.canvas = canvas;
-  this.context = canvas.getContext('2d');
+  this.fg = fg_canvas;
+  this.fg_context = fg_canvas.getContext('2d');
+  this.bg = bg_canvas;
+  this.bg_context = bg_canvas.getContext('2d');
   this.draw_physics = false;
   this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
+  this.undraw = function() {
+    self.fg_context.clearRect(0,0,self.fg.width, self.fg.height);
+  }
   this.draw = function() {
-    //self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
-    this.sprites.forEach(function(sprite) {
-      sprite.draw(self.context);
+    self.undraw();
+    self.sprites.forEach(function(sprite) {
+      if (sprite.is_background) sprite.draw(self.bg_context);
+      else sprite.draw(self.fg_context);
     });
     if (self.draw_physics) {
-      self.context.strokeStyle = 'blue';   
+      self.fg_context.strokeStyle = 'blue';   
       for (var i=0; i<Game.lines.length; ++i) {
-        self.context.beginPath();
-        self.context.moveTo(Game.lines[i].A.x, Game.lines[i].A.y);
-        self.context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
-        self.context.stroke();
+        self.fg_context.beginPath();
+        self.fg_context.moveTo(Game.lines[i].A.x, Game.lines[i].A.y);
+        self.fg_context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
+        self.fg_context.stroke();
       }
     }
     if (self.draw_alien_sensors) {
       Game.aliens.forEach(function(alien) {
-        if ('visualize_sensors' in alien) alien.visualize_sensors(self.context);
+        if ('visualize_sensors' in alien) alien.visualize_sensors(self.fg_context);
       });
     }
   }
   
   this.show_fps = function(tasks) {
-    self.context.fillStyle = 'white';
-    self.context.fillRect(500, 180, 100, 100);
+    self.fg_context.fillStyle = 'white';
+    self.fg_context.fillRect(500, 180, 100, 100);
     var now = Date.now();
-    self.context.fillStyle = Colors.gray;
-    self.context.font = '15px "Arial"';
+    self.fg_context.fillStyle = Colors.gray;
+    self.fg_context.font = '15px "Arial"';
     fps = 1000/(now-self.last_time);
     this.fps = 0.99*this.fps+0.01*fps;
     self.last_time = now
-    self.context.fillText('fps: '+Math.round(this.fps), 500, 200);
+    self.fg_context.fillText('fps: '+Math.round(this.fps), 500, 200);
     var i=1
     for (t in tasks) {
       i++;
-      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
+      self.fg_context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
     }
   } 
 }
