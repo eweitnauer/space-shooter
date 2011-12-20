@@ -18,22 +18,22 @@ var Ship = function(session_code) {
   this.mass = 1;
   this.last_shot_time = 0;
   this.shot_delay = 250; // in ms
-  this.energy = 100;
+  this.energy = 500;
   this.last_time = 0;
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
   this.points = 0;
   this.destroyed = false;
   this.state = 'flying'; // 'opening, charging, closing, flying'
-//  this.lives = 3;
+  this.lives = 3;
   this.respawn_delay = 3000;
   this.extras = new Extras();
   
   this.max_energy = 100;
   this.acceleration = 0.1;
   this.shot_speed = 10;
-  this.shot_energy = 100;
-  this.shot_max_dist = 250;
+  this.shot_energy = 60;
+  this.shot_max_dist = 270;
   this.num_shots = 1;
   this.shot_angle = 0.05;
   this.shot_level = 0;
@@ -115,12 +115,13 @@ Ship.prototype.steer = function(data) {
   if ('pitch' in data) this.steer_data.pitch = data.pitch
   if ('mode' in data) this.steer_data.mode = data.mode
   
-  if (!data.shot) this.shop_flag = true;
-  else if (this.shop_flag) {
-    if (this.state != 'charging' && Game.state == 'running') return;
-    Game.triggerShop(this);
-    this.shop_flag = false;
-  }
+  /*  if (!data.shot) this.shop_flag = true;
+      else if (this.shop_flag) {
+      if (this.state != 'charging' && Game.state == 'running') return;
+      Game.triggerShop(this);
+      this.shop_flag = false;
+      }
+  */
 }
 
 Ship.prototype.step = function() {
@@ -253,13 +254,14 @@ Ship.prototype.apply_physics = function() {
 Ship.max_land_speed = 0.5;
 
 Ship.prototype.destroy = function() {
-  Game.lives-=1;
+//  Game.lives-=1;
+  this.lives--;
   this.heat = 0;
   this.energy = 0;
   this.explode();
   this.display = false;
   this.destroyed = true;
-  if (Game.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
+  if (this.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
 Ship.prototype.hit = function(energy, x, y) {
@@ -410,6 +412,9 @@ Ship.prototype.createScoreSprite = function() {
     ctx.save();
     ctx.translate(8,4);
     ship_sprite_1.draw(ctx);
+    
+    ctx.translate(60,8);
+    ctx.fillText('Lives:'+ship.lives,0,0);
     ctx.restore();
 
     /*

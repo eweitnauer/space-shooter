@@ -58,6 +58,9 @@ Explosion.prototype.shockwave = function(args) {
 }
 
 var Smoke = function(x,y,type,parent_sprite){
+  this.animation = {};
+  return;
+
   this.init_sprite(type, parent_sprite);
   this.x = x;
   this.y = y;

@@ -18,6 +18,14 @@ Sprite = function(timeline, img_tag) {
   this.hide_self_but_draw_children = false; // do we need this?
 }
 
+Sprite.prototype.count_children_recursive = function(){
+  var c = this.child_sprites.length;
+  for(var i=0;i<this.child_sprites.length;++i){
+    c += this.child_sprites[i].count_children_recursive();
+  }
+  return c;
+}
+
 /// Queries the animation for size, returns {width, height}.
 Sprite.prototype.getImageSize = function() {
   if (this.animation._img == null) return {width:0, height:0};
@@ -270,6 +278,16 @@ PaintEngine = function(canvas) {
   this.draw_physics = false;
   this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
+  
+  this.count_children_recursive = function(){
+    var count = this.sprites.length;
+    for(var i=0;i<this.sprites.length;++i){
+      count += this.sprites[i].count_children_recursive();
+    }
+    return {'top-level-sprites': this.sprites.length,
+            'all-sprites' :count };
+  }
+  
   this.draw = function() {
     //self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
     this.sprites.forEach(function(sprite) {
@@ -292,18 +310,20 @@ PaintEngine = function(canvas) {
   }
   
   this.show_fps = function(tasks) {
-/*
-    self.context.fillStyle = 'green'
+    return;
+    self.context.fillStyle = '#555';
     var t = Date.now()
     if (t-this.lastTime > 500) {
       this.fps = Math.round(this.counter*1000/(t-this.lastTime));
       this.counter = 0
       this.lastTime = t
     } else this.counter++
-    self.context.font = "50px Arial";
+    self.context.font = "20px Arial";
     self.context.textAlign = 'right';
-    self.context.fillText(this.fps, 60,50);
-  */  
+    self.context.fillText(this.fps + 'fps', 60,50);
+    self.context.fillStyle = 'white';
+    self.context.fillText(this.fps + 'fps', 60-2,50-2);
+  /*  
     var now = Date.now();
     self.context.fillStyle = Colors.gray;
     self.context.font = '15px "Arial"';
@@ -315,5 +335,6 @@ PaintEngine = function(canvas) {
       i++;
       self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
     }
+   */
   } 
 }

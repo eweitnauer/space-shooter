@@ -8,7 +8,7 @@ var Game = {
   ,wind_vy: -0.01
   ,step_timer: null
   ,ships: {}
-  ,coins: 100000
+  ,coins: 0
   ,points: 0
   ,lives: 3
   ,shots: new LinkedList
@@ -17,9 +17,10 @@ var Game = {
   ,pointObjects : new LinkedList
   ,spawn_next_wave_request_time: null
   ,lines: []
-  ,level: -1 
-  ,state: 'paused' //'paused','running','shop', 'splash'
-  ,splashScreen: null
+  ,level: 0 
+  ,currentStep: 0
+  ,state: 'paused' //'over'
+//  ,splashScreen: null
   ,startTime: Date.now()
   ,start: function() {
     Animation.time = Date.now();
@@ -49,7 +50,7 @@ var Game = {
     //this.spawn_aliens();
     this.state = 'running';
   }
-  ,enterShop: function(ship) {
+/*  ,enterShop: function(ship) {
     if(Game.state != 'running') return;
     Shop.setup(this.painter.context, ship);
     Game.state = 'shop';
@@ -60,7 +61,8 @@ var Game = {
   ,triggerShop: function(ship) {
     Game.state == 'running' ? Game.enterShop(ship) : Game.leaveShop();
   }
-  // can also be used to switch to next splash screen
+*/
+/*  // can also be used to switch to next splash screen
   ,enterSplashScreen: function(splashScreen){
     if(Game.splashScreen){
       Game.splashScreen.display = false;
@@ -78,7 +80,8 @@ var Game = {
       Game.splashScreen = null;
     }
     Game.state = 'running';
-  }  
+  }
+*/  
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
@@ -111,13 +114,20 @@ var Game = {
     }
   }
   ,spawn_next_wave: function(){
-    var num = (Game.level % 4)+1;
-    var skillLevel = Math.floor(Game.level/4);
+    var num = ((Game.level-1) % 4)+1;
+    var skillLevel = Math.floor((Game.level-1)/4)+1;
     for(var i=0;i<num;++i){
       var f = new Fighter();
       f.coins = skillLevel * 100;
       f.max_energy = skillLevel * 50;
-      f.shot_energy = 10*skillLevel;
+      f.shot_energy = 1*skillLevel;
+      if(Game.level > 6){
+        f.shot_time = 1000;
+      }else if(Game.level > 10){
+        f.shot_time = 500;      
+      }else{
+        f.shot_time = 1500;
+      }
     }
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
@@ -330,6 +340,39 @@ var Game = {
     };  */
   }
   ,step: function() {
+    Game.currentStep ++;
+    var numLivesTotal = 0;
+    for(var i in Game.ships){
+      numLivesTotal += Game.ships[i].lives;
+    }
+    if(Game.currentStep > 10 && numLivesTotal == 0){
+      Game.state = 'over';
+      var s = new Sprite([],'');
+      s.extra_draw = function(ctx){
+        ctx.save();
+        ctx.font = '50px "Permanent Marker"';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Game Over',400,350);
+        ctx.fillStyle = '#00a5cd';
+        ctx.fillText('Game Over',400-2,350-2);
+
+        ctx.font = '35px "Permanent Marker"';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380,400);
+        ctx.fillStyle = '#00a5cd';
+        ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380-1,400-1);
+        
+
+
+        ctx.restore();
+      }
+      Game.main_sprite.child_sprites.push(s);
+    }
+
+    //var counts = Game.painter.count_children_recursive();
+    
+    //console.log('number of sprites: top-level:' + counts['top-level-sprites'] + ' all:' + counts['all-sprites']);
+    
     Animation.time = Date.now();
     
     /// overlay ...
@@ -346,13 +389,13 @@ var Game = {
     }
     
     /// levels ..
-    console.log(Game.aliens.length);
+   // console.log(Game.aliens.length);
     if(Game.aliens.length == 0){
       if(!Game.spawn_next_wave_request_time){
         Game.spawn_next_wave_request_time = Animation.time;
       }else{
         var dt = Animation.time - Game.spawn_next_wave_request_time;
-        if(dt > 4000){
+        if(dt > 8000){
           Game.level ++;
           Game.spawn_next_wave();
           Game.spawn_next_wave_request_time = null;
@@ -395,14 +438,16 @@ var Game = {
     case 'paused':
       // update the display
       //Game.painter.draw();
-      
       break;
-    case 'shop':
+    case 'over':
       Game.painter.draw();
-      Shop.draw();
       break;
-    case 'splash':
-      Game.painter.draw();
+ //   case 'shop':
+ //     Game.painter.draw();
+ //     Shop.draw();
+ //     break;
+//    case 'splash':
+ //     Game.painter.draw();
     }
   }
   ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
@@ -444,10 +489,10 @@ Infobar = function() {
   this.coin_sprite.extra_draw = function(ctx){
     ctx.save();  
     ctx.textAlign = "left";
-    ctx.font = '20px "Permanent Marker"';
+    ctx.font = '30px "Permanent Marker"';
     ctx.fillStyle = 'rgb(100,100,100)';
     ctx.fillText(''+Game.coins,30,-22);
-    ctx.fillText('total: ' + Game.points, 30,-5)
+//    ctx.fillText('total: ' + Game.points, 30,-5)
     ctx.restore();
   }
     

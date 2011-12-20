@@ -84,7 +84,8 @@ function test7() {
   touch_interface();
   acc_interface();
   addship();
-  //new Fighter(); // this is achieved by the game now
+//  keyboard_init();
+//new Fighter(); // this is achieved by the game now
   //new Fighter();
   //new Fighter();
 }
