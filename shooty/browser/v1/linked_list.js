@@ -44,7 +44,9 @@ ListElement.prototype.forTail = function(fn) {
 
 LinkedList.prototype.push = function(data) {
   if (!this.head) {
+    this.length = 1;
     return this.head = this.tail = new ListElement(this, data, null, null);
+    
   }
   else return this.tail.append(data);
 }
@@ -66,6 +68,14 @@ LinkedList.prototype.findAndRemove = function(data){
 
 LinkedList.prototype.forEach = function(fn) {
   for (var el = this.head; el; el=el.next) { fn(el.d, el) }
+}
+
+LinkedList.prototype.countIf = function(fn) {
+  var cnt = 0;
+  for (var el = this.head; el; el=el.next) { 
+    if( fn(el.d) ) ++cnt; 
+  }
+  return cnt;
 }
 
 LinkedList.prototype.forEachReverse = function(fn) {

@@ -15,10 +15,12 @@ var Game = {
   ,aliens: new LinkedList
   ,smokes: new LinkedList
   ,pointObjects : new LinkedList
+  ,spawn_next_wave_request_time: null
   ,lines: []
-  ,level: 0 
+  ,level: -1 
   ,state: 'paused' //'paused','running','shop', 'splash'
   ,splashScreen: null
+  ,startTime: Date.now()
   ,start: function() {
     Animation.time = Date.now();
     this.canvas = document.getElementById("canvas");
@@ -34,6 +36,8 @@ var Game = {
     Game.painter.add(new ScoreBoard());
     Game.infobar = new Infobar();
     Game.painter.add(Game.infobar);
+    Game.overlay = new Overlay();
+    Game.painter.add(Game.overlay);
 //    Game.lines = load_collision_data_from_svg(Game.coll_data);
 //    for (l in Game.lines) {Game.lines[l].type = 'landscape'}
     Game.lines = JSON.parse(preloaded_collision_lines);
@@ -106,16 +110,15 @@ var Game = {
       new Mine(x,y,0,0);
     }
   }
-  ,spawn_aliens: function(){
-    //new Ufo();
-    //new Ufo();
-    //new Pyramid();
-    for(var i=0;i<10;++i){
-      new Fighter();
+  ,spawn_next_wave: function(){
+    var num = (Game.level % 4)+1;
+    var skillLevel = Math.floor(Game.level/4);
+    for(var i=0;i<num;++i){
+      var f = new Fighter();
+      f.coins = skillLevel * 100;
+      f.max_energy = skillLevel * 50;
+      f.shot_energy = 10*skillLevel;
     }
-    //new Cannon(720,455);
-    //new YellowBox();
-    new Amoeba();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -328,6 +331,35 @@ var Game = {
   }
   ,step: function() {
     Animation.time = Date.now();
+    
+    /// overlay ...
+    if(Game.overlay){
+      var dt = Animation.time - Game.startTime;
+      if(dt > 3000){
+      Game.overlay.set_alpha(1.0-((dt - 3000)/2000));
+        if(dt > 5000){
+          Game.overlay.display=false;
+          Game.overlay.animation.finished = true;
+          Game.overlay = null;
+        }
+      }
+    }
+    
+    /// levels ..
+    console.log(Game.aliens.length);
+    if(Game.aliens.length == 0){
+      if(!Game.spawn_next_wave_request_time){
+        Game.spawn_next_wave_request_time = Animation.time;
+      }else{
+        var dt = Animation.time - Game.spawn_next_wave_request_time;
+        if(dt > 4000){
+          Game.level ++;
+          Game.spawn_next_wave();
+          Game.spawn_next_wave_request_time = null;
+        }
+      }
+    }    
+
     switch(Game.state){
     case 'running':
       var t_stepping = measure_duration(function() {
@@ -377,6 +409,29 @@ var Game = {
   ,nextshipcolor : 0
 };
 
+Overlay = function(){
+  jQuery.extend(this, new Sprite([], ''));
+  this.accel = new Sprite([],'overlay-accel');
+  this.fire = new Sprite([],'overlay-fire');
+  this.rotate = new Sprite([],'overlay-rotate');
+  this.child_sprites.push(this.accel);
+  this.child_sprites.push(this.fire);
+  this.child_sprites.push(this.rotate);
+  this.accel.x = 70;
+  this.accel.y = 370;
+
+  this.fire.x = 955;
+  this.fire.y = 370;
+  
+  this.rotate.x = 520;
+  this.rotate.y = 200;
+  
+  this.set_alpha = function(alpha){
+    this.accel.alpha = alpha;
+    this.fire.alpha = alpha;
+    this.rotate.alpha = alpha;
+  }
+}
 
 Infobar = function() {
   jQuery.extend(this, new Sprite([], ''));
@@ -409,7 +464,10 @@ Infobar = function() {
     } else {
       ctx.fillText('connecting to server...', 0, 0);
     }
-    ctx.restore();
+    
+    ctx.translate(-650,-3);
+    ctx.fillText('Level:' + (Game.level<10?'0':'')+Math.max(0,Game.level),0,0);
+    ctx.restore();    
   }
 }
 

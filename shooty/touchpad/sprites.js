@@ -292,6 +292,7 @@ PaintEngine = function(canvas) {
   }
   
   this.show_fps = function(tasks) {
+/*
     self.context.fillStyle = 'green'
     var t = Date.now()
     if (t-this.lastTime > 500) {
@@ -302,17 +303,17 @@ PaintEngine = function(canvas) {
     self.context.font = "50px Arial";
     self.context.textAlign = 'right';
     self.context.fillText(this.fps, 60,50);
-    
-//    var now = Date.now();
-//    self.context.fillStyle = Colors.gray;
-//    self.context.font = '15px "Arial"';
-//    fps = 1000/(now-self.last_time);
-//    self.last_time = now
-//    self.context.fillText('fps: '+Math.round(fps), 500, 200);
-//    var i=1
-//    for (t in tasks) {
-//      i++;
-//      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
-//    }
+  */  
+    var now = Date.now();
+    self.context.fillStyle = Colors.gray;
+    self.context.font = '15px "Arial"';
+    fps = 1000/(now-self.last_time);
+    self.last_time = now
+    self.context.fillText('fps: '+Math.round(fps), 500, 200);
+    var i=1
+    for (t in tasks) {
+      i++;
+      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
+    }
   } 
 }
