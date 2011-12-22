@@ -1,0 +1,36 @@
+body {
+  background: gray;
+  font-size: 12pt;
+  margin: 0px;
+  padding: 0px;
+}
+
+#conn_status {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+
+div#btn1 {
+  width: 50%;
+  height: 300px;
+  float: left;
+  background-image: url(./imgs/btn1_relative_up.png);
+  background-position: center center;
+}
+
+div#btn2 {
+  width: 50%;
+  height: 300px;
+  float: left;
+  background-image: url(./imgs/btn2_relative_up.png);
+  background-position: center center;
+}
+
+div.active {
+  background: red;
+}
+
+.clear {
+  clear: both;
+}
