@@ -372,7 +372,7 @@ var Game = {
         Game.painter.draw();
       });
       
-      Game.painter.show_fps({stepping: t_stepping, collision: t_collisions, drawing: t_drawing});
+      Game.painter.show_fps({KI: t_stepping, collision: t_collisions, render: t_drawing});
       
       break;
     case 'paused':
@@ -396,7 +396,7 @@ var Game = {
 Infobar = function() {
   jQuery.extend(this, new Sprite([], ''));
 
-  this.coin_sprite = new Sprite(120,'coin');
+  this.coin_sprite = new Sprite(120,'extra-coin');
   this.child_sprites.push(this.coin_sprite);
   this.coin_sprite.x = 1050;
   this.coin_sprite.y = 725;
