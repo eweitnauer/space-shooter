@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var measure_duration = function(fn) {
   var t0 = Date.now()
   fn()

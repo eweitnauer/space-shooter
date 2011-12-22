@@ -1,4 +1,5 @@
-// js speedtest array vs. linked list
+/// Written by Erik Weitnauer, Christof Elbrechter.
+/// eweitnauer@gmail.com
 
 LinkedList = function() {
   this.head = null;

@@ -1,7 +1,11 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var Game = {
   //w: 1237, h: 777
   w: 1024, h: 768
   ,borders: {left:150, top:145, right: 970, bottom: 325}
+  ,ship_spawn_pts: [[273,533],[515,442],[618,437],[770,565],[829,417],[916,334]]
   ,grav_x:0, grav_y:0.02
   ,air_friction: 0.01
   ,wind_vx: 0.05
@@ -49,6 +53,14 @@ var Game = {
     }
     //this.spawn_aliens();
     this.state = 'running';
+  }
+  // return true if there would be a collision at the given point with moving objects
+  ,check_collision: function(x,y,r) {
+    var result = false;
+    Game.forEachMovableObject(function(obj) {
+      if (inner_dist(obj, {x:x, y:y, collision_radius:r}) <= 0) result = true;
+    });
+    return result;
   }
 /*  ,enterShop: function(ship) {
     if(Game.state != 'running') return;
@@ -115,19 +127,14 @@ var Game = {
   }
   ,spawn_next_wave: function(){
     var num = ((Game.level-1) % 4)+1;
-    var skillLevel = Math.floor((Game.level-1)/4)+1;
+    var skillLevel = Math.floor((Game.level-1)/4);
     for(var i=0;i<num;++i){
       var f = new Fighter();
-      f.coins = skillLevel * 100;
-      f.max_energy = skillLevel * 50;
-      f.shot_energy = 1*skillLevel;
-      if(Game.level > 6){
-        f.shot_time = 1000;
-      }else if(Game.level > 10){
-        f.shot_time = 500;      
-      }else{
-        f.shot_time = 1500;
-      }
+      f.coins = 100 * Math.pow(1.5, skillLevel);
+      f.max_energy = 40 * Math.pow(1.5, skillLevel);
+      f.energy = f.max_energy;
+      f.shot_energy = 1 * Math.pow(1.5, skillLevel);
+      f.shot_time = Math.max(500, 1500 * Math.pow(1.2, -skillLevel));
     }
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
@@ -175,7 +182,7 @@ var Game = {
           line.restitution = 0.4;
           var energy = Physics.letCollide(ship, line, true, false);
           if (!ship.attempt_land(line)) {
-            ship.hit(Math.max(10,energy));
+            ship.hit(Math.max(2,energy));
             new Explosion(p.x, p.y, 'sploing');
           }
         });
@@ -349,22 +356,22 @@ var Game = {
       Game.state = 'over';
       var s = new Sprite([],'');
       s.extra_draw = function(ctx){
-        ctx.save();
-        ctx.font = '50px "Permanent Marker"';
-        ctx.fillStyle = 'black';
-        ctx.fillText('Game Over',400,350);
-        ctx.fillStyle = '#00a5cd';
-        ctx.fillText('Game Over',400-2,350-2);
+        try {
+          ctx.save();
+          ctx.font = '50px "prelude"';
+          ctx.fillStyle = 'black';
+          ctx.fillText('Game Over',400,350);
+          ctx.fillStyle = '#00a5cd';
+          ctx.fillText('Game Over',400-2,350-2);
 
-        ctx.font = '35px "Permanent Marker"';
-        ctx.fillStyle = 'black';
-        ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380,400);
-        ctx.fillStyle = '#00a5cd';
-        ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380-1,400-1);
-        
-
-
-        ctx.restore();
+          ctx.font = '35px "prelude"';
+          ctx.fillStyle = 'black';
+          ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380,400);
+          ctx.fillStyle = '#00a5cd';
+          ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380-1,400-1);
+        } finally {
+          ctx.restore();
+        }
       }
       Game.main_sprite.child_sprites.push(s);
     }
@@ -479,64 +486,62 @@ Overlay = function(){
 }
 
 Infobar = function() {
-  jQuery.extend(this, new Sprite([], ''));
+  jQuery.extend(this, new Sprite([],''));
 
-  this.coin_sprite = new Sprite(120,'coin');
+  this.coin_sprite = new Sprite([],'');
   this.child_sprites.push(this.coin_sprite);
   this.coin_sprite.x = 860;
   this.coin_sprite.y = 725;
-  this.coin_sprite.scale = 0.5;
   this.coin_sprite.extra_draw = function(ctx){
-    ctx.save();  
     ctx.textAlign = "left";
-    ctx.font = '30px "Permanent Marker"';
+    ctx.font = '30px "Prelude"';
     ctx.fillStyle = 'rgb(100,100,100)';
     ctx.fillText(''+Game.coins,30,-22);
-//    ctx.fillText('total: ' + Game.points, 30,-5)
-    ctx.restore();
   }
     
   this.extra_draw = function(ctx) {
-    ctx.font = '18px "Permanent Marker"';
+    ctx.font = '18px "prelude"';
     ctx.textBaseline = "top";
     ctx.textAlign = "right";
     ctx.fillStyle = '#00a5cd';
     ctx.save();
-    ctx.translate(900,100);
-    ctx.rotate(0.02);
-    if (comm && comm.connected) {
-      ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
-    } else {
-      ctx.fillText('connecting to server...', 0, 0);
-    }
-    
-    ctx.translate(-650,-3);
-    ctx.fillText('Level:' + (Game.level<10?'0':'')+Math.max(0,Game.level),0,0);
-    ctx.restore();    
+    try {
+      ctx.translate(900,100);
+      ctx.rotate(0.02);
+      if (comm && comm.connected) {
+        ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
+      } else {
+        ctx.fillText('connecting to server...', 0, 0);
+      }
+      
+      ctx.translate(-650,-3);
+      ctx.fillText('Level:' + (Game.level<10?'0':'')+Math.max(0,Game.level),0,0);
+    } finally { ctx.restore(); }
   }
 }
 
 ScoreBoard = function() {
   jQuery.extend(this, new Sprite([], ''));
   this.extra_draw = function(ctx) {
-    ctx.font = '15px "Permanent Marker"';
+    ctx.font = '15px "prelude"';
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(150,705);
-    ctx.rotate(0.005);
-    var i = 0;
-    for (s in Game.ships) {
-      var ship = Game.ships[s];
-      ctx.save();
-      //ctx.translate(Math.floor(i/2)*200, (i%2)*28);
-      ctx.translate(i*175, 8);
-      ship.score_sprite.draw(ctx);
-      ctx.restore();
-      i++;
-    }
-    ctx.restore();
+    try {
+      ctx.translate(150,705);
+      ctx.rotate(0.005);
+      var i = 0;
+      for (s in Game.ships) {
+        var ship = Game.ships[s];
+        ctx.save();
+        try {
+          ctx.translate(i*175, 8);
+          ship.score_sprite.draw(ctx);
+        } finally { ctx.restore(); }
+        i++;
+      }
+    } finally { ctx.restore(); }
   }
 }
 

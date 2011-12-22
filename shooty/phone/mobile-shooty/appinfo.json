@@ -1,9 +1,9 @@
 {
-	"id": "com.phigames.shooty",
-	"version": "0.2.0",
-	"vendor": "PhiGames",
+	"id": "com.phigames.shooty-controller",
+	"version": "0.1.0",
+	"vendor": "phigames",
 	"type": "web",
 	"main": "index.html",
-	"title": "shooty_mobile",
+	"title": "Shooty Controller",
 	"icon": "icon.png"
 }

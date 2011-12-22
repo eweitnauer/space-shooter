@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 function dist(o1, o2) {
   var dx = o1.x-o2.x, dy=o1.y-o2.y;
   return Math.sqrt(dx*dx+dy*dy);

@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 Communicator = function(io) {
   this.io = io;
   this.url = 'http://phigames.com:9888';

@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var Extras = function(){
   this.names = [ 'health','acceleration','bullet-speed','life','shield',
                  'shot','shot-angle','shot-length','shot-strength',

@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var PointObject = function(x, y, points) {
   jQuery.extend(this,new Sprite());
   this.x = x;
@@ -13,15 +16,14 @@ var PointObject = function(x, y, points) {
     if(this.show_steps > 30){
       this.alpha *= 0.95;
     }
-    ctx.save();
-
-    ctx.font = '50px "Permanent Marker"';
-    ctx.fillStyle = 'rgba(255,120,50,'+(this.alpha)+')'
-    ctx.fillText(''+points,14,5);
-    ctx.fillStyle = 'rgba(255,240,50,'+(this.alpha)+')'
-    ctx.fillText(''+points,12,3);
-    
-    ctx.restore();
+    try {
+      ctx.save();
+      ctx.font = '50px "prelude"';
+      ctx.fillStyle = 'rgba(255,120,50,'+(this.alpha)+')'
+      ctx.fillText(''+points,14,5);
+      ctx.fillStyle = 'rgba(255,240,50,'+(this.alpha)+')'
+      ctx.fillText(''+points,12,3);
+    } finally { ctx.restore(); }
 
     this.show_steps ++;
     if(this.show_steps > 42){

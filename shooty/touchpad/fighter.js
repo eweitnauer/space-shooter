@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var Fighter = function() {
   this.type = 'alien_ship'; // should be changed to 'alien_ship' or 'alien_shot'
   this.sensor_count = 6;    // number of sensors

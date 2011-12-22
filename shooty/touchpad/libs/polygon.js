@@ -1,3 +1,6 @@
+/// Polygon class
+/// Copyright 2011 by Erik Weitnauer (eweitnauer@gmail.com)
+/// Do with this code whatever you want :)
 Array.prototype.back = function() {
   return this[this.length-1];
 }

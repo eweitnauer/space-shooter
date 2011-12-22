@@ -1,3 +1,6 @@
+/// Point class
+/// Copyright 2011 by Erik Weitnauer (eweitnauer@gmail.com)
+/// Do with this code whatever you want :)
 Point = function(x, y) {
   this.x = x || 0;
   this.y = y || 0;

@@ -1,5 +1,5 @@
-//ImageBank.prefix = 'http://phigames.com/demos/shooty/';
-
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
 
 load_images = function(type,list){
   for(var i in list){
@@ -45,10 +45,10 @@ load_images('explosion',{
 //  'blast':7,
 //  'green':13,
   'XL':15,
-  'L':26,
+//  'L':26,
   'M':11,
-  'S':15,
-  'ship':28,
+//  'S':15,
+//  'ship':28,
   'sploing-a':4,
   'sploing-b':4,
 //  'shield-sploing':7
@@ -117,4 +117,4 @@ for (var i=0; i< global_ship_colors.length;++i){
 }
 
 ImageBank.load('bg','graphics/bg',1);
-ImageBank.load('shop-background','graphics/shop',1);
+//ImageBank.load('shop-background','graphics/shop',1);

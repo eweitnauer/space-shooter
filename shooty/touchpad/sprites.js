@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 /// Passes the arguments to the contructor of the Animation class.
 Sprite = function(timeline, img_tag) {
   this.x = 0;              // x position of sprite in image
@@ -190,42 +193,48 @@ Animation.prototype.drawCurrentImage = function(ctx, center_img) {
 Sprite.prototype.draw = function(ctx) {
   if (typeof(this.display) == 'function') { if (!this.display()) return; }
   else if (!this.display) return;
-  ctx.save();
-  ctx.translate(this.x, this.y);
-  if (this.rot != 0) ctx.rotate(this.rot);
-  //if (this.scale != 1) ctx.scale(this.scale, this.scale);
-  
-  // draw child sprites
-  this.child_sprites.forEach(function (child) {
-    if (!child.draw_in_front_of_parent) child.draw(ctx);
-  });
-  
-  // draw self
-  if (!this.hide_self_but_draw_children && this.animation.hasCurrentImage()) {
+  try {
     ctx.save();
-    ctx.translate(this.offset_x, this.offset_y);
-    if (this.offset_rot != 0) ctx.rotate(this.offset_rot);
-    //ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
-    var alpha = ctx.globalAlpha;
-    if (this.alpha!=1) ctx.globalAlpha = this.alpha;
-    this.animation.drawCurrentImage(ctx, this.center_img);
-    if (this.alpha!=1) ctx.globalAlpha = alpha;
+    ctx.translate(this.x, this.y);
+    // bug in webos canvas: does not handle negative rotation correctly
+    if (this.rot != 0) ctx.rotate(norm_rotation2(this.rot));
+    //if (this.scale != 1) ctx.scale(this.scale, this.scale);
+    
+    // draw child sprites
+    this.child_sprites.forEach(function (child) {
+      if (!child.draw_in_front_of_parent) child.draw(ctx);
+    });
+    
+    // draw self
+    if (!this.hide_self_but_draw_children && this.animation.hasCurrentImage()) {
+      try {
+        ctx.save();
+        ctx.translate(this.offset_x, this.offset_y);
+        if (this.offset_rot != 0) ctx.rotate(this.offset_rot);
+        //ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
+        var alpha = ctx.globalAlpha;
+        if (this.alpha!=1) ctx.globalAlpha = this.alpha;
+        this.animation.drawCurrentImage(ctx, this.center_img);
+        if (this.alpha!=1) ctx.globalAlpha = alpha;
+      } finally {
+        ctx.restore();
+      }
+    }
+    
+    // custom draw method
+    if (this.extra_draw) this.extra_draw.call(this, ctx);
+
+    // draw child sprites in front of this and delete finished ones
+    var still_active_childs = [];
+    this.child_sprites.forEach(function (child) {
+      if (child.draw_in_front_of_parent) child.draw(ctx);
+      if (!(child.animation.finished && child.animation.remove_after_finish))
+        still_active_childs.push(child);
+    });
+    this.child_sprites = still_active_childs;
+  } finally {  
     ctx.restore();
   }
-  
-  // custom draw method
-  if (this.extra_draw) this.extra_draw.call(this, ctx);
-
-  // draw child sprites in front of this and delete finished ones
-  var still_active_childs = [];
-  this.child_sprites.forEach(function (child) {
-    if (child.draw_in_front_of_parent) child.draw(ctx);
-    if (!(child.animation.finished && child.animation.remove_after_finish))
-      still_active_childs.push(child);
-  });
-  this.child_sprites = still_active_childs;
-  
-  ctx.restore();
 }
 
 ImageBank = {
@@ -290,6 +299,7 @@ PaintEngine = function(canvas) {
   
   this.draw = function() {
     //self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
+    self.context.setTransform(1,0,0,1);
     this.sprites.forEach(function(sprite) {
       sprite.draw(self.context);
     });

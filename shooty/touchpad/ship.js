@@ -1,3 +1,5 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
 
 var Ship = function(session_code) {
   this.type = 'ship';
@@ -162,16 +164,30 @@ Ship.prototype.step = function() {
 }
 
 Ship.prototype.spawn = function() {
+  var trys = 0;
+  while (true) {
+    trys++
+    var p = Game.ship_spawn_pts[Math.floor(Math.random()*Game.ship_spawn_pts.length)]
+    if (Game.check_collision(p[0],p[1], this.collision_radius) === false) {
+      this.x = p[0]; this.y = p[1]; 
+      this.rot = 0;
+      this.trigger_charge();
+      break;
+    }
+    if (trys > 15) {
+      this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
+      this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
+      this.rot = Math.random()*0.2 - 0.1;
+      this.trigger_fly();
+      break;
+    }
+  }
   this.display = true;
   this.destroyed = false;
   this.energy = 100;
-  this.trigger_fly();
   this.last_shoot_time = 0;
   this.last_smoke_time = 0;
   this.last_time = Animation.time;
-  this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
-  this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
-  this.rot = Math.random()*2*Math.PI;
   this.vx = this.vy = 0;
 }
 
@@ -395,7 +411,7 @@ Ship.prototype.createScoreSprite = function() {
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
     ctx.fillStyle = Colors.gray;
-    ctx.font = '15px "Permanent Marker"';
+    ctx.font = '15px "prelude"';
     ctx.fillText(ship.player_name, 20, -3);
 
     // shield:
@@ -409,13 +425,13 @@ Ship.prototype.createScoreSprite = function() {
       ctx.strokeRect(0,28,l,7);
     }
 
-    ctx.save();
-    ctx.translate(8,4);
-    ship_sprite_1.draw(ctx);
-    
-    ctx.translate(60,8);
-    ctx.fillText('Lives:'+ship.lives,0,0);
-    ctx.restore();
+    try {
+      ctx.save();
+      ctx.translate(8,4);
+      ship_sprite_1.draw(ctx);
+      ctx.translate(60,8);
+      ctx.fillText('Lives:'+ship.lives,0,0);
+    } finally { ctx.restore(); }
 
     /*
     // lives

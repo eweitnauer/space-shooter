@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 /** The alien base class for all actual aliens in the game. Defines sensors and
 a sense function as well as some basic behaviors that can be configured by the
 child classes. */
