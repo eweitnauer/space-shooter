@@ -43,7 +43,7 @@ Io.sockets.on('connection', function (socket) {
     sessions[code] = {game: socket.id};
     fn(code, true);
     logger.info('[', socket.id, '] created session ', code, '.');
-    fs.write('['+Date()+'] Session created.\n', null, 'utf8')
+    fs.write(logfile, '['+Date()+'] Session created.\n', null, 'utf8')
   });
   
   /// Called by Player to join the session a Game set up. On success, the Game
@@ -61,7 +61,7 @@ Io.sockets.on('connection', function (socket) {
     Io.sockets.socket(sessions[code].game).emit('player_joined', code, data);
     logger.info('[', socket.id, '] joined session ', code, '.');
     var pname = ('player_name' in data) ? data.player_name : '?'
-    fs.write('['+Date()+'] Player ' + pname + ' joined.\n', null, 'utf8')
+    fs.write(logfile, '['+Date()+'] Player ' + pname + ' joined.\n', null, 'utf8')
   });
   
   /// Called by either Game or Player. If the other participant of the session has
