@@ -63,7 +63,7 @@ Io.sockets.on('connection', function (socket) {
     fn(code, true);
     Io.sockets.socket(sessions[code].game).emit('player_joined', code, data);
     logger.info('[', socket.id, '] joined session ', code, '.');
-    var pname = ('player_name' in data) ? data.player_name : '?'
+    var pname = (data.player_name) ? data.player_name : '?'
     fs.write(logfile, '['+Date()+'] Player ' + pname + ' joined.\n', null, 'utf8')
   });
   
