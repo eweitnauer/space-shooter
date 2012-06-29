@@ -1,3 +1,6 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 /// Passes the arguments to the contructor of the Animation class.
 Sprite = function(timeline, img_tag) {
   this.x = 0;              // x position of sprite in image
@@ -16,6 +19,14 @@ Sprite = function(timeline, img_tag) {
   this.center_img = true;  // true: x,y is the center of the img / false: x,y is the upper left corner of the img
   this.display = true;     // should this sprite be displayed?
   this.hide_self_but_draw_children = false; // do we need this?
+}
+
+Sprite.prototype.count_children_recursive = function(){
+  var c = this.child_sprites.length;
+  for(var i=0;i<this.child_sprites.length;++i){
+    c += this.child_sprites[i].count_children_recursive();
+  }
+  return c;
 }
 
 /// Queries the animation for size, returns {width, height}.
@@ -166,7 +177,9 @@ Animation.prototype.hasCurrentImage = function() {
 
 /// You should call updateFrame() before.
 Animation.prototype.drawCurrentImage = function(ctx, center_img) {
+  if (!this._img) return;
   if (!this._img.frame_height) this._img.frame_height = this._img.height / this._img.frames;
+  if (this._img.width == 0 || this._img.frame_height ==0) return;
   if (center_img) {
     var dx = -this._img.width/2;
     var dy = -this._img.frame_height/2;
@@ -180,41 +193,48 @@ Animation.prototype.drawCurrentImage = function(ctx, center_img) {
 Sprite.prototype.draw = function(ctx) {
   if (typeof(this.display) == 'function') { if (!this.display()) return; }
   else if (!this.display) return;
-  ctx.save();
-  ctx.translate(this.x, this.y);
-  ctx.rotate(this.rot);
-  ctx.scale(this.scale, this.scale);
-  
-  // draw child sprites
-  this.child_sprites.forEach(function (child) {
-    if (!child.draw_in_front_of_parent) child.draw(ctx);
-  });
-  
-  // draw self
-  if (!this.hide_self_but_draw_children && this.animation.hasCurrentImage()) {
+  try {
     ctx.save();
-    ctx.translate(this.offset_x, this.offset_y);
-    ctx.rotate(this.offset_rot);
-    var alpha = ctx.globalAlpha;
-    ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
-    this.animation.drawCurrentImage(ctx, this.center_img);
-    ctx.globalAlpha = alpha;
+    ctx.translate(this.x, this.y);
+    // bug in webos canvas: does not handle negative rotation correctly
+    if (this.rot != 0) ctx.rotate(norm_rotation2(this.rot));
+    //if (this.scale != 1) ctx.scale(this.scale, this.scale);
+    
+    // draw child sprites
+    this.child_sprites.forEach(function (child) {
+      if (!child.draw_in_front_of_parent) child.draw(ctx);
+    });
+    
+    // draw self
+    if (!this.hide_self_but_draw_children && this.animation.hasCurrentImage()) {
+      try {
+        ctx.save();
+        ctx.translate(this.offset_x, this.offset_y);
+        if (this.offset_rot != 0) ctx.rotate(this.offset_rot);
+        //ctx.globalAlpha = this.alpha * Math.pow((1-this.alpha_decay),this.animation.frame);
+        var alpha = ctx.globalAlpha;
+        if (this.alpha!=1) ctx.globalAlpha = this.alpha;
+        this.animation.drawCurrentImage(ctx, this.center_img);
+        if (this.alpha!=1) ctx.globalAlpha = alpha;
+      } finally {
+        ctx.restore();
+      }
+    }
+    
+    // custom draw method
+    if (this.extra_draw) this.extra_draw.call(this, ctx);
+
+    // draw child sprites in front of this and delete finished ones
+    var still_active_childs = [];
+    this.child_sprites.forEach(function (child) {
+      if (child.draw_in_front_of_parent) child.draw(ctx);
+      if (!(child.animation.finished && child.animation.remove_after_finish))
+        still_active_childs.push(child);
+    });
+    this.child_sprites = still_active_childs;
+  } finally {  
     ctx.restore();
   }
-  
-  // custom draw method
-  if (this.extra_draw) this.extra_draw.call(this, ctx);
-
-  // draw child sprites in front of this and delete finished ones
-  var still_active_childs = [];
-  this.child_sprites.forEach(function (child) {
-    if (child.draw_in_front_of_parent) child.draw(ctx);
-    if (!(child.animation.finished && child.animation.remove_after_finish))
-      still_active_childs.push(child);
-  });
-  this.child_sprites = still_active_childs;
-  
-  ctx.restore();
 }
 
 ImageBank = {
@@ -256,57 +276,75 @@ function imageLoaded(img) {
   return true;
 }
 
-PaintEngine = function(fg_canvas, bg_canvas) {
+PaintEngine = function(canvas) {
   var self = this;
-  this.last_time = 0;
-  this.sprites = []; // top-level sprites
+  this.lastTime = 0;
+  this.counter = 0;
   this.fps = 0;
-  this.fg = fg_canvas;
-  this.fg_context = fg_canvas.getContext('2d');
-  this.bg = bg_canvas;
-  this.bg_context = bg_canvas.getContext('2d');
+  this.sprites = []; // top-level sprites
+  this.canvas = canvas;
+  this.context = canvas.getContext('2d');
   this.draw_physics = false;
   this.draw_alien_sensors = false;
   this.add = function(sprite) { this.sprites.push(sprite); }
-  this.undraw = function() {
-    self.fg_context.clearRect(0,0,self.fg.width, self.fg.height);
+  
+  this.count_children_recursive = function(){
+    var count = this.sprites.length;
+    for(var i=0;i<this.sprites.length;++i){
+      count += this.sprites[i].count_children_recursive();
+    }
+    return {'top-level-sprites': this.sprites.length,
+            'all-sprites' :count };
   }
+  
   this.draw = function() {
-    self.undraw();
-    self.sprites.forEach(function(sprite) {
-      if (sprite.is_background) sprite.draw(self.bg_context);
-      else sprite.draw(self.fg_context);
+    //self.context.clearRect(0,0,self.canvas.width, self.canvas.height);
+    self.context.setTransform(1,0,0,1);
+    this.sprites.forEach(function(sprite) {
+      sprite.draw(self.context);
     });
     if (self.draw_physics) {
-      self.fg_context.strokeStyle = 'blue';   
+      self.context.strokeStyle = 'blue';   
       for (var i=0; i<Game.lines.length; ++i) {
-        self.fg_context.beginPath();
-        self.fg_context.moveTo(Game.lines[i].A.x, Game.lines[i].A.y);
-        self.fg_context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
-        self.fg_context.stroke();
+        self.context.beginPath();
+        self.context.moveTo(Game.lines[i].A.x, Game.lines[i].A.y);
+        self.context.lineTo(Game.lines[i].B.x, Game.lines[i].B.y);
+        self.context.stroke();
       }
     }
     if (self.draw_alien_sensors) {
       Game.aliens.forEach(function(alien) {
-        if ('visualize_sensors' in alien) alien.visualize_sensors(self.fg_context);
+        if ('visualize_sensors' in alien) alien.visualize_sensors(self.context);
       });
     }
   }
   
   this.show_fps = function(tasks) {
-    self.fg_context.fillStyle = 'white';
-    self.fg_context.fillRect(500, 180, 100, 100);
+    return;
+    self.context.fillStyle = '#555';
+    var t = Date.now()
+    if (t-this.lastTime > 500) {
+      this.fps = Math.round(this.counter*1000/(t-this.lastTime));
+      this.counter = 0
+      this.lastTime = t
+    } else this.counter++
+    self.context.font = "20px Arial";
+    self.context.textAlign = 'right';
+    self.context.fillText(this.fps + 'fps', 60,50);
+    self.context.fillStyle = 'white';
+    self.context.fillText(this.fps + 'fps', 60-2,50-2);
+  /*  
     var now = Date.now();
-    self.fg_context.fillStyle = Colors.gray;
-    self.fg_context.font = '15px "Arial"';
+    self.context.fillStyle = Colors.gray;
+    self.context.font = '15px "Arial"';
     fps = 1000/(now-self.last_time);
-    this.fps = 0.99*this.fps+0.01*fps;
     self.last_time = now
-    self.fg_context.fillText('fps: '+Math.round(this.fps), 500, 200);
+    self.context.fillText('fps: '+Math.round(fps), 500, 200);
     var i=1
     for (t in tasks) {
       i++;
-      self.fg_context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
+      self.context.fillText(t+': '+tasks[t].toFixed(1)+' ms', 500, 200+i*20);
     }
+   */
   } 
 }

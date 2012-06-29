@@ -1,0 +1,9 @@
+{
+  "id": "com.phigames.shooty-game",
+  "version": "0.1.0",
+  "vendor": "phigames",
+  "type": "web",
+  "main": "index.html",
+  "title": "Shooty",
+  "uiRevision": "2"
+}

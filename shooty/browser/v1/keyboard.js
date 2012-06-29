@@ -1,9 +1,9 @@
 var key_steer_data = { pitch: 0, accel: 0, mode: 'relative' };
 
 var keyboard_init = function() {
-  //Game.ships['key'] = new Ship('key');
-  //Game.ships['key'].player_name = "Keyboard Klaus";
-  //Game.ships['key'].spawn();
+  Game.ships['key'] = new Ship('key');
+  Game.ships['key'].player_name = "Keyboard Klaus";
+  Game.ships['key'].spawn();
   
   document.onkeydown = function(evt) {
     if(evt.keyCode == 37) {

@@ -1,7 +1,14 @@
 ///// Settings ///////////////////////////////////////
+var version = '0.1.2'
 var port = 9888;
-var log_level = 'debug';  // error, warn, info, debug
+var log_level = 'info';  // error, warn, info, debug
+var logfile_name = 'phii-server.log'
 //////////////////////////////////////////////////////
+
+var fs = require('fs')
+var logfile = fs.openSync(logfile_name, 'a') 
+
+fs.write(logfile, 'Server v' + version + ' started at ' + Date() + '\n', null, 'utf8')
 
 // io.listen() will create a http server
 var Io = require('socket.io').listen(9888);
@@ -9,6 +16,9 @@ var Io = require('socket.io').listen(9888);
 var logger = Io.settings.logger;
 logger.info('setting log level to', log_level);
 logger.level = {error:0, warn:1, info:2, debug:3}[log_level];
+Io.configure(function () {
+  Io.set('log level', {error:0, warn:1, info:2, debug:3}[log_level]);
+});
 
 var sessions = {};
 
@@ -36,6 +46,7 @@ Io.sockets.on('connection', function (socket) {
     sessions[code] = {game: socket.id};
     fn(code, true);
     logger.info('[', socket.id, '] created session ', code, '.');
+    fs.write(logfile, '['+Date()+'] Session created.\n', null, 'utf8')
   });
   
   /// Called by Player to join the session a Game set up. On success, the Game
@@ -52,6 +63,8 @@ Io.sockets.on('connection', function (socket) {
     fn(code, true);
     Io.sockets.socket(sessions[code].game).emit('player_joined', code, data);
     logger.info('[', socket.id, '] joined session ', code, '.');
+    var pname = (data.player_name) ? data.player_name : '?'
+    fs.write(logfile, '['+Date()+'] Player ' + pname + ' joined.\n', null, 'utf8')
   });
   
   /// Called by either Game or Player. If the other participant of the session has

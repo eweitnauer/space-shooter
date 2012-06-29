@@ -1,3 +1,5 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
 
 var Ship = function(session_code) {
   this.type = 'ship';
@@ -5,7 +7,7 @@ var Ship = function(session_code) {
 //  this.shield = new Shield(this);
   this.init_sprite();
   this.score_sprite = this.createScoreSprite();
-  this.player_name = '???';
+  this.player_name = 'player';
   this.code = session_code;
   this.id = Ship.id++;
   this.x = 320;
@@ -18,27 +20,27 @@ var Ship = function(session_code) {
   this.mass = 1;
   this.last_shot_time = 0;
   this.shot_delay = 250; // in ms
-  this.energy = 100;
+  this.energy = 500;
   this.last_time = 0;
   this.session_code = session_code;
   this.steer_data = { shot:false, accel:false, pitch:0 };
   this.points = 0;
   this.destroyed = false;
   this.state = 'flying'; // 'opening, charging, closing, flying'
-//  this.lives = 3;
+  this.lives = 3;
   this.respawn_delay = 3000;
   this.extras = new Extras();
   
   this.max_energy = 100;
   this.acceleration = 0.1;
   this.shot_speed = 10;
-  this.shot_energy = 100;
-  this.shot_max_dist = 250;
+  this.shot_energy = 60;
+  this.shot_max_dist = 270;
   this.num_shots = 1;
   this.shot_angle = 0.05;
   this.shot_level = 0;
   
-  this.rocket_level = 1; // todo
+  this.rocket_level = 0; // todo
   this.heal_per_sec = 15;
   this.rotation_speed = 1;
 
@@ -48,8 +50,9 @@ var Ship = function(session_code) {
   this.rocket_sensor_range = 100;
   this.rocket_count_max = 0;
   this.rocket_scale = 0.4;
-  this.curr_rocket_count = 1;
+  this.curr_rocket_count = 0;
 
+  this.smoke_interval = 200;   // one puff every x ms
 };
 
 
@@ -107,15 +110,20 @@ Ship.prototype.update_from_extra = function(name){
 }
 
 Ship.prototype.steer = function(data) {
-  this.steer_data = data;
-  
   if (!data) return;
-  if (!data.shot) this.shop_flag = true;
-  else if (this.shop_flag) {
-    if (this.state != 'charging' && Game.state == 'running') return;
-    Game.triggerShop(this);
-    this.shop_flag = false;
-  }
+  
+  if ('accel' in data) this.steer_data.accel = data.accel
+  if ('shot' in data) this.steer_data.shot = data.shot
+  if ('pitch' in data) this.steer_data.pitch = data.pitch
+  if ('mode' in data) this.steer_data.mode = data.mode
+  
+  /*  if (!data.shot) this.shop_flag = true;
+      else if (this.shop_flag) {
+      if (this.state != 'charging' && Game.state == 'running') return;
+      Game.triggerShop(this);
+      this.shop_flag = false;
+      }
+  */
 }
 
 Ship.prototype.step = function() {
@@ -156,15 +164,30 @@ Ship.prototype.step = function() {
 }
 
 Ship.prototype.spawn = function() {
+  var trys = 0;
+  while (true) {
+    trys++
+    var p = Game.ship_spawn_pts[Math.floor(Math.random()*Game.ship_spawn_pts.length)]
+    if (Game.check_collision(p[0],p[1], this.collision_radius) === false) {
+      this.x = p[0]; this.y = p[1]; 
+      this.rot = 0;
+      this.trigger_charge();
+      break;
+    }
+    if (trys > 15) {
+      this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
+      this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
+      this.rot = Math.random()*0.2 - 0.1;
+      this.trigger_fly();
+      break;
+    }
+  }
   this.display = true;
   this.destroyed = false;
   this.energy = 100;
-  this.trigger_fly();
   this.last_shoot_time = 0;
+  this.last_smoke_time = 0;
   this.last_time = Animation.time;
-  this.x = Game.borders.left + this.collision_radius + Math.random()*(Game.borders.right-Game.borders.left-2*this.collision_radius);
-  this.y = Game.borders.top + this.collision_radius + Math.random()*(Game.borders.bottom-Game.borders.top-2*this.collision_radius);
-  this.rot = Math.random()*2*Math.PI;
   this.vx = this.vy = 0;
 }
 
@@ -177,7 +200,7 @@ Ship.prototype.isShooting = function() {
 }
 
 Ship.prototype.explode = function() {
-  var expl = new Explosion(this.x, this.y, 'L');
+  var expl = new Explosion(this.x, this.y, 'XL');
   expl.rot = this.rot;
   var code = this.code;
   sendVibrate(code, 1000);
@@ -201,28 +224,16 @@ Ship.prototype.rotate = function(mode, pitch) {
 }
 
 Ship.prototype.smoke = function() {
-  // idee: wir könnten smoke-alpha 
-  // von der schiff-geschwindigkeit
-  // abhängig machen
-  if (Math.random()< 0.67) {
-    var rot = (this.rot + Math.PI/2);
-    var r = 25;
-    if(this.state == 'closing'){
-      r = 15;
-    }
-    var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
-                      this.y+Math.sin(rot)*r+(Math.random()-0.5)*6,
-                     '0');
-    
-    s.rot = Math.random()*1.5-0.75;
-    // shipSpeed \in [ 0 , 6 ]
-    var shipSpeed = Math.sqrt(this.vx*this.vx + this.vy*this.vy)/6;
-
-    s.alpha = 0.98+Math.random()*0.02 - shipSpeed/6;
-    s.scale = 0.3+Math.random()*0.3;
-    s.alpha_decay = 0.02+Math.random()*0.2 + shipSpeed/6*0.6;
-
-  }
+  return;
+  if (Animation.time - this.last_smoke_time < this.smoke_interval) return;
+  this.last_smoke_time = Animation.time;
+  var rot = (this.rot + Math.PI/2);
+  var r = 25;
+  if (this.state == 'closing') r = 15;
+  var s = new Smoke(this.x+Math.cos(rot)*r+(Math.random()-0.5)*6,
+                    this.y+Math.sin(rot)*r+(Math.random()-0.5)*6,
+                   'rocket-S');
+  s.alpha = 0.7
 }
 
 Ship.prototype.shoot = function() {
@@ -259,13 +270,14 @@ Ship.prototype.apply_physics = function() {
 Ship.max_land_speed = 0.5;
 
 Ship.prototype.destroy = function() {
-  Game.lives-=1;
+//  Game.lives-=1;
+  this.lives--;
   this.heat = 0;
   this.energy = 0;
   this.explode();
   this.display = false;
   this.destroyed = true;
-  if (Game.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
+  if (this.lives>0) setTimeout(jQuery.proxy(this.spawn, this), this.respawn_delay);
 }
 
 Ship.prototype.hit = function(energy, x, y) {
@@ -357,11 +369,11 @@ Ship.prototype.init_sprite = function() {
   this.color = Ship.getNextColor();
   jQuery.extend(this, new Sprite(120, 'ship-'+this.color));
   this.offset_x = 2; this.offset_y = -3;
-  this.scale = 0.9;
+  this.scale = 1//0.9;
   Game.main_sprite.child_sprites.push(this);
   var ship = this;
   var flame_sprite = new Sprite(160, 'flame-XL');
-  flame_sprite.scale = 0.8;
+  flame_sprite.scale = 1//0.8;
   flame_sprite.y = 18; flame_sprite.alpha = 0.9;
   flame_sprite.display = function() { return ship.isAccelerating() && ship.state == 'flying' };
   flame_sprite.draw_in_front_of_parent = false;
@@ -393,14 +405,14 @@ Ship.prototype.createScoreSprite = function() {
     }
     ctx.lineWidth = 1;
     var w = l*ship.energy*(1.0/ship.max_energy); //0.01;
-    ctx.fillRect(0,19,w,7);
-    ctx.strokeRect(0,19,l,7);
+    ctx.fillRect(0,8,w,10);
+    ctx.strokeRect(0,8,l,10);
     // write player name
     ctx.textBaseline = "middle";
     ctx.textAlign = "left";
     ctx.fillStyle = Colors.gray;
-    ctx.font = '15px "Permanent Marker"';
-    ctx.fillText(ship.player_name, 20, 9);
+    ctx.font = '15px "prelude"';
+    ctx.fillText(ship.player_name, 20, -3);
 
     // shield:
     if(ship.shield){
@@ -413,10 +425,13 @@ Ship.prototype.createScoreSprite = function() {
       ctx.strokeRect(0,28,l,7);
     }
 
-    ctx.save();
-    ctx.translate(8,4);
-    ship_sprite_1.draw(ctx);
-    ctx.restore();
+    try {
+      ctx.save();
+      ctx.translate(8,4);
+      ship_sprite_1.draw(ctx);
+      ctx.translate(60,8);
+      ctx.fillText('Lives:'+ship.lives,0,0);
+    } finally { ctx.restore(); }
 
     /*
     // lives

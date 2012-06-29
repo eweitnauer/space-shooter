@@ -25,7 +25,6 @@ var Shield = function(ship, radius, maxEnergy, recoveryPerSec){
   this.currEnergy = maxEnergy;
   this.energyRatio = 1;
   this.lastTime = null;
-
 }
 
 Shield.prototype = new Sprite();

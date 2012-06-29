@@ -1,71 +1,68 @@
+/// Written by Erik Weitnauer, Christof Elbrechter and Rene Tuennermann.
+/// eweitnauer@gmail.com
+
 var Game = {
   //w: 1237, h: 777
   w: 1024, h: 768
-  ,borders: {left:336, top:158, right: 1171, bottom: 355}
+  ,borders: {left:150, top:145, right: 970, bottom: 325}
+  ,ship_spawn_pts: [[273,533],[515,442],[618,437],[770,565],[829,417],[916,334]]
   ,grav_x:0, grav_y:0.02
   ,air_friction: 0.01
   ,wind_vx: 0.05
   ,wind_vy: -0.01
   ,step_timer: null
   ,ships: {}
-  ,coins: 100000
+  ,coins: 0
   ,points: 0
   ,lives: 3
   ,shots: new LinkedList
   ,aliens: new LinkedList
   ,smokes: new LinkedList
   ,pointObjects : new LinkedList
+  ,spawn_next_wave_request_time: null
   ,lines: []
   ,level: 0 
-  ,state: 'paused' //'paused','running','shop', 'splash'
-  ,splashScreen: null
-  ,currentWave: null
-  ,nextWave: function(){
-    var nextLevel = this.currentWave==null ? 1 : this.currentWave.level+1;
-    this.currentWave = create_wave(1);
-    var splashScreen = this.currentWave.create_info_screen();
-    this.enterSplashScreen(splashScreen);
-  }
-  ,endWave: function(result){
-    console.log('wave ended: result: ', result);
-    console.log('aliens', Game.aliens);
-    this.enterSplashScreen(result.create_result_screen());
-  }
+  ,currentStep: 0
+  ,state: 'paused' //'over'
+//  ,splashScreen: null
+  ,startTime: Date.now()
   ,start: function() {
-    
     Animation.time = Date.now();
-    //this.canvas.width = this.w; 
-    //this.canvas.height = this.h;
+    this.canvas = document.getElementById("canvas");
+    this.canvas.width = this.w; 
+    this.canvas.height = this.h;
     
-    this.painter = new PaintEngine(document.getElementById("fg"), document.getElementById("bg"));
-    //this.step_timer = setInterval(this.step, 1000/500);
-    this.step_timer = setInterval(Game.step, 1000/500);
-    
-    Game.main_sprite = new Sprite([], '');
+    this.painter = new PaintEngine(this.canvas);
+    this.step_timer = setInterval(this.step, 1000/30);
+    Game.main_sprite = new Sprite([], 'bg');
     Game.main_sprite.center_img = false;
     Game.painter.add(Game.main_sprite);
-    var bg = new Sprite([], 'bg_small');
-    bg.center_img = false;
-    bg.is_background = true;
-    Game.painter.add(bg);
     Game.painter.draw();
-    bg.hide_self_but_draw_children = true;
-    //Game.painter.add(new ScoreBoard());
-    //Game.infobar = new Infobar();
-    //Game.painter.add(Game.infobar);
-    //Game.lines = load_collision_data_from_svg(Game.coll_data);
-    //for (l in Game.lines) {Game.lines[l].type = 'landscape'}
+    Game.painter.add(new ScoreBoard());
+    Game.infobar = new Infobar();
+    Game.painter.add(Game.infobar);
+    Game.overlay = new Overlay();
+    Game.painter.add(Game.overlay);
+//    Game.lines = load_collision_data_from_svg(Game.coll_data);
+//    for (l in Game.lines) {Game.lines[l].type = 'landscape'}
     Game.lines = JSON.parse(preloaded_collision_lines);
     for (var l=0; l<Game.lines.length; l++) {
       Game.lines[l].A = new Point(Game.lines[l].A.x, Game.lines[l].A.y)
       Game.lines[l].B = new Point(Game.lines[l].B.x, Game.lines[l].B.y)
       Game.lines[l].type = 'landscape'
     }
-    this.spawn_aliens();
+    //this.spawn_aliens();
     this.state = 'running';
-    this.nextWave();
   }
-  ,enterShop: function(ship) {
+  // return true if there would be a collision at the given point with moving objects
+  ,check_collision: function(x,y,r) {
+    var result = false;
+    Game.forEachMovableObject(function(obj) {
+      if (inner_dist(obj, {x:x, y:y, collision_radius:r}) <= 0) result = true;
+    });
+    return result;
+  }
+/*  ,enterShop: function(ship) {
     if(Game.state != 'running') return;
     Shop.setup(this.painter.context, ship);
     Game.state = 'shop';
@@ -76,7 +73,8 @@ var Game = {
   ,triggerShop: function(ship) {
     Game.state == 'running' ? Game.enterShop(ship) : Game.leaveShop();
   }
-  // can also be used to switch to next splash screen
+*/
+/*  // can also be used to switch to next splash screen
   ,enterSplashScreen: function(splashScreen){
     if(Game.splashScreen){
       Game.splashScreen.display = false;
@@ -91,13 +89,11 @@ var Game = {
     if(Game.splashScreen){
       Game.splashScreen.display = false;
       Game.splashScreen.animation.finished = true;
-      if(Game.splashScreen.end_callback != null){
-        Game.splashScreen.end_callback();
-      }
       Game.splashScreen = null;
     }
     Game.state = 'running';
-  }  
+  }
+*/  
   ,forEachActiveShip: function(fn) {
     for (var s in Game.ships) {
       if (Game.ships.hasOwnProperty(s) && !Game.ships[s].destroyed) fn(Game.ships[s]);
@@ -129,16 +125,17 @@ var Game = {
       new Mine(x,y,0,0);
     }
   }
-  ,spawn_aliens: function(){
-    //new Ufo();
-    //new Ufo();
-    //new Pyramid();
-    for(var i=0;i<15;++i){
-      new Fighter();
+  ,spawn_next_wave: function(){
+    var num = ((Game.level-1) % 4)+1;
+    var skillLevel = Math.floor((Game.level-1)/4);
+    for(var i=0;i<num;++i){
+      var f = new Fighter();
+      f.coins = 100 * Math.pow(1.5, skillLevel);
+      f.max_energy = 40 * Math.pow(1.5, skillLevel);
+      f.energy = f.max_energy;
+      f.shot_energy = 1 * Math.pow(1.5, skillLevel);
+      f.shot_time = Math.max(500, 1500 * Math.pow(1.2, -skillLevel));
     }
-    //new Cannon(720,455);
-    //new YellowBox();
-    //new Amoeba();
   }
   /// move the shots and remove marked ones (which hit something / flew too far)
   ,handleShots: function() {
@@ -185,7 +182,7 @@ var Game = {
           line.restitution = 0.4;
           var energy = Physics.letCollide(ship, line, true, false);
           if (!ship.attempt_land(line)) {
-            ship.hit(Math.max(10,energy));
+            ship.hit(Math.max(2,energy));
             new Explosion(p.x, p.y, 'sploing');
           }
         });
@@ -252,7 +249,7 @@ var Game = {
           line.restitution = 0.4;
           var energy = Physics.letCollide(alien, line, true, false);
           alien.hit(Math.max(1,energy), 'landscape');
-          if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'sploing');
+          //if (!(alien instanceof Mine)) new Explosion(p.x, p.y, 'sploing');
         });
       }
     });
@@ -315,12 +312,6 @@ var Game = {
       alien.step(); 
       if(alien.destroyed) {
         el.remove();
-        if( alien instanceof Ufo ){
-          setTimeout(function(){
-            Game.spawn_aliens();
-          },4000);
-        }
-        
       }
     });
   }
@@ -356,7 +347,69 @@ var Game = {
     };  */
   }
   ,step: function() {
+    Game.currentStep ++;
+    var numLivesTotal = 0;
+    for(var i in Game.ships){
+      numLivesTotal += Game.ships[i].lives;
+    }
+    if(Game.currentStep > 10 && numLivesTotal == 0){
+      Game.state = 'over';
+      var s = new Sprite([],'');
+      s.extra_draw = function(ctx){
+        try {
+          ctx.save();
+          ctx.font = '50px "prelude"';
+          ctx.fillStyle = 'black';
+          ctx.fillText('Game Over',400,350);
+          ctx.fillStyle = '#00a5cd';
+          ctx.fillText('Game Over',400-2,350-2);
+
+          ctx.font = '35px "prelude"';
+          ctx.fillStyle = 'black';
+          ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380,400);
+          ctx.fillStyle = '#00a5cd';
+          ctx.fillText('Level:' + Game.level+ '   Points: '+ Game.coins,380-1,400-1);
+        } finally {
+          ctx.restore();
+        }
+      }
+      Game.main_sprite.child_sprites.push(s);
+    }
+
+    //var counts = Game.painter.count_children_recursive();
+    
+    //console.log('number of sprites: top-level:' + counts['top-level-sprites'] + ' all:' + counts['all-sprites']);
+    
     Animation.time = Date.now();
+    
+    /// overlay ...
+    if(Game.overlay){
+      var dt = Animation.time - Game.startTime;
+      if(dt > 3000){
+      Game.overlay.set_alpha(1.0-((dt - 3000)/2000));
+        if(dt > 5000){
+          Game.overlay.display=false;
+          Game.overlay.animation.finished = true;
+          Game.overlay = null;
+        }
+      }
+    }
+    
+    /// levels ..
+   // console.log(Game.aliens.length);
+    if(Game.aliens.length == 0){
+      if(!Game.spawn_next_wave_request_time){
+        Game.spawn_next_wave_request_time = Animation.time;
+      }else{
+        var dt = Animation.time - Game.spawn_next_wave_request_time;
+        if(dt > 8000){
+          Game.level ++;
+          Game.spawn_next_wave();
+          Game.spawn_next_wave_request_time = null;
+        }
+      }
+    }    
+
     switch(Game.state){
     case 'running':
       var t_stepping = measure_duration(function() {
@@ -392,78 +445,103 @@ var Game = {
     case 'paused':
       // update the display
       //Game.painter.draw();
-      
       break;
-    case 'shop':
+    case 'over':
       Game.painter.draw();
-      Shop.draw();
       break;
-    case 'splash':
-      Game.painter.draw();
+ //   case 'shop':
+ //     Game.painter.draw();
+ //     Shop.draw();
+ //     break;
+//    case 'splash':
+ //     Game.painter.draw();
     }
   }
   ,shipcolors: ['rgba(255,0,0,0.7)','rgba(0,255,0,0.7)','rgba(0,0,255,0.7)','rgba(0,0,0,0.7)']
   ,nextshipcolor : 0
 };
 
+Overlay = function(){
+  jQuery.extend(this, new Sprite([], ''));
+  this.accel = new Sprite([],'overlay-accel');
+  this.fire = new Sprite([],'overlay-fire');
+  this.rotate = new Sprite([],'overlay-rotate');
+  this.child_sprites.push(this.accel);
+  this.child_sprites.push(this.fire);
+  this.child_sprites.push(this.rotate);
+  this.accel.x = 70;
+  this.accel.y = 370;
+
+  this.fire.x = 955;
+  this.fire.y = 370;
+  
+  this.rotate.x = 520;
+  this.rotate.y = 200;
+  
+  this.set_alpha = function(alpha){
+    this.accel.alpha = alpha;
+    this.fire.alpha = alpha;
+    this.rotate.alpha = alpha;
+  }
+}
 
 Infobar = function() {
-  jQuery.extend(this, new Sprite([], ''));
+  jQuery.extend(this, new Sprite([],''));
 
-  this.coin_sprite = new Sprite(120,'coin');
+  this.coin_sprite = new Sprite([],'');
   this.child_sprites.push(this.coin_sprite);
-  this.coin_sprite.x = 1050;
+  this.coin_sprite.x = 860;
   this.coin_sprite.y = 725;
-  this.coin_sprite.scale = 0.5;
   this.coin_sprite.extra_draw = function(ctx){
-    ctx.save();  
     ctx.textAlign = "left";
-    ctx.font = '30px "Permanent Marker"';
+    ctx.font = '30px "Prelude"';
     ctx.fillStyle = 'rgb(100,100,100)';
     ctx.fillText(''+Game.coins,30,-22);
-    ctx.fillText('total: ' + Game.points, 30,5)
-    ctx.restore();
   }
     
   this.extra_draw = function(ctx) {
-    ctx.font = '20px "Permanent Marker"';
+    ctx.font = '18px "prelude"';
     ctx.textBaseline = "top";
     ctx.textAlign = "right";
     ctx.fillStyle = '#00a5cd';
     ctx.save();
-    ctx.translate(1080,112);
-    ctx.rotate(0.02);
-    if(comm){
-      ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
-    }
-    ctx.restore();
-    
-    
-
+    try {
+      ctx.translate(900,100);
+      ctx.rotate(0.02);
+      if (comm && comm.connected) {
+        ctx.fillText('join game with session code ' + comm.session_code, 0, 0);
+      } else {
+        ctx.fillText('connecting to server...', 0, 0);
+      }
+      
+      ctx.translate(-650,-3);
+      ctx.fillText('Level:' + (Game.level<10?'0':'')+Math.max(0,Game.level),0,0);
+    } finally { ctx.restore(); }
   }
 }
 
 ScoreBoard = function() {
   jQuery.extend(this, new Sprite([], ''));
   this.extra_draw = function(ctx) {
-    ctx.font = '15px "Permanent Marker"';
+    ctx.font = '15px "prelude"';
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
     ctx.fillStyle = '#555';
     ctx.save();
-    ctx.translate(330,713);
-    ctx.rotate(0.005);
-    var i = 0;
-    for (s in Game.ships) {
-      var ship = Game.ships[s];
-      ctx.save();
-      //ctx.translate(Math.floor(i/2)*200, (i%2)*28);
-      ctx.translate(i*175, 8);
-      ship.score_sprite.draw(ctx);
-      ctx.restore();
-      i++;
-    }
-    ctx.restore();
+    try {
+      ctx.translate(150,705);
+      ctx.rotate(0.005);
+      var i = 0;
+      for (s in Game.ships) {
+        var ship = Game.ships[s];
+        ctx.save();
+        try {
+          ctx.translate(i*175, 8);
+          ship.score_sprite.draw(ctx);
+        } finally { ctx.restore(); }
+        i++;
+      }
+    } finally { ctx.restore(); }
   }
 }
 
@@ -479,31 +557,15 @@ Game.getRandomPos = function(r) {
 Game.coll_data = '\
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>\
 <svg\
-   xmlns:dc="http://purl.org/dc/elements/1.1/"\
-   xmlns:cc="http://creativecommons.org/ns#"\
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\
    xmlns:svg="http://www.w3.org/2000/svg"\
    xmlns="http://www.w3.org/2000/svg"\
+   id="svg2"\
    version="1.1"\
-   width="1280"\
-   height="800"\
-   id="svg2">\
-  <metadata\
-     id="metadata8">\
-    <rdf:RDF>\
-      <cc:Work\
-         rdf:about="">\
-        <dc:format>image/svg+xml</dc:format>\
-        <dc:type\
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />\
-        <dc:title></dc:title>\
-      </cc:Work>\
-    </rdf:RDF>\
-  </metadata>\
-  <defs\
-     id="defs6" />\
+   width="1024"\
+   height="768">\
   <path\
-     d="m 323.61111,525 21.52778,20.13889 14.58333,8.33333 2.08334,20.13889 35.41666,14.58333 11.80556,17.36112 25,10.41666 25,-18.75 -20.83334,-10.41666 -29.86111,-6.25 0,-9.72223 79.16667,-9.72222 15.27778,7.63889 18.75,58.33333 -10.41667,4.86111 -27.08333,-20.83333 -16.66667,28.47222 45.13889,40.97223 48.61111,-2.77778 31.25,-22.91667 L 643.75,657.63889 669.44445,555.55556 632.63889,531.25 686.80556,529.86111 681.25,495.83333 639.58333,475 l 218.05556,-9.72222 -33.33333,76.38889 5.55555,21.52777 8.33334,4.16667 -7.63889,36.11111 11.80555,6.25 -12.5,30.55556 4.16667,4.86111 35.41667,7.63889 10.41666,20.83333 19.44445,-8.33333 0,-20.13889 6.25,-0.69445 4.86111,14.58334 34.72222,0 9.02778,-11.11111 L 944.44445,612.5 923.61111,595.13889 1034.7222,593.05556 1011.8056,500 l -31.25004,-29.86111 -3.47223,-22.22222 58.33337,-1.38889 47.2222,-15.27778 -0.6945,-34.72222 -38.8888,-33.33334 117.3611,2.08334 1.3889,33.33333 9.7222,1.38889 6.25,-172.22222 -8.3334,-77.08334 -31.25,-0.69444 -30.5555,-7.63889 -777.77779,-15.27778 z"\
-     id="path2987" collision-object="true"\
-     style="fill:none;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />\
+     style="fill:none;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"\
+     d="m 136.91666,507.18055 36.11111,28.47222 2.08334,20.13889 72.22222,42.36111 25,-18.75 -54.70609,-23.98191 94.45609,-10.1066 15.54069,67.15893 -30.29069,-19.18153 -16.66667,28.47222 45.13889,40.97223 48.61111,-2.77778 31.25,-22.91667 51.38889,2.77778 25.69445,-102.08333 -36.80557,-24.30556 54.16668,-1.38889 -5.55556,-34.02778 -41.66667,-20.83333 215.64858,-10.52455 -31.8973,72.4036 5.19114,102.25917 61.76562,29.65894 10.45023,-25.15504 6.6879,15.38567 54.76044,1.72612 -34.56719,-65.61502 98.27384,0.32365 -14.09099,-95.46254 -31.25004,-29.86111 -3.47223,-22.22222 58.33337,-1.38889 47.22219,-15.27778 -0.6945,-34.72222 -38.8888,-33.33334 115.36111,2.08334 18.3204,33.11757 -4.0834,-249.30556 -842.7926,-22.00646 z"\
+     id="path2987"\
+     collision-object="true"/>\
 </svg>';
