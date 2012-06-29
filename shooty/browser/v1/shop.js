@@ -148,9 +148,9 @@ var Shop = {
       new Sprite(80,'extra-star-4'),
       new Sprite(80,'extra-star-5')
     ];
-    this.coin = new Sprite(120,'coin');
+    this.coin = new Sprite(120,'extra-coin');
     this.coin.scale = 0.5;
-    this.large_coin = new Sprite(120,'coin');
+    this.large_coin = new Sprite(120,'extra-coin');
     this.ship_sprite = new Sprite(80,'ship-'+this.ship.color);
     this.ship_sprite.scale = 1.5;
 //    this.ship_sprite.rot = Math.PI/2;

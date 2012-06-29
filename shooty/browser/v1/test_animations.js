@@ -13,7 +13,6 @@ function init_animations() {
   solar_animation();
   var xcell = 2, ycell = 1;
   for (var img in ImageBank.imgs) {
-    if (img == 'background') continue;
     var sprite = new Sprite(80, img);
     sprite.x = xcell * cell_size;
     sprite.y = ycell * cell_size;
@@ -28,6 +27,32 @@ function init_animations() {
       ctx.textAlign = 'center';
       ctx.fillText(this.animation.img_tag,0,-40);
     }
+    if(/material/.test(img)){
+      var s = new Sprite;
+      s.animation.finished = false;
+      s.draw_in_front_of_parent = false;
+      if(/one/.test(img)){
+        s.extra_draw = function(ctx){
+          ctx.fillStyle = 'rgb(230,230,230)';
+          ctx.fillRect(-44,-44,88,88);
+        }
+      }else{
+        s.extra_draw = function(ctx){
+          ctx.fillStyle = 'rgb(230,230,230)';
+          ctx.fillRect(-44,-44,88,88);
+          //todo use animation.frame_change_callback!
+          if(s.animation.frame == 20){
+            //s.scale = 10;
+          }else{
+            //s.scale = 20;
+          }
+        }
+      }
+      sprite.child_sprites.push(s);
+    }
+
+    
+
 //    if (img == 'alien_ufo') sprite.offset_rot = Math.PI*0.25;
 //    if (/solar/.test(img)) {
 //      sprite.animation.setTimeLine(120);
