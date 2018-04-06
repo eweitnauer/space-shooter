@@ -1,0 +1,17 @@
+{
+  "name": "rocket-shooter-server",
+  "version": "1.0.0",
+  "description": "communication backend for rocket shooter game",
+  "main": "server.js",
+  "dependencies": {
+    "node-uuid": "^1.2.0",
+    "socket.io": "^1.7.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Erik Weitnauer",
+  "license": "ISC"
+}
